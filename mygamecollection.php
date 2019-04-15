@@ -11,6 +11,7 @@
  * - sortable columns
  * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
  * - automatically fetch the game ids, so the price scraper import works out of the box
+ * - namespaces and autoloader
  */
 
 if (!is_readable('mygamecollection.inc.php')) {
@@ -19,11 +20,25 @@ if (!is_readable('mygamecollection.inc.php')) {
         pathinfo(__FILE__, PATHINFO_FILENAME)
     ));
 }
+
 require_once('mygamecollection.inc.php');
 require_once('lib/logger.php');
 require_once('lib/database.php');
 
 $oDatabase = new Database;
+
+//check if database connection is ok
+if ($oDatabase->connect()) {
+
+    //check if table exists
+    if (!$oDatabase->query('SHOW TABLES LIKE "mygamecollection"')) {
+
+        //call setup
+        require_once('setup/setup.php');
+        (new Setup($oDatabase))->run();
+        exit();
+    }
+}
 
 $sThisFile = pathinfo(__FILE__, PATHINFO_BASENAME);
 
@@ -339,6 +354,7 @@ if ($id = $oRequest->getInt('id')) {
 }
 
 if (empty($aGames)) {
+    //initial page load, so show all games
     if (empty($sSearch) && empty($sShow)) {
         $aGames = $oDatabase->query('
             SELECT SQL_CALC_FOUND_ROWS *
@@ -468,7 +484,7 @@ if (empty($id)) {
     </head>
     <body>
         <div class="container">
-        <h1><a href="https://www.trueachievements.com/gamer/mrbellek/gamecollection" target="_blank">My Game Collection</a>
+        <h1><a href="https://www.trueachievements.com/" target="_blank">My Game Collection</a>
             <a href="#content"><span class="glyphicon glyphicon-arrow-down"></span></a>
         </h1>
 
@@ -845,16 +861,23 @@ if (empty($id)) {
                 <?php if (!$aGames): ?>
                     <p>Your game collection seems empty! You can fill it by doing the following things:</p>
                     <ul>
+                        <li>Run the price scraper (<span style="font-family: Courier New;">php xboxcalculator.php [gamertag] [region]</span>
+                            from the command line) and import the resulting .json file with price info.</li>
                         <li>Go to your <a href="https://www.trueachievements.com/">TrueAchievements</a> game collection</a></li>
                         <li>Click the 'View and filter' button, then click the down arrow to download your game collection as a .csv file.</li>
                         <li>Back here, click 'Choose file', pick the .csv and hit 'Import game collection CSV'.</li>
                     </ul>
                     <p>To get the full power of this page, there's a few more optional things you can do:</p>
                     <ul>
-                        <li>Manually set the game id for your games to enable the price scraper import (below)</li>
-                        <li>Run the price scraper (`php xboxcalculator.php [gamertag] [region]` from the command line) and import the resulting
-                        .json file with price info.</li>
-                        <li>Manually enter additional game details, like BC, kinect/peripherals required etc</li>
+                        <li>Manually enter prices you paid for your games. Use your
+                            <a href="https://account.microsoft.com/billing/orders">Transaction history on Xbox.com</a></li>
+                        <li>Manually enter additional game details, like BC, kinect/peripherals required etc.</li>
+                    </ul>
+                    <p>Finally, if you want to keep your collection up to date, you should periodically:</p>
+                    <ul>
+                        <li>Import your game collection csv.</li>
+                        <li>Import new prices json.</li>
+                        <li>Manually update new games with price and game details, like above.</li>
                     </ul>
                     <p>Feedback and improvements are welcome, the GitHub page is at <a href="https://github.com/mrbellek/mygamecollection"
                     target="_blank">github.com/mrbellek/mygamecollection</a></p>
@@ -1279,10 +1302,14 @@ function importJsonIntoDatabase($json) {
 
             $oGame = new Game($oDatabase);
             $oGame->getById($game->id);
-            $oGame->current_price = $game->price;
-            $oGame->regular_price = ($game->saleFrom ? $game->saleFrom : '');
-            $oGame->status = $game->status;
-            $oGame->save();
+            if (!$oGame->id) {
+                $oGame->createByPriceData($game);
+            } else {
+                $oGame->current_price = $game->price;
+                $oGame->regular_price = ($game->saleFrom ? $game->saleFrom : '');
+                $oGame->status = $game->status;
+                $oGame->save();
+            }
 
         } else {
             $games_unchanged[] = $game;
@@ -1316,6 +1343,15 @@ function hasPriceChanged($game)
     $oGame->getById($game->id);
 
     $return = ['status' => false, 'price' => false];
+
+    if (!$oGame->id) {
+        //game isn't in database yet
+        $return['status'] = ['old' => false, 'new' => $game->status];
+        $return['price'] = ['old' => false, 'new' => $game->price];
+
+        return $return;
+    }
+
     if ($game->status != $oGame->status) {
         $return['status'] = ['old' => $oGame->status, 'new' => $game->status];
     }
@@ -1541,7 +1577,6 @@ class Game
     public function shortlistUp()
     {
         if ($this->shortlist_order == 1 || is_null($this->shortlist_order)) {
-            //die('kan niet omhoog');
             return;
         }
 
@@ -1552,10 +1587,8 @@ class Game
             LIMIT 1',
             [':order' => $this->shortlist_order - 1]
         );
-        //var_dumP($switchId);
 
         if ($switchId) {
-            //echo 'switchid, dus wissel';
             $this->db->query('
                 UPDATE mygamecollection
                 SET shortlist_order = shortlist_order + 1
@@ -1564,12 +1597,10 @@ class Game
                 [':id' => $switchId]
             );
         } else {
-            //echo 'geen switchid';
         }
 
         $this->shortlist_order--;
         $this->save();
-        //die('done');
     }
 
     public function shortlistDown()
@@ -1598,6 +1629,30 @@ class Game
 
         $this->shortlist_order++;
         $this->save();
+    }
+
+    //wrapper for creating a game during the price import
+    public function createByPriceData($game)
+    {
+        $this->id = $game->id;
+        $this->name = $game->name;
+        $this->game_url = $game->url;
+        $this->current_price = $game->price;
+        $this->regular_price = $game->saleFrom;
+        $this->status = $game->status;
+        $this->date_created = $game->timestamp;
+        $this->last_modified = $game->timestamp;
+
+        $this->completion_perc = 0;
+        $this->platform = '';
+        $this->gamerscore_total = 0;
+        $this->hours_played = 0;
+        $this->achievements_won = 0;
+        $this->achievements_total = 0;
+        $this->gamerscore_won = 0;
+        $this->gamerscore_total = 0;
+
+        $this->insert();
     }
 }
 

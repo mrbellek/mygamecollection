@@ -42,6 +42,15 @@ class Database
         return true;
     }
 
+    public function statement($sQuery)
+    {
+        if (empty($this->oPDO)) {
+            $this->connect();
+        }
+
+        return $this->oPDO->query($sQuery);
+    }
+
     /**
      * Generic query function wrapper
      *
