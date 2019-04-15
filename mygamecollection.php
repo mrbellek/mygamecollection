@@ -359,10 +359,6 @@ if (empty($aGames)) {
 $aCount = $oDatabase->query('SELECT FOUND_ROWS()', []);
 $iCount = $aCount[0]['FOUND_ROWS()'];
 
-//DEBUG
-$aGames = [];
-$iCount = 0;
-
 //calculate worth of current selection (total purchased value, total current value, total saved, most expensive (current/purchased), 
 //average price (current/purchased), amount of free/delisted/on sale...)
 if (empty($id)) {
