@@ -1,6 +1,8 @@
 # My Game Collection
 Import your [TrueAchievements][1] game collection into this CMS to get a better insight into it. Requires some manual data entry for full functionality.
 
+![MyGameCollection screenshot](https://i.imgur.com/V4DIDVy.png)
+
 This is a small CMS written in PHP, that can import your game collection from TrueAchievements (csv) and display some info on it and apply some filters that the regular TA game collection doesn't allow (like ['show games that are not backwards compatible'][3]). If you go the distance and also how much you paid for each game, it can give some insight into how much you spent in total, how much you saved by comparing it to current prices. There's a lot of info TA has that it can't/won't show you that's very useful, and I put a lot of that information at your fingertips here.
 
 A selection:
