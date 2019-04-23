@@ -10,7 +10,6 @@
  * - show if dlc also completed
  * - sortable columns
  * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
- * - automatically fetch the game ids, so the price scraper import works out of the box
  * - namespaces and autoloader
  */
 
@@ -818,7 +817,7 @@ if (empty($id)) {
                                 <a class="btn btn-success <?= ($sShow == 'walkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=walkthrough">With walkthrough</a>
                                 <a class="btn btn-warning <?= ($sShow == 'nowalkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nowalkthrough">Without walkthrough</a>
                         <?php if ($iNewAdded): ?>
-                            <a class="btn btn-danger <?= ($sShow == 'new' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=new">Newly added games <span class="badge"><?= $iNewAdded ?></span></a><br/>
+                            <a class="btn btn-danger <?= ($sShow == 'new' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=new">Without TA game id <span class="badge"><?= $iNewAdded ?></span></a><br/>
                         <?php endif; ?>
                         <input type="hidden" name="page" value="<?= $iPage ?>" />
                         <input type="hidden" name="show" value="<?= $sShow ?>" />
@@ -860,13 +859,13 @@ if (empty($id)) {
 
                 <?php if (!$aGames): ?>
                     <p>Your game collection seems empty! You can fill it by doing the following things:</p>
-                    <ul>
+                    <ol>
                         <li>Run the price scraper (<span style="font-family: Courier New;">php xboxcalculator.php [gamertag] [region]</span>
                             from the command line) and import the resulting .json file with price info.</li>
                         <li>Go to your <a href="https://www.trueachievements.com/">TrueAchievements</a> game collection</a></li>
                         <li>Click the 'View and filter' button, then click the down arrow to download your game collection as a .csv file.</li>
                         <li>Back here, click 'Choose file', pick the .csv and hit 'Import game collection CSV'.</li>
-                    </ul>
+                    </ol>
                     <p>To get the full power of this page, there's a few more optional things you can do:</p>
                     <ul>
                         <li>Manually enter prices you paid for your games. Use your
@@ -874,14 +873,19 @@ if (empty($id)) {
                         <li>Manually enter additional game details, like BC, kinect/peripherals required etc.</li>
                     </ul>
                     <p>Finally, if you want to keep your collection up to date, you should periodically:</p>
-                    <ul>
-                        <li>Import your game collection csv.</li>
+                    <ol>
                         <li>Import new prices json.</li>
+                        <li>Import your game collection csv.</li>
                         <li>Manually update new games with price and game details, like above.</li>
-                    </ul>
+                    </ol>
                     <p>Feedback and improvements are welcome, the GitHub page is at <a href="https://github.com/mrbellek/mygamecollection"
                     target="_blank">github.com/mrbellek/mygamecollection</a></p>
                 <?php else: ?>
+
+                <?php if ($sShow == 'new' && $aGames): ?>
+                <p>This filter shows games that were imported into your library without their corresponding TA game id. To fix this,
+                delete them from here, run the price scraper, import the .json file and then import your game collection .csv again.</p>
+                <?php endif; ?>
 
                 <table class="table table-condensed table-hover">
 
