@@ -6,8 +6,8 @@
  * TODO:
  * v shortlist
  * v separate this mess from twitterbot libraries and put it on github
+ * v show if dlc also completed
  * x walkthrough urls seems mostly wrong (TA bug reported)
- * - show if dlc also completed
  * - sortable columns
  * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
  * - namespaces and autoloader
@@ -319,6 +319,14 @@ if ($id = $oRequest->getInt('id')) {
             $sQuery .= 'AND walkthrough_url != "" ORDER BY name'; break;
         case 'nowalkthrough':
             $sQuery .= 'AND walkthrough_url = "" ORDER BY name'; break;
+        case 'withdlc':
+            $sQuery .= 'AND dlc = 1'; break;
+        case 'nodlc':
+            $sQuery .= 'AND dlc = 0'; break;
+        case 'dlccompleted':
+            $sQuery .= 'AND dlc = 1 AND dlc_completion = 100'; break;
+        case 'dlcnotcompleted':
+            $sQuery .= 'AND dlc = 1 AND dlc_completion < 100'; break;
         case 'mostplayed':
             $sQuery .= 'ORDER BY hours_played DESC'; break;
         case 'shortlist':
@@ -816,6 +824,10 @@ if (empty($id)) {
                                 <a class="btn btn-danger <?= ($sShow == 'nonbconline' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbconline">Non-BC games with online multiplayer</a>
                                 <a class="btn btn-success <?= ($sShow == 'walkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=walkthrough">With walkthrough</a>
                                 <a class="btn btn-warning <?= ($sShow == 'nowalkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nowalkthrough">Without walkthrough</a>
+                                <a class="btn btn-success <?= ($sShow == 'nodlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nodlc">Without DLC</a>
+                                <a class="btn btn-warning <?= ($sShow == 'withdlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=withdlc">With DLC</a>
+                                <a class="btn btn-success <?= ($sShow == 'dlccompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlccompleted">DLC completed</a>
+                                <a class="btn btn-warning <?= ($sShow == 'dlcnotcompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlcnotcompleted">DLC not completed</a>
                         <?php if ($iNewAdded): ?>
                             <a class="btn btn-danger <?= ($sShow == 'new' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=new">Without TA game id <span class="badge"><?= $iNewAdded ?></span></a><br/>
                         <?php endif; ?>
@@ -894,6 +906,7 @@ if (empty($id)) {
                         <th class="hidden-xs">Platform</th>
                         <th class="text-nowrap">C<span class="hidden-xs">ompletion</span> %</th>
                         <th class="text-nowrap">C<span class="hidden-xs">omp</span> est.</th>
+                        <th><abbr title="Downloadable content">DLC</abbr></th>
                         <th><abbr title="Backwards compatible">BC</abbr></th>
                         <th><abbr title="Kinect required">K</abbr></th>
                         <th><abbr title="Peripheral required">P</abbr></th>
@@ -958,6 +971,17 @@ if (empty($id)) {
                         } elseif ($aGame['format'] == 'Disc') {
                             $aGameFormat = 'warning';
                         }
+                        //show dlc icon if present, red if not complete, orange if partial, green if completed
+                        $sDlcStatus = '';
+                        if ($aGame['dlc']) {
+                            if ($aGame['dlc_completion'] == 100) {
+                                $sDlcStatus = 'green';
+                                $sDlcCompletion = '100%';
+                            } else {
+                                $sDlcStatus = ($aGame['dlc_completion'] == 0 ? 'red' : 'orange');
+                                $sDlcCompletion = $aGame['dlc_completion'] . '%';
+                            }
+                        }
                         ?>
                         <tr class="table-striped <?= $sGameStatus ?>">
                         <td>
@@ -971,6 +995,11 @@ if (empty($id)) {
                             <td class="<?= $sCompletionEstimate ?>">
                                 <span class="hidden-xs"><?= $aGame['completion_estimate'] ?></span>
                                 <span class="visible-xs text-nowrap"><?= str_replace(' hours', ' h', $aGame['completion_estimate']) ?></span>
+                            </td>
+                            <td>
+                            <?php if ($aGame['dlc']): ?>
+                                <span style="color: <?= $sDlcStatus ?>;" title="<?= $sDlcCompletion ?>" class="glyphicon glyphicon-plus"></span></td>
+                            <?php endif; ?>
                             </td>
                             <?php if ($aGame['platform'] == 'Xbox 360'): ?>
                                 <td class="<?= $sBackcompatStatus ?>"><?= int2glyph($aGame['backcompat'], 'glyphicon-refresh') ?></td>
@@ -1178,6 +1207,14 @@ function importCsvIntoDatabase($data) {
                 $oGame->gamerscore_total    = $line['Max Gamerscore (incl. DLC)'];
                 $oGame->ta_score            = $line['TrueAchievement Won (incl. DLC)'];
                 $oGame->ta_total            = $line['Max TrueAchievement (incl. DLC)'];
+                $oGame->dlc                 = ($line['Max Gamerscore (incl. DLC)'] != $line['Max GamerScore (No DLC)'] ? 1 : 0);
+                if ($oGame->dlc) {
+                    $ta_dlc_won = $line['TrueAchievement Won (incl. DLC)'] - $line['TrueAchievement Won (No DLC)'];
+                    $ta_dlc_total = $line['Max TrueAchievement (incl. DLC)'] - $line['Max TrueAchievement (No DLC)'];
+                    $oGame->dlc_completion  = intval($ta_dlc_won / $ta_dlc_total * 100);
+                } else {
+                    $oGame->dlc_completion  = 0;
+                }
                 $oGame->completion_date     = $line['Completion Date'];
                 $oGame->site_rating         = $line['Site Rating'];
                 $oGame->format              = $line['Format'];
@@ -1201,6 +1238,14 @@ function importCsvIntoDatabase($data) {
             $oGame->gamerscore_total    = $line['Max Gamerscore (incl. DLC)'];
             $oGame->ta_score            = $line['TrueAchievement Won (incl. DLC)'];
             $oGame->ta_total            = $line['Max TrueAchievement (incl. DLC)'];
+            $oGame->dlc                 = ($line['Max Gamerscore (incl. DLC)'] == $line['Max GamerScore (No DLC)']);
+            if ($oGame->dlc) {
+                $ta_dlc_won = $line['TrueAchievement Won (incl. DLC)'] - $line['TrueAchievement Won (No DLC)'];
+                $ta_dlc_total = $line['Max TrueAchievement Won (incl. DLC)'] - $line['Max TrueAchievement (No DLC)'];
+                $oGame->dlc_completion  = intval($ta_dlc_won / $ta_dlc_total * 100);
+            } else {
+                $oGame->dlc_completion  = 0;
+            }
             $oGame->completion_date     = $line['Completion Date'];
             $oGame->site_rating         = $line['Site Rating'];
             $oGame->format              = $line['Format'];
@@ -1328,8 +1373,6 @@ function importJsonIntoDatabase($json) {
         'games_undiscounted' => $games_undiscounted,
         'games_unchanged' => $games_unchanged,
         'price_drop' => $price_drop,
-        'price_hike' => $available,
-        'price_hike' => $unavailable,
         'price_hike' => $price_hike,
 
         'total' => $total,
@@ -1385,6 +1428,8 @@ class Game
     public $gamerscore_total;
     public $ta_score;
     public $ta_total;
+    public $dlc;
+    public $dlc_completion;
     public $completion_date;
     public $site_rating;
     public $format;
@@ -1494,6 +1539,8 @@ class Game
                 gamerscore_total = :gamerscore_total,
                 ta_score = :ta_score,
                 ta_total = :ta_total,
+                dlc = :dlc,
+                dlc_completion = :dlc_completion,
                 completion_date = NULLIF(:completion_date, ""),
                 site_rating = :site_rating,
                 format = COALESCE(NULLIF(:format, ""), format),
@@ -1537,6 +1584,8 @@ class Game
                 gamerscore_total = :gamerscore_total,
                 ta_score = :ta_score,
                 ta_total = :ta_total,
+                dlc = :dlc,
+                dlc_completion = :dlc_completion,
                 completion_date = NULLIF(:completion_date, ""),
                 site_rating = :site_rating,
                 format = :format,
@@ -1655,6 +1704,8 @@ class Game
         $this->achievements_total = 0;
         $this->gamerscore_won = 0;
         $this->gamerscore_total = 0;
+        $this->dlc = 0;
+        $this->dlc_completion = 0;
 
         $this->insert();
     }
