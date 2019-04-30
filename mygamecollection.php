@@ -12,13 +12,13 @@ use MyGameCollection\Setup\Setup;
  * Import the csv from TA, and the .json from the price scraper.
  *
  * TODO:
+ * v namespaces and autoloader
  * v shortlist
  * v separate this mess from twitterbot libraries and put it on github
  * v show if dlc also completed
  * x walkthrough urls seems mostly wrong (TA bug reported)
  * - sortable columns
  * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
- * . namespaces and autoloader
  */
 
 if (!is_readable('mygamecollection.inc.php')) {
