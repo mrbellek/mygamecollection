@@ -1,4 +1,8 @@
 <?php
+namespace MyGameCollection\Lib;
+
+use MyGameCollection\Lib\Database;
+
 /**
  * Logger class, write messages to database or to screen
  */

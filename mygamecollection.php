@@ -1,4 +1,12 @@
 <?php
+namespace Mygamecollection;
+
+use MyGameCollection\Lib\Database;
+use MyGameCollection\Lib\Game;
+use MyGameCollection\Lib\Logger;
+use MyGameCollection\Lib\Request;
+use MyGameCollection\Setup\Setup;
+
 /**
  * CMS page for managing your TrueAchievements game collection.
  * Import the csv from TA, and the .json from the price scraper.
@@ -10,7 +18,7 @@
  * x walkthrough urls seems mostly wrong (TA bug reported)
  * - sortable columns
  * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
- * - namespaces and autoloader
+ * . namespaces and autoloader
  */
 
 if (!is_readable('mygamecollection.inc.php')) {
@@ -21,10 +29,10 @@ if (!is_readable('mygamecollection.inc.php')) {
 }
 
 require_once('mygamecollection.inc.php');
-require_once('lib/logger.php');
-require_once('lib/database.php');
+require_once('autoloader.php');
 
 $oDatabase = new Database;
+$oRequest = new Request;
 
 //check if database connection is ok
 if ($oDatabase->connect()) {
@@ -33,15 +41,12 @@ if ($oDatabase->connect()) {
     if (!$oDatabase->query('SHOW TABLES LIKE "mygamecollection"')) {
 
         //call setup
-        require_once('setup/setup.php');
         (new Setup($oDatabase))->run();
         exit();
     }
 }
 
 $sThisFile = pathinfo(__FILE__, PATHINFO_BASENAME);
-
-$oRequest = new Request;
 
 $sSearch = $oRequest->getStr('search');
 $sShow = $oRequest->getStr('show');
@@ -1407,408 +1412,4 @@ function hasPriceChanged($game)
     }
 
     return ($return['status'] || $return['price'] ? $return : false);
-}
-
-class Game
-{
-    public $id;
-    public $newid;
-    public $name;
-    public $platform;
-    public $backcompat;
-    public $kinect_required;
-    public $peripheral_required;
-    public $online_multiplayer;
-    public $completion_perc;
-    public $completion_estimate;
-    public $hours_played;
-    public $achievements_won;
-    public $achievements_total;
-    public $gamerscore_won;
-    public $gamerscore_total;
-    public $ta_score;
-    public $ta_total;
-    public $dlc;
-    public $dlc_completion;
-    public $completion_date;
-    public $site_rating;
-    public $format;
-    public $status;
-    public $purchased_price;
-    public $current_price;
-    public $regular_price;
-    public $shortlist_order;
-    public $walkthrough_url;
-    public $game_url;
-    public $last_modified;
-    public $date_created;
-
-    public function __construct($oDatabase)
-    {
-        $this->db = $oDatabase;
-    }
-
-    private function fillObject($gameArr)
-    {
-        foreach ($gameArr as $key => $value) {
-            $this->{$key} = $value;
-        }
-
-        return $this;
-    }
-
-    public function getById($id)
-    {
-        $game = $this->db->query_single('
-            SELECT *
-            FROM mygamecollection
-            WHERE id = :id
-            LIMIT 1',
-            ['id' => $id]
-        );
-
-        return $this->fillObject($game);
-    }
-
-    public function getIdByUrl($url)
-    {
-        return $this->db->query_value('
-            SELECT id
-            FROM mygamecollection
-            WHERE game_url = :url
-            LIMIT 1',
-            [':url' => $url]
-        );
-    }
-
-    public function getAll()
-    {
-        $games = $this->db->query('
-            SELECT *
-            FROM mygamecollection
-            ORDER BY id'
-        );
-        foreach ($games as $key => $game) {
-            $games[$key] = $this->fillObject($game);
-        }
-
-        return $games;
-    }
-
-    public function save()
-    {
-        /*
-         * scenarios:
-         * - update a game normally: id > 0 and newid blank
-         * - insert a new game, id < 0 and newid blank
-         * - update a new game, id < 0 and newid > 0
-         */
-        if ($this->id < 0 && empty($this->newid)) {
-            return $this->insert();
-        } else {
-            return $this->update();
-        }
-    }
-
-    private function update()
-    {
-        $data = get_object_vars($this);
-        unset($data['db']);
-        unset($data['last_modified']);
-        unset($data['date_created']);
-
-        if (empty($data['newid'])) {
-            $data['newid'] = $data['id'];
-        }
-
-        return $this->db->query('
-            UPDATE mygamecollection
-            SET id = :newid,
-                name = :name,
-                platform = :platform,
-                backcompat = NULLIF(:backcompat, ""),
-                kinect_required = NULLIF(:kinect_required, ""),
-                peripheral_required = NULLIF(:peripheral_required, ""),
-                online_multiplayer = NULLIF(:online_multiplayer, ""),
-                completion_perc = :completion_perc,
-                completion_estimate = :completion_estimate,
-                hours_played = :hours_played,
-                achievements_won = :achievements_won,
-                achievements_total = :achievements_total,
-                gamerscore_won = :gamerscore_won,
-                gamerscore_total = :gamerscore_total,
-                ta_score = :ta_score,
-                ta_total = :ta_total,
-                dlc = :dlc,
-                dlc_completion = :dlc_completion,
-                completion_date = NULLIF(:completion_date, ""),
-                site_rating = :site_rating,
-                format = COALESCE(NULLIF(:format, ""), format),
-                status = COALESCE(NULLIF(:status, ""), status),
-                purchased_price = COALESCE(NULLIF(:purchased_price, ""), purchased_price),
-                current_price = COALESCE(NULLIF(:current_price, ""), current_price),
-                regular_price = COALESCE(NULLIF(:regular_price, ""), regular_price),
-                shortlist_order = :shortlist_order,
-                walkthrough_url = :walkthrough_url,
-                game_url = :game_url,
-                last_modified = NOW()
-            WHERE id = :id
-            LIMIT 1',
-            $data
-        );
-    }
-
-    private function insert()
-    {
-        $data = get_object_vars($this);
-        unset($data['db']);
-        unset($data['last_modified']);
-        unset($data['date_created']);
-        unset($data['newid']);
-
-        return $this->db->query('
-            INSERT INTO mygamecollection
-            SET id = :id,
-                name = :name,
-                platform = :platform,
-                backcompat = NULLIF(:backcompat, ""),
-                kinect_required = NULLIF(:kinect_required, ""),
-                peripheral_required = NULLIF(:peripheral_required, ""),
-                online_multiplayer = NULLIF(:online_multiplayer, ""),
-                completion_perc = :completion_perc,
-                completion_estimate = :completion_estimate,
-                hours_played = :hours_played,
-                achievements_won = :achievements_won,
-                achievements_total = :achievements_total,
-                gamerscore_won = :gamerscore_won,
-                gamerscore_total = :gamerscore_total,
-                ta_score = :ta_score,
-                ta_total = :ta_total,
-                dlc = :dlc,
-                dlc_completion = :dlc_completion,
-                completion_date = NULLIF(:completion_date, ""),
-                site_rating = :site_rating,
-                format = :format,
-                status = :status,
-                purchased_price = NULLIF(:purchased_price, ""),
-                current_price = NULLIF(:current_price, ""),
-                regular_price = NULLIF(:regular_price, ""),
-                shortlist_order = NULLIF(:shortlist_order, ""),
-                walkthrough_url = :walkthrough_url,
-                game_url = :game_url,
-                last_modified = NOW(),
-                date_created = NOW()',
-            $data
-        );
-    }
-
-    public function delete()
-    {
-        return $this->db->query('
-            DELETE FROM mygamecollection
-            WHERE id = :id
-            LIMIT 1',
-            ['id' => $this->id]
-        );
-    }
-
-    private function getMaxShortlistOrder()
-    {
-        return $this->db->query_value('
-            SELECT COALESCE(MAX(shortlist_order), 0)
-            FROM mygamecollection'
-        );
-    }
-
-    public function addToShortlist()
-    {
-        $this->shortlist_order = $this->getMaxShortlistOrder() + 1;
-
-        return $this->save();
-    }
-
-    public function shortlistUp()
-    {
-        if ($this->shortlist_order == 1 || is_null($this->shortlist_order)) {
-            return;
-        }
-
-        $switchId = $this->db->query_value('
-            SELECT id
-            FROM mygamecollection
-            WHERE shortlist_order = :order
-            LIMIT 1',
-            [':order' => $this->shortlist_order - 1]
-        );
-
-        if ($switchId) {
-            $this->db->query('
-                UPDATE mygamecollection
-                SET shortlist_order = shortlist_order + 1
-                WHERE id = :id
-                LIMIT 1',
-                [':id' => $switchId]
-            );
-        } else {
-        }
-
-        $this->shortlist_order--;
-        $this->save();
-    }
-
-    public function shortlistDown()
-    {
-        if ($this->shortlist_order == $this->getMaxShortlistOrder() || is_null($this->shortlist_order)) {
-            return;
-        }
-
-        $switchId = $this->db->query_value('
-            SELECT id
-            FROM mygamecollection
-            WHERE shortlist_order = :order
-            LIMIT 1',
-            [':order' => $this->shortlist_order + 1]
-        );
-
-        if ($switchId) {
-            $this->db->query('
-                UPDATE mygamecollection
-                SET shortlist_order = shortlist_order - 1
-                WHERE id = :id
-                LIMIT 1',
-                [':id' => $switchId]
-            );
-        }
-
-        $this->shortlist_order++;
-        $this->save();
-    }
-
-    //wrapper for creating a game during the price import
-    public function createByPriceData($game)
-    {
-        $this->id = $game->id;
-        $this->name = $game->name;
-        $this->game_url = $game->url;
-        $this->current_price = $game->price;
-        $this->regular_price = $game->saleFrom;
-        $this->status = $game->status;
-        $this->date_created = $game->timestamp;
-        $this->last_modified = $game->timestamp;
-
-        $this->completion_perc = 0;
-        $this->platform = '';
-        $this->gamerscore_total = 0;
-        $this->hours_played = 0;
-        $this->achievements_won = 0;
-        $this->achievements_total = 0;
-        $this->gamerscore_won = 0;
-        $this->gamerscore_total = 0;
-        $this->dlc = 0;
-        $this->dlc_completion = 0;
-
-        $this->insert();
-    }
-}
-
-class Request
-{
-    private $queryVars = [];
-    private $postVars = [];
-    private $cookies = [];
-    private $files = [];
-
-    public function __construct()
-    {
-        $this->getQueryVars();
-        $this->getPostVars();
-        $this->getCookies();
-        $this->getFiles();
-    }
-
-    private function getQueryVars()
-    {
-        foreach ($_GET as $key => $value) {
-            $this->queryVars[$key] = $value;
-        }
-    }
-
-    private function getPostVars()
-    {
-        foreach ($_POST as $key => $value) {
-            $this->postVars[$key] = $value;
-        }
-
-        $this->postBody = $_POST;
-    }
-
-    private function getCookies()
-    {
-        foreach ($_COOKIE as $key => $value) {
-            $this->cookies[$key] = $value;
-        }
-    }
-
-    private function getFiles()
-    {
-        foreach ($_FILES as $field => $file) {
-            if (is_array($file['tmp_name'])) {
-                //multiple files
-                $this->files[$field] = [];
-                for ($i = 0; $i < count($file['tmp_name']); $i++) {
-                    $file = [
-                        'name' => $file['name'][$i],
-                        'type' => $file['type'][$i],
-                        'size' => $file['size'][$i],
-                        'tmp_name' => $file['tmp_name'][$i],
-                        'error' => $file['error'][$i],
-                    ];
-                    $this->files[$field][] = $file;
-                }
-            } else {
-                //single file
-                $this->files[$field] = [$file];
-            }
-        }
-    }
-
-    public function isGet()
-    {
-        return filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'GET';
-    }
-
-    public function isPost()
-    {
-        return filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'POST';
-    }
-
-    public function getInt($var)
-    {
-        return (isset($this->queryVars[$var]) ? filter_var($this->queryVars[$var], FILTER_SANITIZE_NUMBER_INT) : 0);
-    }
-
-    public function getStr($var)
-    {
-        return (isset($this->queryVars[$var]) ? filter_var($this->queryVars[$var], FILTER_SANITIZE_STRING) : '');
-    }
-
-    public function postInt($var)
-    {
-        return (isset($this->postVars[$var]) ? filter_var($this->postVars[$var], FILTER_SANITIZE_NUMBER_INT) : 0);
-    }
-
-    public function postStr($var)
-    {
-        return (isset($this->postVars[$var]) ? filter_var($this->postVars[$var], FILTER_SANITIZE_STRING) : '');
-    }
-
-    public function cookie($name)
-    {
-        return (isset($this->cookies[$name]) ? $this->cookies[$name] : '');
-    }
-
-    public function file($field)
-    {
-        return (isset($this->files[$field]) ? $this->files[$field] : []);
-    }
 }

@@ -1,4 +1,9 @@
 <?php
+namespace MyGameCollection\Lib;
+
+use \PDO;
+use MyGameCollection\Lib\Logger;
+
 /**
  * Database class, connect to database and run queries
  *

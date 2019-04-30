@@ -1,9 +1,13 @@
 <?php
+namespace MyGameCollection\Setup\Setup;
+
+use MyGameCollection\Lib\Database;
+
 class Setup
 {
     private $db;
 
-    public function __construct($oDatabase)
+    public function __construct(Database $oDatabase)
     {
         $this->db = $oDatabase;
     }
