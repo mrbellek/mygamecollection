@@ -1241,7 +1241,7 @@ function importCsvIntoDatabase($data) {
             $oGame->dlc                 = ($line['Max Gamerscore (incl. DLC)'] == $line['Max GamerScore (No DLC)']);
             if ($oGame->dlc) {
                 $ta_dlc_won = $line['TrueAchievement Won (incl. DLC)'] - $line['TrueAchievement Won (No DLC)'];
-                $ta_dlc_total = $line['Max TrueAchievement Won (incl. DLC)'] - $line['Max TrueAchievement (No DLC)'];
+                $ta_dlc_total = $line['Max TrueAchievement (incl. DLC)'] - $line['Max TrueAchievement (No DLC)'];
                 $oGame->dlc_completion  = intval($ta_dlc_won / $ta_dlc_total * 100);
             } else {
                 $oGame->dlc_completion  = 0;
