@@ -56,170 +56,181 @@ $iPerPage = 30;
 $iOffset = ($iPage - 1) * $iPerPage;
 
 if ($oRequest->isPost()) {
-    //process post
-    if ($oRequest->postStr('action') == 'Save') {
-        //edit game
+    if (defined('FORM_PASSWORD') && FORM_PASSWORD && $oRequest->postStr('password') != FORM_PASSWORD) {
+        $sError = 'Invalid password.';
+    } else {
 
-        //fetch existing record
-        $oGame = new Game($oDatabase);
-        $oGame->getById($oRequest->postInt('id'));
+        //process post
+        if ($oRequest->postStr('action') == 'Save') {
+            //edit game
 
-        //set new id if needed
-        if ($oRequest->postInt('newid')) {
-            $oGame->newid = $oRequest->postInt('newid');
-        }
+            //fetch existing record
+            $oGame = new Game($oDatabase);
+            $oGame->getById($oRequest->postInt('id'));
 
-        //set rest of the data
-        $oGame->backcompat = $oRequest->postStr('backcompat');
-        $oGame->kinect_required = $oRequest->postStr('kinect_required');
-        $oGame->peripheral_required = $oRequest->postStr('peripheral_required');
-        $oGame->online_multiplayer = $oRequest->postStr('online_multiplayer');
-        $oGame->purchased_price = $oRequest->postStr('purchased_price');
-        $oGame->current_price = $oRequest->postStr('current_price');
-        $oGame->shortlist_order = $oRequest->postStr('shortlist_order');
+            //set new id if needed
+            if ($oRequest->postInt('newid')) {
+                $oGame->newid = $oRequest->postInt('newid');
+            }
 
-        //save
-        if ($oGame->save()) {
-            $sSuccess = 'Game updated.';
-        } else {
-            $sError = 'Updating game failed.';
-            $aData = $_POST;
-        }
+            //set rest of the data
+            $oGame->backcompat = $oRequest->postStr('backcompat');
+            $oGame->kinect_required = $oRequest->postStr('kinect_required');
+            $oGame->peripheral_required = $oRequest->postStr('peripheral_required');
+            $oGame->online_multiplayer = $oRequest->postStr('online_multiplayer');
+            $oGame->purchased_price = $oRequest->postStr('purchased_price');
+            $oGame->current_price = $oRequest->postStr('current_price');
+            $oGame->shortlist_order = $oRequest->postStr('shortlist_order');
 
-    } elseif ($oRequest->postStr('action') == 'Delete' && $oRequest->postInt('id')) {
-        //delete record
-        $oGame = new Game($oDatabase);
-        $oGame->getById($oRequest->postInt('id'));
-        if ($oGame->delete()) {
-            $sSuccess = 'Game deleted.';
-        } else {
-            $sError = 'Deleting game failed.';
-            $aData = $_POST;
-        }
+            //save
+            if ($oGame->save()) {
+                $sSuccess = 'Game updated.';
+            } else {
+                $sError = 'Updating game failed.';
+                $aData = $_POST;
+            }
 
-    } elseif ($oRequest->postStr('action') == 'Import game collection CSV' && $csvFile = $oRequest->file('upload')) {
+        } elseif ($oRequest->postStr('action') == 'Delete' && $oRequest->postInt('id')) {
 
-        $result = importCsvIntoDatabase(file($csvFile[0]['tmp_name']));
+            if (defined('FORM_PASSWORD') && FORM_PASSWORD && $oRequest->postStr('password') != FORM_PASSWORD) {
+                $sError = 'Invalid password.';
+            } else {
 
-        if (!isset($result['error'])) {
-            $aSuccess[] = 'Import complete!';
-            if ($result['new']) {
-                $aSuccess[] = '<br/>The following games were new:<ul>';
-                foreach ($result['new'] as $game) {
+                //delete record
+                $oGame = new Game($oDatabase);
+                $oGame->getById($oRequest->postInt('id'));
+                if ($oGame->delete()) {
+                    $sSuccess = 'Game deleted.';
+                } else {
+                    $sError = 'Deleting game failed.';
+                    $aData = $_POST;
+                }
+            }
+
+        } elseif ($oRequest->postStr('action') == 'Import game collection CSV' && $csvFile = $oRequest->file('upload')) {
+
+            $result = importCsvIntoDatabase(file($csvFile[0]['tmp_name']));
+
+            if (!isset($result['error'])) {
+                $aSuccess[] = 'Import complete!';
+                if ($result['new']) {
+                    $aSuccess[] = '<br/>The following games were new:<ul>';
+                    foreach ($result['new'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
+                            $game['id'],
+                            $game['Game name']
+                        );
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+
+                if ($result['updated']) {
+                    $aSuccess[] = '<br/>The following games were updated:<ul>';
+                    foreach ($result['updated'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a> (%s)</li>',
+                            $game['id'],
+                            $game['Game name'],
+                            $game['changes']
+                        );
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                /*$aSuccess[] = '</ul>The following games were unchanged:<ul>';
+                foreach ($result['notupdated'] as $game) {
                     $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
                         $game['id'],
                         $game['Game name']
                     );
+                }*/
+                if ($result['removed']) {
+                    $aSuccess[] = '<br/>The following games have disappeared from your collection:<ul>';
+                    foreach ($result['removed'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
+                            $game->id,
+                            $game->name
+                        );
+                    }
+                    $aSuccess[] = '</ul>';
                 }
-                $aSuccess[] = '</ul>';
+                $sSuccess = implode(PHP_EOL, $aSuccess);
+            } else {
+                $sError = $result['error'];
             }
 
-            if ($result['updated']) {
-                $aSuccess[] = '<br/>The following games were updated:<ul>';
-                foreach ($result['updated'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a> (%s)</li>',
-                        $game['id'],
-                        $game['Game name'],
-                        $game['changes']
-                    );
-                }
-                $aSuccess[] = '</ul>';
-            }
-            /*$aSuccess[] = '</ul>The following games were unchanged:<ul>';
-            foreach ($result['notupdated'] as $game) {
-                $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
-                    $game['id'],
-                    $game['Game name']
+        } elseif ($oRequest->postStr('action') == 'Import prices JSON' && $jsonFile = $oRequest->file('upload')) {
+
+            $result = importJsonIntoDatabase(file_get_contents($jsonFile[0]['tmp_name']));
+
+            if (!isset($result['error'])) {
+
+                $aSuccess[] = 'Import complete!';
+                $aSuccess[] = sprintf('<br/>Out of %d games, currently %d are available, %d are delisted/unavailable and %d are on sale.',
+                    $result['total'],
+                    $result['available'],
+                    $result['unavailable'],
+                    $result['sale']
                 );
-            }*/
-            if ($result['removed']) {
-                $aSuccess[] = '<br/>The following games have disappeared from your collection:<ul>';
-                foreach ($result['removed'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
-                        $game->id,
-                        $game->name
-                    );
+                if ($result['games_delisted']) {
+                    $aSuccess[] = 'The following games were delisted:<ul>';
+                    foreach ($result['games_delisted'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
+                    }
+                    $aSuccess[] = '</ul>';
                 }
-                $aSuccess[] = '</ul>';
-            }
-            $sSuccess = implode(PHP_EOL, $aSuccess);
-        } else {
-            $sError = $result['error'];
-        }
+                if ($result['games_unavailabled']) {
+                    $aSuccess[] = 'The following games are now unavailable:<ul>';
+                    foreach ($result['games_unavailabled'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->status);
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                if ($result['games_availabled']) {
+                    $aSuccess[] = 'The following games are now available again:<ul>';
+                    foreach ($result['games_availabled'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                if ($result['games_discounted']) {
+                    $aSuccess[] = 'The following games were discounted:<ul>';
+                    foreach ($result['games_discounted'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> %s</li>', $game->url, $game->name, ($game->status != 'sale' ? '<b>(not a sale)</b>' : ''));
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                if ($result['games_undiscounted']) {
+                    $aSuccess[] = 'The following games are no longer discounted:<ul>';
+                    foreach ($result['games_undiscounted'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                if ($result['price_drop']) {
+                    $aSuccess[] = 'The following games dropped in price outside of a sale:<ul>';
+                    foreach ($result['price_drop'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                if ($result['price_hike']) {
+                    $aSuccess[] = 'The following games increased in price outside of a sale:<ul>';
+                    foreach ($result['price_hike'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
+                    }
+                    $aSuccess[] = '</ul>';
+                }
+                /*if ($result['games_unchanged']) {
+                    $aSuccess[] = 'The following games were unchanged:<ul>';
+                    foreach ($result['games_unchanged'] as $game) {
+                        $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
+                    }
+                    $aSuccess[] = '</ul>';
+                }*/
 
-    } elseif ($oRequest->postStr('action') == 'Import prices JSON' && $jsonFile = $oRequest->file('upload')) {
-
-        $result = importJsonIntoDatabase(file_get_contents($jsonFile[0]['tmp_name']));
-
-        if (!isset($result['error'])) {
-
-            $aSuccess[] = 'Import complete!';
-            $aSuccess[] = sprintf('<br/>Out of %d games, currently %d are available, %d are delisted/unavailable and %d are on sale.',
-                $result['total'],
-                $result['available'],
-                $result['unavailable'],
-                $result['sale']
-            );
-            if ($result['games_delisted']) {
-                $aSuccess[] = 'The following games were delisted:<ul>';
-                foreach ($result['games_delisted'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
-                }
-                $aSuccess[] = '</ul>';
+                $sSuccess = implode(PHP_EOL, $aSuccess);
+            } else {
+                $sError = $result['error'];
             }
-            if ($result['games_unavailabled']) {
-                $aSuccess[] = 'The following games are now unavailable:<ul>';
-                foreach ($result['games_unavailabled'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->status);
-                }
-                $aSuccess[] = '</ul>';
-            }
-            if ($result['games_availabled']) {
-                $aSuccess[] = 'The following games are now available again:<ul>';
-                foreach ($result['games_availabled'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
-                }
-                $aSuccess[] = '</ul>';
-            }
-            if ($result['games_discounted']) {
-                $aSuccess[] = 'The following games were discounted:<ul>';
-                foreach ($result['games_discounted'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> %s</li>', $game->url, $game->name, ($game->status != 'sale' ? '<b>(not a sale)</b>' : ''));
-                }
-                $aSuccess[] = '</ul>';
-            }
-            if ($result['games_undiscounted']) {
-                $aSuccess[] = 'The following games are no longer discounted:<ul>';
-                foreach ($result['games_undiscounted'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
-                }
-                $aSuccess[] = '</ul>';
-            }
-            if ($result['price_drop']) {
-                $aSuccess[] = 'The following games dropped in price outside of a sale:<ul>';
-                foreach ($result['price_drop'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
-                }
-                $aSuccess[] = '</ul>';
-            }
-            if ($result['price_hike']) {
-                $aSuccess[] = 'The following games increased in price outside of a sale:<ul>';
-                foreach ($result['price_hike'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
-                }
-                $aSuccess[] = '</ul>';
-            }
-            /*if ($result['games_unchanged']) {
-                $aSuccess[] = 'The following games were unchanged:<ul>';
-                foreach ($result['games_unchanged'] as $game) {
-                    $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
-                }
-                $aSuccess[] = '</ul>';
-            }*/
-
-            $sSuccess = implode(PHP_EOL, $aSuccess);
-        } else {
-            $sError = $result['error'];
         }
     }
 }
@@ -604,6 +615,15 @@ if (empty($id)) {
 					</div>
                 </div>
 
+                <?php if (defined('FORM_PASSWORD') && FORM_PASSWORD) : ?>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" id="password" name="password" class="form-control" />
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label class="col-sm-2 control-label">&nbsp;</label>
 					<div class="col-sm-10">
@@ -846,6 +866,9 @@ if (empty($id)) {
                     </form>
                     <form method="post" enctype="multipart/form-data" class="form-inline">
                         <input type="file" name="upload" style="width: auto; display: inline;" id="upload" class="form-control hidden-xs" />
+                        <?php if (defined('FORM_PASSWORD') && FORM_PASSWORD) : ?>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                        <?php endif; ?>
                         <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import game collection CSV" />
                         <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import prices JSON" />
                     </form>

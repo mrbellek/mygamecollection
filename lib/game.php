@@ -284,7 +284,7 @@ class Game
     }
 
     //wrapper for creating a game during the price import
-    public function createByPriceData(Game $game) : bool
+    public function createByPriceData($game) : bool
     {
         $this->id = $game->id;
         $this->name = $game->name;
