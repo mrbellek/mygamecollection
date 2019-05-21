@@ -1266,7 +1266,7 @@ function importCsvIntoDatabase($data) {
             $oGame->gamerscore_total    = $line['Max Gamerscore (incl. DLC)'];
             $oGame->ta_score            = $line['TrueAchievement Won (incl. DLC)'];
             $oGame->ta_total            = $line['Max TrueAchievement (incl. DLC)'];
-            $oGame->dlc                 = ($line['Max Gamerscore (incl. DLC)'] == $line['Max GamerScore (No DLC)']);
+            $oGame->dlc                 = ($line['Max Gamerscore (incl. DLC)'] != $line['Max GamerScore (No DLC)']);
             if ($oGame->dlc) {
                 $ta_dlc_won = $line['TrueAchievement Won (incl. DLC)'] - $line['TrueAchievement Won (No DLC)'];
                 $ta_dlc_total = $line['Max TrueAchievement (incl. DLC)'] - $line['Max TrueAchievement (No DLC)'];
@@ -1435,4 +1435,39 @@ function hasPriceChanged($game)
     }
 
     return ($return['status'] || $return['price'] ? $return : false);
+}
+
+//backup import function for when custom data is wiped out again
+function importStuff($db)
+{
+    echo '<pre>';
+    $lines = file('export.sql');
+    $line = false;
+    while (strpos($line, '(') !== 0) {
+        $line = array_shift($lines);
+    }
+    foreach ($lines as $line) {
+        $parts = explode(',', $line);
+        if (isset($parts[2]) && $parts[2] == " 'Xbox 360'") {
+            //var_dump($parts);
+            $id = trim($parts[0], ' (');
+            $bc = trim($parts[3]);
+            $kr = trim($parts[4]);
+            $pr = trim($parts[5]);
+            $om = trim($parts[6]);
+            if ($bc != 'NULL' || $kr != 'NULL' || $pr != 'NULL' || $om != 'NULL') {
+                //printf('needs updating: %s<br>', trim($parts[1]));
+                printf('UPDATE mygamecollection SET backcompat=%s, kinect_required=%s, peripheral_required=%s, online_multiplayer=%s WHERE id=%d LIMIT 1;<br>',
+                    $bc,
+                    $kr,
+                    $pr,
+                    $om,
+                    $id
+                );
+            } else {
+                //printf('skip: %s<br>', trim($parts[1]));
+            }
+        }
+    }
+    die();
 }
