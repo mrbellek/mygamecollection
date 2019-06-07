@@ -1120,7 +1120,8 @@ function hasGameChanged($game)
     $oOldGame->getById($game['id']);
 
     if ($oOldGame->format == '') {
-        return 'format was empty';
+        //this is a good indication that the game was freshly imported from the prices .json
+        return 'new game!';
     }
 
     $newgame = [
