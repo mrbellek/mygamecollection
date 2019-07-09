@@ -340,9 +340,9 @@ if ($id = $oRequest->getInt('id')) {
         case 'nodlc':
             $sQuery .= 'AND dlc = 0'; break;
         case 'dlccompleted':
-            $sQuery .= 'AND dlc = 1 AND dlc_completion = 100'; break;
+            $sQuery .= 'AND dlc = 1 AND dlc_completion = 100 ORDER BY name'; break;
         case 'dlcnotcompleted':
-            $sQuery .= 'AND dlc = 1 AND dlc_completion < 100'; break;
+            $sQuery .= 'AND dlc = 1 AND dlc_completion < 100 ORDER BY dlc_completion DESC'; break;
         case 'mostplayed':
             $sQuery .= 'ORDER BY hours_played DESC'; break;
         case 'shortlist':
@@ -1121,7 +1121,7 @@ function hasGameChanged($game)
 
     if ($oOldGame->format == '') {
         //this is a good indication that the game was freshly imported from the prices .json
-        return 'new game!';
+        return '<b>new game!</b>';
     }
 
     $newgame = [
