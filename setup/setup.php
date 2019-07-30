@@ -1,5 +1,5 @@
 <?php
-namespace MyGameCollection\Setup\Setup;
+namespace MyGameCollection\Setup;
 
 use MyGameCollection\Lib\Database;
 
