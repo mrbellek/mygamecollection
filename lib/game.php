@@ -1,5 +1,5 @@
 <?php
-namespace Mygamecollection\Lib;
+namespace MyGameCollection\Lib;
 
 use MyGameCollection\Lib\Database;
  
@@ -307,5 +307,30 @@ class Game
         $this->dlc_completion = 0;
 
         return $this->insert();
+    }
+
+    static public function hasPriceChanged(Database $oDatabase, $game)
+    {
+        $oGame = new Game($oDatabase);
+        $oGame->getById($game->id);
+
+        $return = ['status' => false, 'price' => false];
+
+        if (!$oGame->id) {
+            //game isn't in database yet
+            $return['status'] = ['old' => false, 'new' => $game->status];
+            $return['price'] = ['old' => false, 'new' => $game->price];
+
+            return $return;
+        }
+
+        if ($game->status != $oGame->status) {
+            $return['status'] = ['old' => $oGame->status, 'new' => $game->status];
+        }
+        if ($game->price != $oGame->current_price) {
+            $return['price'] = ['old' => $oGame->current_price, 'new' => $game->price];
+        }
+
+        return ($return['status'] || $return['price'] ? $return : false);
     }
 }
