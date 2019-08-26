@@ -326,37 +326,38 @@
             
                 <div class="form-group" style="line-height: 3em;">
                     <form action="<?= $sThisFile ?>" method="get" class="form-inline">
-                                <a class="btn btn-success" href="<?= $sThisFile ?>">All games</a>
-                                <a class="btn btn-success <?= ($sShow == 'completed' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=completed">Completed games</a>
-                                <a class="btn btn-success <?= ($sShow == 'shortlist' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=shortlist">Shortlist</a>
-                                <a class="btn btn-info <?= ($sShow == 'incomplete' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=incomplete">Started games</a>
-                                <a class="btn btn-info <?= ($sShow == 'notstarted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstarted">Not started games</a>
-                                <a class="btn btn-info <?= ($sShow == 'bestrating' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=bestrating">Best games</a>
-                                <a class="btn btn-info <?= ($sShow == 'notstartedrating' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstartedrating">Best not started games</a>
-                                <a class="btn btn-info <?= ($sShow == 'notstartedshort' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstartedshort">Shortest not started games</a>
-                                <a class="btn btn-info <?= ($sShow == 'shortest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=shortest">Shortest games</a>
-                                <a class="btn btn-info <?= ($sShow == 'longest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=longest">Longest games</a>
-                                <a class="btn btn-info <?= ($sShow == 'mostplayed' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=mostplayed">Most played</a>
-                                <a class="btn btn-info <?= ($sShow == 'recent' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=recent">Recent</a>
-                                <a class="btn btn-default <?= ($sShow == 'free' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=free">Free games</a>
-                                <a class="btn btn-default <?= ($sShow == 'sale' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=sale">On sale</a>
-                                <a class="btn btn-default <?= ($sShow == 'physical' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=physical">Physical games</a>
-                                <a class="btn btn-default <?= ($sShow == 'sold' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=sold">Sold games</a>
-                                <a class="btn btn-default <?= ($sShow == 'unavailable' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=unavailable">Unavailable games</a>
-                                <a class="btn btn-warning <?= ($sShow == 'xb1' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=xb1">Xbox One games</a>
-                                <a class="btn btn-warning <?= ($sShow == '360' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=360">Xbox 360 games</a>
-                                <a class="btn btn-warning <?= ($sShow == 'win' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=win">Windows games</a>
-                                <a class="btn btn-warning <?= ($sShow == 'bc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=bc">Backwards compatible games</a>
-                                <a class="btn btn-warning <?= ($sShow == 'nonbc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbc">Not backwards compatible games</a>
-                                <a class="btn btn-warning <?= ($sShow == 'nonbckinect' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbckinect">Non-BC games with Kinect</a>
-                                <a class="btn btn-warning <?= ($sShow == 'nonbcperiph' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbcperiph">Non-BC games with peripheral</a>
-                                <a class="btn btn-danger <?= ($sShow == 'nonbconline' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbconline">Non-BC games with online multiplayer</a>
-                                <a class="btn btn-success <?= ($sShow == 'walkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=walkthrough">With walkthrough</a>
-                                <a class="btn btn-warning <?= ($sShow == 'nowalkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nowalkthrough">Without walkthrough</a>
-                                <a class="btn btn-success <?= ($sShow == 'nodlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nodlc">Without DLC</a>
-                                <a class="btn btn-warning <?= ($sShow == 'withdlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=withdlc">With DLC</a>
-                                <a class="btn btn-success <?= ($sShow == 'dlccompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlccompleted">DLC completed</a>
-                                <a class="btn btn-warning <?= ($sShow == 'dlcnotcompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlcnotcompleted">DLC not completed</a>
+                        <a class="btn btn-success" href="<?= $sThisFile ?>">All games</a>
+                        <a class="btn btn-success <?= ($sShow == 'completed' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=completed">Completed games</a>
+                        <a class="btn btn-success <?= ($sShow == 'shortlist' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=shortlist">Shortlist</a>
+                        <a class="btn btn-info <?= ($sShow == 'incomplete' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=incomplete">Started games</a>
+                        <a class="btn btn-info <?= ($sShow == 'notstarted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstarted">Not started games</a>
+                        <a class="btn btn-info <?= ($sShow == 'bestrating' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=bestrating">Best games</a>
+                        <a class="btn btn-info <?= ($sShow == 'notstartedrating' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstartedrating">Best not started games</a>
+                        <a class="btn btn-info <?= ($sShow == 'notstartedshort' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=notstartedshort">Shortest not started games</a>
+                        <a class="btn btn-info <?= ($sShow == 'shortest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=shortest">Shortest games</a>
+                        <a class="btn btn-info <?= ($sShow == 'longest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=longest">Longest games</a>
+                        <a class="btn btn-info <?= ($sShow == 'mostplayed' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=mostplayed">Most played</a>
+                        <a class="btn btn-info <?= ($sShow == 'recent' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=recent">Recent</a>
+                        <a class="btn btn-default <?= ($sShow == 'paid' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=paid">Purchased games</a>
+                        <a class="btn btn-default <?= ($sShow == 'free' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=free">Free games</a>
+                        <a class="btn btn-default <?= ($sShow == 'sale' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=sale">On sale</a>
+                        <a class="btn btn-default <?= ($sShow == 'physical' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=physical">Physical games</a>
+                        <a class="btn btn-default <?= ($sShow == 'sold' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=sold">Sold games</a>
+                        <a class="btn btn-default <?= ($sShow == 'unavailable' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=unavailable">Unavailable games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'xb1' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=xb1">Xbox One games</a>
+                        <a class="btn btn-warning <?= ($sShow == '360' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=360">Xbox 360 games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'win' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=win">Windows games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'bc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=bc">Backwards compatible games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'nonbc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbc">Not backwards compatible games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'nonbckinect' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbckinect">Non-BC games with Kinect</a>
+                        <a class="btn btn-warning <?= ($sShow == 'nonbcperiph' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbcperiph">Non-BC games with peripheral</a>
+                        <a class="btn btn-danger <?= ($sShow == 'nonbconline' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbconline">Non-BC games with online multiplayer</a>
+                        <a class="btn btn-success <?= ($sShow == 'walkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=walkthrough">With walkthrough</a>
+                        <a class="btn btn-warning <?= ($sShow == 'nowalkthrough' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nowalkthrough">Without walkthrough</a>
+                        <a class="btn btn-success <?= ($sShow == 'nodlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nodlc">Without DLC</a>
+                        <a class="btn btn-warning <?= ($sShow == 'withdlc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=withdlc">With DLC</a>
+                        <a class="btn btn-success <?= ($sShow == 'dlccompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlccompleted">DLC completed</a>
+                        <a class="btn btn-warning <?= ($sShow == 'dlcnotcompleted' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=dlcnotcompleted">DLC not completed</a>
                         <?php if ($iNewAdded): ?>
                             <a class="btn btn-danger <?= ($sShow == 'new' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=new">Without TA game id <span class="badge"><?= $iNewAdded ?></span></a><br/>
                         <?php endif; ?>

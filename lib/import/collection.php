@@ -172,9 +172,11 @@ class Collection
         ];
 
         $aChanges = [];
+        //@TODO: if a completed game gets new dlc and you complete that, the comp. percentage
+        //still goes from 100 to 100 and won't show as 'completed'
         if ($oOldGame->completion_perc != $newgame['completion_perc']) {
             if ($newgame['completion_perc'] == 100) {
-                $aChanges[] = 'game completed';
+                $aChanges[] = '<b>game completed</b>';
             } elseif ($oOldGame->completion_perc == 0) {
                 $aChanges[] = 'game started';
             } else {

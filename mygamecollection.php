@@ -120,7 +120,11 @@ if ($oRequest->isPost()) {
                 $aSuccess[] = 'Import complete!';
                 if ($result['new']) {
                     $aSuccess[] = '<br/>The following games were new:<ul>';
-                    foreach ($result['new'] as $game) {
+                    $aNewGames = $result['new'];
+                    usort($aNewGames, function($a, $b) {
+                        return strcasecmp($a['Game name'], $b['Game name']);
+                    });
+                    foreach ($aNewGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
                             $game['id'],
                             $game['Game name']
@@ -131,7 +135,11 @@ if ($oRequest->isPost()) {
 
                 if ($result['updated']) {
                     $aSuccess[] = '<br/>The following games were updated:<ul>';
-                    foreach ($result['updated'] as $game) {
+                    $aUpdatedGames = $result['new'];
+                    usort($aUpdatedGames, function($a, $b) {
+                        return strcasecmp($a['Game name'], $b['Game name']);
+                    });
+                    foreach ($aUpdatedGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a> (%s)</li>',
                             $game['id'],
                             $game['Game name'],
@@ -149,10 +157,14 @@ if ($oRequest->isPost()) {
                 }*/
                 if ($result['removed']) {
                     $aSuccess[] = '<br/>The following games have disappeared from your collection:<ul>';
-                    foreach ($result['removed'] as $game) {
+                    $aRemovedGames = $result['removed'];
+                    usort($aRemovedGames, function($a, $b) {
+                        return strcasecmp($a['Game name'], $b['Game name']);
+                    });
+                    foreach ($aRemovedGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
-                            $game->id,
-                            $game->name
+                            $game['id'],
+                            $game['Game name']
                         );
                     }
                     $aSuccess[] = '</ul>';
@@ -177,56 +189,88 @@ if ($oRequest->isPost()) {
                 );
                 if ($result['games_new']) {
                     $aSuccess[] = 'The following games were <b>new</b> in your collection:<ul>';
-                    foreach ($result['games_new'] as $game) {
+                    $aNewGames = $result['games_new'];
+                    usort($aNewGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aNewGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['games_delisted']) {
                     $aSuccess[] = 'The following games were <b>delisted</b>:<ul>';
-                    foreach ($result['games_delisted'] as $game) {
+                    $aDelistedGames = $result['games_delisted'];
+                    usort($aDelistedGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aDelistedGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['games_unavailabled']) {
                     $aSuccess[] = 'The following games are now <b>unavailable</b>:<ul>';
-                    foreach ($result['games_unavailabled'] as $game) {
+                    $aUnavailableGames = $result['games_unavailabled'];
+                    usort($aUnavailableGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aUnavailableGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->status);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['games_availabled']) {
                     $aSuccess[] = 'The following games are now <b>available</b> again:<ul>';
-                    foreach ($result['games_availabled'] as $game) {
+                    $aAvailableGames = $result['games_availabled'];
+                    usort($aAvailableGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aAvailableGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['games_discounted']) {
                     $aSuccess[] = 'The following games were <b>discounted</b>:<ul>';
-                    foreach ($result['games_discounted'] as $game) {
+                    $aDiscountedGames = $result['games_discounted'];
+                    usort($aDiscountedGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aDiscountedGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> %s</li>', $game->url, $game->name, ($game->status != 'sale' ? '<b>(not a sale)</b>' : ''));
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['games_undiscounted']) {
                     $aSuccess[] = 'The following games are <b>no longer discounted</b>:<ul>';
-                    foreach ($result['games_undiscounted'] as $game) {
+                    $aUndiscountedGames = $result['games_undiscounted'];
+                    usort($aUndiscountedGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aUndiscountedGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a></li>', $game->url, $game->name);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['price_drop']) {
                     $aSuccess[] = 'The following games <b>dropped in price</b> outside of a sale:<ul>';
-                    foreach ($result['price_drop'] as $game) {
+                    $aPriceDropGames = $result['price_drop'];
+                    usort($aPriceDropGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aPriceDropGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
                     }
                     $aSuccess[] = '</ul>';
                 }
                 if ($result['price_hike']) {
                     $aSuccess[] = 'The following games <b>increased in price</b> outside of a sale:<ul>';
-                    foreach ($result['price_hike'] as $game) {
+                    $aPriceHikeGames = $result['price_hike'];
+                    usort($aPriceHikeGames, function($a, $b) {
+                        return strcasecmp($a->name, $b->name);
+                    });
+                    foreach ($aPriceHikeGames as $game) {
                         $aSuccess[] = sprintf('<li><a href="%s" target="_blank">%s</a> (%s)</li>', $game->url, $game->name, $game->price);
                     }
                     $aSuccess[] = '</ul>';
@@ -317,6 +361,8 @@ if ($id = $oRequest->getInt('id')) {
             $sQuery .= 'AND completion_perc = 0 AND completion_estimate != "" AND (0 + completion_estimate) < 12 ORDER BY (0 + completion_estimate) ASC, name'; break;
         case 'longest':
             $sQuery .= 'AND (0 + completion_estimate) >= 100 AND completion_estimate != "" ORDER BY (0 + completion_estimate) DESC, name'; break;
+        case 'paid':
+            $sQuery .= 'AND purchased_price > 0 ORDER BY purchased_price DESC'; break;
         case 'free':
             $sQuery .= 'AND purchased_price = 0 ORDER BY name'; break;
         case 'sale':
