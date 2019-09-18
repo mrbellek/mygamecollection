@@ -60,6 +60,7 @@ class Collection
             if ($gameid = $oGame->getIdByUrl($line['Game URL'])) {
                 $oGame->id = $gameid;
                 $line['id'] = $gameid;
+                $line['changes'] = '';
                 if ($changes = $this->hasGameChanged($oDatabase, $line)) {
                     $line['changes'] = $changes;
                     $updatedgames[] = $line;
@@ -157,7 +158,7 @@ class Collection
 
         if ($oOldGame->format == '') {
             //this is a good indication that the game was freshly imported from the prices .json
-            return '<b>new game!</b>';
+            //return '<b>new game!</b>';
         }
 
         $newgame = [

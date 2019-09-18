@@ -135,7 +135,7 @@ if ($oRequest->isPost()) {
 
                 if ($result['updated']) {
                     $aSuccess[] = '<br/>The following games were updated:<ul>';
-                    $aUpdatedGames = $result['new'];
+                    $aUpdatedGames = $result['updated'];
                     usort($aUpdatedGames, function($a, $b) {
                         return strcasecmp($a['Game name'], $b['Game name']);
                     });
