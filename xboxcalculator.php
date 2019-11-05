@@ -583,6 +583,8 @@ class XboxCalculator
             'RegionID' => $this->regions[$this->region],
             'PageType' => 'Game',
             'GamePropertyID' => 0,
+            'MobileVersion' => false,
+            'ResponsiveVersion' => true,
         ]];
 
         $curl = curl_init($this->pricepage);
@@ -617,7 +619,7 @@ class XboxCalculator
 
                 //extract price from html
                 $xpath = new DOMXPath($dom);
-                $priceNode = $xpath->query('//span[contains(@class, "price") and contains(@class, "lg")]');
+                $priceNode = $xpath->query('//div[contains(@class, "price")]/span');
                 if ($priceNode->length) {
                     //multiple prices may be listed - get the lowest one
                     foreach ($priceNode as $item) {
@@ -631,7 +633,7 @@ class XboxCalculator
                     }
 
                     //check for 'strikethrough' price, meaning the item is on sale
-                    $salePriceNode = $xpath->query('//span[contains(@class, "price") and contains(@class, "lg") and contains(@class, "strk")]');
+                    $salePriceNode = $xpath->query('//div[contains(@class, "price")]/span[contains(@class, "strk")]');
                     if ($salePriceNode->length) {
                         foreach ($salePriceNode as $item) {
                             if (preg_match('/\d+[.,]\d+/', $item->textContent, $match)) {
