@@ -515,6 +515,10 @@
                                 $sDlcCompletion = $aGame['dlc_completion'] . '%';
                             }
                         }
+                        $hoursPlayed = '';
+                        if ($aGame['hours_played']) {
+                            $hoursPlayed = sprintf('title="%d hours played"', $aGame['hours_played']);
+                        }
                         ?>
                         <tr class="table-striped <?= $sGameStatus ?>">
                         <td>
@@ -526,7 +530,7 @@
                             <td class="<?= $sPlatform ?> hidden-xs"><?= $aGame['platform'] ?></td>
                             <td class="<?= $sGameCompStatus ?> text-center text-nowrap"><?= $aGame['completion_perc'] ?> %</td>
                             <td class="<?= $sCompletionEstimate ?>">
-                                <span class="hidden-xs"><?= $aGame['completion_estimate'] ?></span>
+                                <span class="hidden-xs" <?= $hoursPlayed ?>><?= $aGame['completion_estimate'] ?></span>
                                 <span class="visible-xs text-nowrap"><?= str_replace(' hours', ' h', $aGame['completion_estimate']) ?></span>
                             </td>
                             <td>
