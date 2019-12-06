@@ -39,10 +39,10 @@ class XboxCalculator
     private $regions = [
         'US' => 1,
         'Canada' => 7,
-        'Australia' => 5,
+        'Australia' => 6,
         'UK' => 2,
-        'Europe' => 8,
-        'Brazil' => 18,
+        'Europe' => 4,
+        'Brazil' => 11,
     ];
 
     //some games have no boxart, meaning we can't find the game id
@@ -455,6 +455,7 @@ class XboxCalculator
             $gameid = $m[1];
         }
 
+        //return just this since the gamecollection csv will have the rest anyway and is way easier to parse
         return [$gameid, $name, $url];
 
         $temp = $this->basexpath->query('img', $temp);
