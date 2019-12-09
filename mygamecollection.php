@@ -1,6 +1,7 @@
 <?php
 namespace MyGameCollection;
 
+use \DateTime;
 use MyGameCollection\Lib\Database;
 use MyGameCollection\Lib\Game;
 use MyGameCollection\Lib\Logger;
@@ -479,6 +480,13 @@ if (empty($id)) {
         'most_expensive_current' => false,
         'total_playtime' => 0,
         'spent_playtime' => 0,
+        'spent_week' => 0,
+        'spent_month' => 0,
+        'spent_6month' => 0,
+        'spent_year' => 0,
+        'spent_6month_tooltip' => [],
+        'spent_month_tooltip' => [],
+        'spent_week_tooltip' => [],
     ];
     if (!empty($sShow)) {
         $aAllGames = $aGames;
@@ -517,6 +525,25 @@ if (empty($id)) {
                 $aStats['spent_playtime'] += $aGame['hours_played'];
             } elseif ($aGame['completion_perc'] == 100 && !empty($aGame['completion_estimate'])) {
                 $aStats['spent_playtime'] += intval($aGame['completion_estimate']);
+            }
+        }
+
+        //calculate money spent in past 7d/30d/180d/365d
+        if ($aGame['purchased_price'] > 0) {
+            if (new DateTime($aGame['date_created']) > (new DateTime)->modify('-1 year')) {
+                $aStats['spent_year'] += $aGame['purchased_price'];
+            }
+            if (new DateTime($aGame['date_created']) > (new DateTime)->modify('-180 day')) {
+                $aStats['spent_6month'] += $aGame['purchased_price'];
+                $aStats['spent_6month_tooltip'][] = $aGame['name'];
+            }
+            if (new DateTime($aGame['date_created']) > (new DateTime)->modify('-30 day')) {
+                $aStats['spent_month'] += $aGame['purchased_price'];
+                $aStats['spent_month_tooltip'][] = $aGame['name'];
+            }
+            if (new DateTime($aGame['date_created']) > (new DateTime)->modify('-7 day')) {
+                $aStats['spent_week'] += $aGame['purchased_price'];
+                $aStats['spent_week_tooltip'][] = $aGame['name'];
             }
         }
     }

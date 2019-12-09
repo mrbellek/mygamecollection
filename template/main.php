@@ -2,12 +2,16 @@
 <html>
     <head>
         <title>My Game Collection</title>
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-        <script src="template/main.js"></script>
+
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="template/main.css" rel="stylesheet" type="text/css" />
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+ 
+        <script src="template/main.js"></script>
     </head>
     <body>
         <div class="container">
@@ -322,8 +326,14 @@
                     <span class="btn btn-info">Spent playtime<br/><span class="badge"><?= $aStats['spent_playtime'] ?> hours</span></span>
                     <span class="btn btn-danger">Most expensive buy:<br/><?= $aStats['most_expensive_purchased']['name'] ?> <span class="badge"><?= priceFormat($aStats['most_expensive_purchased']['purchased_price']) ?></span></span>
                     <span class="btn btn-danger">Most expensive current:<br/><?= $aStats['most_expensive_current']['name'] ?> <span class="badge"><?= priceFormat($aStats['most_expensive_current']['current_price']) ?></span></span>
+                    <?php if (!empty($aStats['spent_year'])): ?>
+                    <span class="btn btn-warning">Money spent last week:<br/><span class="badge" title="<?= implode(', ', $aStats['spent_week_tooltip']) ?>"><?= priceFormat($aStats['spent_week']) ?></span></span>
+                    <span class="btn btn-warning">Money spent last month:<br/><span class="badge" title="<?= implode(', ', $aStats['spent_month_tooltip']) ?>"><?= priceFormat($aStats['spent_month']) ?></span></span>
+                    <span class="btn btn-warning">Money spent last 6 months:<br/><span class="badge" title="<?= implode(', ', $aStats['spent_6month_tooltip']) ?>"><?= priceFormat($aStats['spent_6month']) ?></span></span>
+                    <span class="btn btn-warning">Money spent last year:<br/><span class="badge"><?= priceFormat($aStats['spent_year']) ?></span></span>
+                    <?php endif; ?>
                 </div>
-            
+
                 <div class="form-group" style="line-height: 3em;">
                     <form action="<?= $sThisFile ?>" method="get" class="form-inline">
                         <a class="btn btn-success" href="<?= $sThisFile ?>">All games</a>
