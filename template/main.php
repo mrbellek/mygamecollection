@@ -20,7 +20,7 @@
         </h1>
 
             <?php if (!empty($id)): ?>
-            <form method="post" action="<?= $sThisFile ?>?page=<?= $iPage ?>&show=<?= $sShow ?>" class="form-horizontal" role="form">
+            <form method="post" action="<?= $sThisFile ?>?page=<?= $iPage ?>&show=<?= $sShow ?>&search=<?= $sSearch ?>" class="form-horizontal" role="form">
 
                 <input type="hidden" name="id" value="<?= $id ?>" />
 
@@ -35,14 +35,14 @@
 
                 <div class="form-group">
                     <label for="name" class="col-sm-2 control-label">Name</label>
-					<div class="col-sm-10">
-						<input type="text" id="name" name="name" class="form-control" disabled value="<?= @utf8_encode($aData['name']) ?>" required />
-					</div>
+                    <div class="col-sm-10">
+                        <input type="text" id="name" name="name" class="form-control" disabled value="<?= @utf8_encode($aData['name']) ?>" required />
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="platform" class="col-sm-2 control-label">Platform</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <select name="platform" id="platform" disabled class="form-control">
                             <option value="Xbox 360" <?= $aData['platform'] == 'Xbox 360' ? 'selected' : '' ?>>Xbox 360</option>
                             <option value="Xbox One" <?= $aData['platform'] == 'Xbox One' ? 'selected' : '' ?>>Xbox One</option>
@@ -55,7 +55,7 @@
 
                 <div class="form-group">
                     <label for="backcompat1" class="col-sm-2 control-label">Backwards compatible</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <label class="radio-inline">
                             <input type="radio" id="backcompat1" name="backcompat" value="1" <?= $aData['backcompat'] === '1' ? 'checked' : '' ?> ?><b>Yes</b>
                         </label>
@@ -70,7 +70,7 @@
 
                 <div class="form-group">
                     <label for="kinect1" class="col-sm-2 control-label">Kinect required</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <label class="radio-inline">
                             <input type="radio" id="kinect1" name="kinect_required" value="1" <?= $aData['kinect_required'] === '1' ? 'checked' : '' ?> ?><b>Yes</b>
                         </label>
@@ -100,7 +100,7 @@
 
                 <div class="form-group">
                     <label for="online1" class="col-sm-2 control-label">Online multiplayer achievements</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <label class="radio-inline">
                             <input type="radio" id="online1" name="online_multiplayer" value="1" <?= $aData['online_multiplayer'] === '1' ? 'checked' : '' ?> ?><b>Yes</b>
                         </label>
@@ -115,12 +115,12 @@
 
                 <div class="form-group">
                     <label for="purchased_price" class="col-sm-2 control-label">Purchased price</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <div class="input-group">
                             <div class="input-group-addon">&euro;</div>
                             <input type="text" id="purchased_price" name="purchased_price" class="form-control" value="<?= $aData['purchased_price'] ?>" />
                         </div>
-					</div>
+                    </div>
                 </div>
 
                 <?php if (defined('FORM_PASSWORD') && FORM_PASSWORD) : ?>
@@ -134,12 +134,12 @@
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">&nbsp;</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <input type="submit" name="action" value="Save" class="btn btn-primary" />
-						<?php if (!empty($id)) : ?>
-                            <a href="<?= $sThisFile ?>?page=<?= $iPage ?>&show=<?= $sShow ?>" class="btn btn-default">Cancel</a>
-							<input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
-						<?php endif; ?>
+                        <?php if (!empty($id)) : ?>
+                            <a href="<?= $sThisFile ?>?page=<?= $iPage ?>&show=<?= $sShow ?>&search=<?= $sSearch ?>" class="btn btn-default">Cancel</a>
+                            <input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -154,14 +154,14 @@
 
                 <div class="form-group">
                     <label for="completion_perc" class="col-sm-2 control-label">Completion percentage</label>
-					<div class="col-sm-10">
-						<input type="text" id="completion_perc" name="completion_perc" disabled class="form-control" value="<?= $aData['completion_perc'] ?>" required />
-					</div>
+                    <div class="col-sm-10">
+                        <input type="text" id="completion_perc" name="completion_perc" disabled class="form-control" value="<?= $aData['completion_perc'] ?>" required />
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="completion_estimate" class="col-sm-2 control-label">Completion estimate</label>
-					<div class="col-sm-10">
+                    <div class="col-sm-10">
                         <select name="completion_estimate" id="completion_estimate" disabled class="form-control">
                             <option value=""></option>
                             <option value="0-1 hour" <?= $aData['completion_estimate'] == '0-1 hour' ? 'selected' : '' ?>>0-1 hour</option>
@@ -585,7 +585,7 @@
                                     <?php else: ?>
                                         <a href="?shortlistadd=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-star-empty"></span></a>
                                     <?php endif; ?>
-                                    <a href="?id=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+                                        <a href="?id=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>&search=<?= $sSearch ?>"><span class="glyphicon glyphicon-pencil"></span></a>
                                 <?php endif; ?>
                             </td>
                         </tr>
