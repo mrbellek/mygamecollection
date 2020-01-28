@@ -29,7 +29,7 @@ class Collection
             return ['error' => 'Invalid CSV.'];
         }
 
-        $id = -1; //@TODO: get lowest id from database and substract 1 instead of hardcoding -1
+        $id = $this->getTempId($oDatabase);
         $csvgames = [];
         $newgames = [];
         $updatedgames = [];
@@ -235,5 +235,19 @@ class Collection
             }
         }
         die();
+    }
+
+    /*
+     * Get a temporary game id for when the normal methods fail
+     * starts at -1, then counts down
+     */
+    private function getTempId(Database $oDatabase) : int
+    {
+        $id = $oDatabase->query_value('
+            SELECT MIN(id)
+            FROM mygamecollection'
+        );
+
+        return min($id, -1);
     }
 }
