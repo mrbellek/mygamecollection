@@ -20,9 +20,10 @@ class Database
     /**
      * Connect to database (PDO)
      *
+     * @throws Exception
      * @return bool
      */
-    public function connect()
+    public function connect() : bool
     {
         $this->checkConfig();
 
@@ -47,7 +48,13 @@ class Database
         return true;
     }
 
-    public function statement($sQuery)
+    /**
+     * Execute a query that doesn't return rows, but is not insert/update/delete/replace
+     *
+     * @param string $sQuery
+     * @return mixed
+     */
+    public function statement(string $sQuery)
     {
         if (empty($this->oPDO)) {
             $this->connect();
@@ -119,13 +126,27 @@ class Database
         }
     }
 
-    public function query_single($sQuery, $aData = [])
+    /**
+     * Execute a select query, and return only the first result row
+     *
+     * @param string $sQuery
+     * @param array $aData
+     * @return array
+     */
+    public function query_single(string $sQuery, array $aData = []) : array
     {
         $aResult = $this->query($sQuery, $aData);
 
         return $aResult ? $aResult[0] : [];
     }
 
+    /**
+     * Execute a select query, and return only the first column of the first result row
+     *
+     * @param string $sQuery
+     * @param array $aData
+     * @return mixed
+     */
     public function query_value($sQuery, $aData = [])
     {
         $aResult = $this->query($sQuery, $aData);

@@ -6,8 +6,15 @@ use MyGameCollection\Lib\Game;
 
 class Collection
 {
-    public function importCsvIntoDatabase(Database $oDatabase, array $data) {
-
+    /**
+     * Import a game collection csv into the database
+     *
+     * @param Database $oDatase
+     * @param array $data - csv data
+     * @return array - import report
+     */
+    public function importCsvIntoDatabase(Database $oDatabase, array $data) : array
+    {
         try {
             $csv = array_map('str_getcsv', $data);
 
@@ -147,7 +154,14 @@ class Collection
         ];
     }
 
-    private function hasGameChanged(Database $oDatabase, array $game)
+    /**
+     * Check if a game has changed in any relevant way
+     *
+     * @param Database $oDatabase
+     * @param array $game - raw csv line as array
+     * @return string - short report of changes
+     */
+    private function hasGameChanged(Database $oDatabase, array $game) : string
     {
         if (!$game['id']) {
             die('hasGameChanged: no game id.' . var_export($game));
@@ -199,11 +213,15 @@ class Collection
             }
         }
 
-        return $aChanges ? implode(' - ', $aChanges) : false;
+        return $aChanges ? implode(' - ', $aChanges) : '';
     }
 
-    //backup import function for when custom data is wiped out again
-    public function importStuff(Database $db)
+    /**
+     * backup import function for when custom data is wiped out again
+     *
+     * @param Database $db
+     */
+    public function importStuff(Database $db) : void
     {
         echo '<pre>';
         $lines = file('export.sql');
@@ -240,6 +258,9 @@ class Collection
     /*
      * Get a temporary game id for when the normal methods fail
      * starts at -1, then counts down
+     *
+     * @param Database $oDatabase
+     * @return int
      */
     private function getTempId(Database $oDatabase) : int
     {

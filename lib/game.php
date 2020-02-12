@@ -37,11 +37,20 @@ class Game
     public $last_modified;
     public $date_created;
 
+    /**
+     * Database $oDatabase
+     */
     public function __construct(Database $oDatabase)
     {
         $this->db = $oDatabase;
     }
 
+    /**
+     * Fill this object from an array of properties
+     *
+     * @param array $gameArr - properties
+     * @return self
+     */
     private function fillObject(array $gameArr) : self
     {
         foreach ($gameArr as $key => $value) {
@@ -51,6 +60,12 @@ class Game
         return $this;
     }
 
+    /**
+     * Get a single game record, by its id
+     *
+     * @param int $id
+     * @return self
+     */
     public function getById(int $id) : self
     {
         $game = $this->db->query_single('
@@ -64,6 +79,13 @@ class Game
         return $this->fillObject($game);
     }
 
+    /**
+     * Get a single game record, by its page url
+     * @TODO sometimes these change? e.g. ' (Xbox 360)' gets added
+     *
+     * @param string $url
+     * @return self
+     */
     public function getIdByUrl(string $url) : ?int
     {
         return $this->db->query_value('
@@ -75,20 +97,31 @@ class Game
         );
     }
 
-    public function getAll() : array
+    /**
+     * Get all games from database, as objects
+     *
+     * @param Database $oDatabase
+     * @return array
+     */
+    static public function getAll(Database $oDatabase) : array
     {
-        $games = $this->db->query('
+        $games = $oDatabase->query('
             SELECT *
             FROM mygamecollection
             ORDER BY id'
         );
-        foreach ($games as $key => $game) {
-            $games[$key] = $this->fillObject($game);
+        foreach ($games as $game) {
+            $games[$game['id']] = (new Game($oDatabase))->fillObject($game);
         }
 
         return $games;
     }
 
+    /**
+     * Save this game to the database
+     *
+     * @return bool
+     */
     public function save() : bool
     {
         /*
@@ -104,6 +137,11 @@ class Game
         }
     }
 
+    /**
+     * Update an existing game record
+     *
+     * @return bool
+     */
     private function update() : bool
     {
         $data = get_object_vars($this);
@@ -152,6 +190,11 @@ class Game
         );
     }
 
+    /**
+     * Insert a new game into the database
+     *
+     * @return bool
+     */
     private function insert() : bool
     {
         $data = get_object_vars($this);
@@ -196,6 +239,11 @@ class Game
         );
     }
 
+    /**
+     * Delete the current game from the database
+     *
+     * @return bool
+     */
     public function delete() : bool
     {
         return $this->db->query('
@@ -206,6 +254,11 @@ class Game
         );
     }
 
+    /**
+     * Get the next available shortlist order
+     *
+     * @return int
+     */
     private function getMaxShortlistOrder() : int
     {
         return $this->db->query_value('
@@ -214,6 +267,11 @@ class Game
         );
     }
 
+    /**
+     * Add this game to the shortlist
+     *
+     * @return bool
+     */
     public function addToShortlist() : bool
     {
         $this->shortlist_order = $this->getMaxShortlistOrder() + 1;
@@ -221,6 +279,11 @@ class Game
         return $this->save();
     }
 
+    /**
+     * Move this game up one spot on the shortlist
+     *
+     * @return bool
+     */
     public function shortlistUp() : bool
     {
         if ($this->shortlist_order == 1 || is_null($this->shortlist_order)) {
@@ -252,6 +315,11 @@ class Game
         return $this->save();
     }
 
+    /**
+     * Move this game down one spot on the shortlist
+     *
+     * @return bool
+     */
     public function shortlistDown() : bool
     {
         if ($this->shortlist_order == $this->getMaxShortlistOrder() || is_null($this->shortlist_order)) {
@@ -283,7 +351,20 @@ class Game
         return $this->save();
     }
 
-    //wrapper for creating a game during the price import
+    public function getGenres() : array
+    {
+    }
+
+    public function setGenres(array $genres) : self
+    {
+    }
+
+    /**
+     * wrapper for creating a game during the price import
+     *
+     * @param Game $game
+     * @return bool
+     */
     public function createByPriceData($game) : bool
     {
         $this->id = $game->id;
@@ -309,6 +390,13 @@ class Game
         return $this->insert();
     }
 
+    /**
+     * Check if a game has changed in status or price
+     *
+     * @param Database $oDatabase
+     * @param Game $game - the newly imported game
+     * @return bool
+     */
     static public function hasPriceChanged(Database $oDatabase, $game)
     {
         $oGame = new Game($oDatabase);

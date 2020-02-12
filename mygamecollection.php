@@ -22,9 +22,9 @@ require_once('func/priceformat.php');
  * v shortlist
  * v separate this mess from twitterbot libraries and put it on github
  * v show if dlc also completed
+ * v fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
  * x walkthrough urls seems mostly wrong (TA bug reported)
  * - sortable columns
- * - fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
  */
 
 if (!is_readable('mygamecollection.inc.php')) {
@@ -37,8 +37,8 @@ if (!is_readable('mygamecollection.inc.php')) {
 require_once('mygamecollection.inc.php');
 require_once('autoloader.php');
 
-$oDatabase = new Database;
-$oRequest = new Request;
+$oDatabase = new Database();
+$oRequest = new Request();
 
 //check if database connection is ok
 if ($oDatabase->connect()) {
@@ -343,6 +343,7 @@ if ($id = $oRequest->getInt('id')) {
         $aPrepared['search'] = '%' . $sSearch . '%';
     }
 
+    //apply the filter
     switch($sShow) {
         case 'completed':
             $sQuery .= 'AND completion_perc = 100 ORDER BY name'; break;
@@ -427,10 +428,9 @@ if ($id = $oRequest->getInt('id')) {
     $aGames = $oDatabase->query('
         SELECT SQL_CALC_FOUND_ROWS *
         FROM mygamecollection
-        WHERE name LIKE :name',
-        [
-            'name' => '%' . $sSearch . '%',
-        ]
+        WHERE name LIKE :name
+        ORDER BY name',
+        ['name' => '%' . $sSearch . '%']
     );
 
 }
