@@ -7,3 +7,8 @@ span.btn { cursor: default; }
 .table-hover tbody tr:hover > td.x36 { background-color: #5cb85c !important; }
 .table-hover tbody tr:hover > td.win { background-color: #f0ad4e !important; }
 .table-hover tbody tr:hover > td.mob { background-color: #5bc0de !important; }
+.table tbody tr > td.ratio-veryeasy { background-color: #00FF00; }
+.table tbody tr > td.ratio-easy { background-color: yellow; }
+.table tbody tr > td.ratio-medium { background-color: orange; }
+.table tbody tr > td.ratio-hard { background-color: pink; }
+.table tbody tr > td.ratio-veryhard { background-color: red; }

@@ -119,7 +119,8 @@
                     <tr>
                         <th>Game name (<?= $iCount ?>)</th>
                         <th class="hidden-xs">Platform</th>
-                        <th class="text-nowrap">C<span class="hidden-xs">ompletion</span> %</th>
+                        <th class="hidden-xs">Ratio</th>
+                        <th class="text-nowrap">C<span class="hidden-xs">omp</span> %</th>
                         <th class="text-nowrap">C<span class="hidden-xs">omp</span> est.</th>
                         <th><abbr title="Downloadable content">DLC</abbr></th>
                         <th><abbr title="Backwards compatible">BC</abbr></th>
@@ -201,6 +202,25 @@
                         if ($aGame['hours_played']) {
                             $hoursPlayed = sprintf('title="%d hours played"', $aGame['hours_played']);
                         }
+                        $sRatioType = 'green';
+                        $dRatio = floatval($aGame['ta_total']) / floatval($aGame['gamerscore_total']);
+                        switch (true) {
+                            case $dRatio < 2:
+                                $sRatioType = 'ratio-veryeasy';
+                                break;
+                            case $dRatio < 3:
+                                $sRatioType = 'ratio-easy';
+                                break;
+                            case $dRatio < 4:
+                                $sRatioType = 'ratio-medium';
+                                break;
+                            case $dRatio < 5:
+                                $sRatioType = 'ratio-hard';
+                                break;
+                            default;
+                                $sRatioType = 'ratio-veryhard';
+                                break;
+                        }
                         ?>
                         <tr class="table-striped <?= $sGameStatus ?>">
                         <td>
@@ -210,6 +230,7 @@
                             <?php endif; ?>
                             </td>
                             <td class="<?= $sPlatform ?> hidden-xs"><?= $aGame['platform'] ?></td>
+                            <td class="hidden-xs <?= $sRatioType ?>"><?= number_format($dRatio, 2) ?></td>
                             <td class="<?= $sGameCompStatus ?> text-center text-nowrap"><?= $aGame['completion_perc'] ?> %</td>
                             <td class="<?= $sCompletionEstimate ?>">
                                 <span class="hidden-xs" <?= $hoursPlayed ?>><?= $aGame['completion_estimate'] ?></span>
