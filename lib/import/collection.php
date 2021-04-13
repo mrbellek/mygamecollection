@@ -139,10 +139,10 @@ class Collection
             $csvgames[$line['id']] = $line['Game name'];
         }
 
-        $dbgames = $oGame->getAll();
+        $dbgames = Game::getAll($oDatabase);
         foreach ($dbgames as $oGame) {
             if (!in_array($oGame->id, array_keys($csvgames))) {
-                $removedgames[] = $oGame;
+                $removedgames[] = (array)$oGame;
             }
         }
 
