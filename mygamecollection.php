@@ -18,19 +18,16 @@ require_once('func/priceformat.php');
  * Import the .json from the price scraper, and the game collection csv from TA.
  *
  * TODO:
- * v namespaces and autoloader
- * v shortlist
- * v separate this mess from twitterbot libraries and put it on github
- * v show if dlc also completed
- * v fix crash when importing new games when there's already newly imported games (hardcoded -1 id)
- * x walkthrough urls seems mostly wrong (TA bug reported)
+ * - auto-run scraper
  * - sortable columns
+ * x walkthrough urls seems mostly wrong (TA bug reported)
  */
 
-if (!is_readable('mygamecollection.inc.php')) {
+$includeFile = str_replace('.php', '.inc.php', pathinfo(__FILE__, PATHINFO_BASENAME));
+if (!is_readable($includeFile)) {
     die(sprintf('Include file missing. Please create %s and define DB_HOST, DB_USER, DB_NAME and DB_PASS with your database details,
         and FORM_PASSWORD if you want to password-protect your edits.',
-        pathinfo(__FILE__, PATHINFO_FILENAME)
+        $includeFile
     ));
 }
 
@@ -159,13 +156,15 @@ if ($oRequest->isPost()) {
                 if ($result['removed']) {
                     $aSuccess[] = '<br/>The following games have disappeared from your collection:<ul>';
                     $aRemovedGames = $result['removed'];
+
+                    //NB: the format of the removed games is a little different, since the data comes from the db instead of the csv
+                    //these are game objects, cast to arrays
                     usort($aRemovedGames, function($a, $b) {
-                        return strcasecmp($a['Game name'], $b['Game name']);
+                        return strcasecmp($a['name'], $b['name']);
                     });
                     foreach ($aRemovedGames as $game) {
-                        $aSuccess[] = sprintf('<li><a href="?id=%s">%s</a></li>',
-                            $game['id'],
-                            $game['Game name']
+                        $aSuccess[] = sprintf('<li>%s</li>',
+                            $game['name']
                         );
                     }
                     $aSuccess[] = '</ul>';
@@ -404,7 +403,11 @@ if ($id = $oRequest->getInt('id')) {
         case 'dlcnotcompleted':
             $sQuery .= 'AND dlc = 1 AND dlc_completion < 100 ORDER BY dlc_completion DESC'; break;
         case 'mostplayed':
-            $sQuery .= 'ORDER BY hours_played DESC'; break;
+            $sQuery .= 'ORDER BY GREATEST(hours_played, IF(completion_perc = 100, completion_estimate, 0)) DESC'; break;
+        case 'easiest':
+            $sQuery .= 'AND ta_total > 0 ORDER BY ta_total / gamerscore_total ASC'; break;
+        case 'hardest':
+            $sQuery .= 'AND ta_total > 0 ORDER BY ta_total / gamerscore_total DESC'; break;
         case 'shortlist':
             $sQuery .= 'AND shortlist_order > 0 ORDER BY shortlist_order ASC'; break;
         case 'recent':

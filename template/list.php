@@ -34,6 +34,8 @@
                         <a class="btn btn-info <?= ($sShow == 'shortest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=shortest">Shortest games</a>
                         <a class="btn btn-info <?= ($sShow == 'longest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=longest">Longest games</a>
                         <a class="btn btn-info <?= ($sShow == 'mostplayed' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=mostplayed">Most played</a>
+                        <a class="btn btn-info <?= ($sShow == 'easiest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=easiest">Easiest</a>
+                        <a class="btn btn-info <?= ($sShow == 'hardest' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=hardest">Hardest</a>
                         <a class="btn btn-info <?= ($sShow == 'recent' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=recent">Recent</a>
                         <a class="btn btn-default <?= ($sShow == 'paid' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=paid">Purchased games</a>
                         <a class="btn btn-default <?= ($sShow == 'free' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=free">Free games</a>
@@ -100,28 +102,7 @@
                 <?php endif; ?>
 
                 <?php if (!$aGames && !$sShow && !$sSearch): ?>
-                    <p>Your game collection seems empty! You can fill it by doing the following things:</p>
-                    <ol>
-                        <li>Run the price scraper (<span style="font-family: Courier New;">php xboxcalculator.php [gamertag] [region]</span>
-                            from the command line) and import the resulting .json file with price info.</li>
-                        <li>Go to your <a href="https://www.trueachievements.com/">TrueAchievements</a> game collection</a></li>
-                        <li>Click the 'View and filter' button, then click the down arrow to download your game collection as a .csv file.</li>
-                        <li>Back here, click 'Choose file', pick the .csv and hit 'Import game collection CSV'.</li>
-                    </ol>
-                    <p>To get the full power of this page, there's a few more optional things you can do:</p>
-                    <ul>
-                        <li>Manually enter prices you paid for your games. Use your
-                            <a href="https://account.microsoft.com/billing/orders">Transaction history on Xbox.com</a></li>
-                        <li>Manually enter additional game details, like BC, kinect/peripherals required etc.</li>
-                    </ul>
-                    <p>Finally, if you want to keep your collection up to date, you should periodically:</p>
-                    <ol>
-                        <li>Import new prices json.</li>
-                        <li>Import your game collection csv.</li>
-                        <li>Manually update new games with price and game details, like above.</li>
-                    </ol>
-                    <p>Feedback and improvements are welcome, the GitHub page is at <a href="https://github.com/mrbellek/mygamecollection"
-                    target="_blank">github.com/mrbellek/mygamecollection</a></p><?= $sSearch ?>
+                    <?php require 'firstrun.php'; ?>
                 <?php elseif (!$aGames && $sSearch): ?>
                     <!-- search has no results -->
                 <?php elseif (!$aGames && $sShow): ?>
