@@ -105,12 +105,13 @@ class Game
      */
     static public function getAll(Database $oDatabase) : array
     {
-        $games = $oDatabase->query('
+        $dbgames = $oDatabase->query('
             SELECT *
             FROM mygamecollection
             ORDER BY id'
         );
-        foreach ($games as $game) {
+        $games = [];
+        foreach ($dbgames as $game) {
             $games[$game['id']] = (new Game($oDatabase))->fillObject($game);
         }
 
