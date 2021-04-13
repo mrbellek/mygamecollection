@@ -11,8 +11,10 @@
                     <span class="btn btn-info">Average current value<br/><span class="badge"><?= priceFormat($aStats['average_value']) ?></span></span>
                     <span class="btn btn-info">Total estimated playtime<br/><span class="badge"><?= $aStats['total_playtime'] ?> hours</span></span>
                     <span class="btn btn-info">Spent playtime<br/><span class="badge"><?= $aStats['spent_playtime'] ?> hours</span></span>
+                    <?php if (isset($aStats['most_expensize_purchased'])): ?>
                     <span class="btn btn-danger">Most expensive buy:<br/><?= $aStats['most_expensive_purchased']['name'] ?> <span class="badge"><?= priceFormat($aStats['most_expensive_purchased']['purchased_price']) ?></span></span>
                     <span class="btn btn-danger">Most expensive current:<br/><?= $aStats['most_expensive_current']['name'] ?> <span class="badge"><?= priceFormat($aStats['most_expensive_current']['current_price']) ?></span></span>
+                    <?php endif; ?>
                     <?php if (!empty($aStats['spent_year'])): ?>
                     <span class="btn btn-warning">Money spent last week:<br/><span class="badge" title="<?= implode(', ', $aStats['spent_week_tooltip']) ?>"><?= priceFormat($aStats['spent_week']) ?></span></span>
                     <span class="btn btn-warning">Money spent last month:<br/><span class="badge" title="<?= implode(', ', $aStats['spent_month_tooltip']) ?>"><?= priceFormat($aStats['spent_month']) ?></span></span>
