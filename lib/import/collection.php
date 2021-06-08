@@ -199,11 +199,25 @@ class Collection
             }
         }
 
-        if ($oOldGame->completion_estimate != $newgame['completion_estimate']) $aChanges[] = 'completion estimate change';
-        if ($oOldGame->hours_played != $newgame['hours_played']) $aChanges[] = 'more hours played';
-        if ($oOldGame->achievements_won != $newgame['achievements_won']) $aChanges[] = 'more achievements unlocked';
-        if ($oOldGame->achievements_total != $newgame['achievements_total']) $aChanges[] = 'new dlc appeared';
-        if ($oOldGame->game_url != $newgame['game_url']) $aChanges[] = 'game url changed';
+        if ($oOldGame->completion_estimate != $newgame['completion_estimate']) {
+            $aChanges[] = 'completion estimate change';
+        }
+        if ($oOldGame->hours_played != $newgame['hours_played']) {
+            $aChanges[] = 'more hours played';
+        }
+        if ($oOldGame->achievements_won != $newgame['achievements_won']) {
+            $aChanges[] = 'more achievements unlocked';
+        }
+        if ($oOldGame->achievements_total != $newgame['achievements_total']) {
+            if ($oOldGame->achievements_total == 0) {
+                $aChanges[] = 'new game';
+            } else {
+                $aChanges[] = 'new dlc appeared';
+            }
+        }
+        if ($oOldGame->game_url != $newgame['game_url']) {
+            $aChanges[] = 'game url changed';
+        }
 
         if ($oOldGame->walkthrough_url != $newgame['walkthrough_url']) {
             if ($oOldGame->walkthrough_url == '') {
