@@ -37,6 +37,10 @@ class Collection
         }
 
         $id = $this->getTempId($oDatabase);
+        if (!$id) {
+            exit('Your database is empty! Make sure you\'re importing the price scraper .json file first, and the TA game collection .csv second.');
+        }
+        
         $csvgames = [];
         $newgames = [];
         $updatedgames = [];
