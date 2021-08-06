@@ -205,7 +205,10 @@
                             $hoursPlayed = sprintf('title="%d hours played"', $aGame['hours_played']);
                         }
                         $sRatioType = 'green';
-                        $dRatio = floatval($aGame['ta_total']) / floatval($aGame['gamerscore_total']);
+                        $dRatio = 0;
+                        if ($aGame['gamerscore_total']) {
+                            $dRatio = floatval($aGame['ta_total']) / floatval($aGame['gamerscore_total']);
+                        }
                         switch (true) {
                             case $dRatio < 2:
                                 $sRatioType = 'ratio-veryeasy';
