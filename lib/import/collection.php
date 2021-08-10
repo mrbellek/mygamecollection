@@ -3,6 +3,7 @@ namespace MyGameCollection\Lib\Import;
 
 use MyGameCollection\Lib\Database;
 use MyGameCollection\Lib\Game;
+use Exception;
 
 class Collection
 {
@@ -271,7 +272,9 @@ class Collection
 
     /*
      * Get a temporary game id for when the normal methods fail
-     * starts at -1, then counts down
+     * starts at -1, then counts down. Put a COALESCE in there
+     * just in case someone imports a .csv into an empty database
+     * and causes the import to crash.
      *
      * @param Database $oDatabase
      * @return int
@@ -279,7 +282,7 @@ class Collection
     private function getTempId(Database $oDatabase) : int
     {
         $id = $oDatabase->query_value('
-            SELECT MIN(id)
+            SELECT COALESCE(MIN(id), -1)
             FROM mygamecollection'
         );
 
