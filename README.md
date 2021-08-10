@@ -21,6 +21,11 @@ Some of the data that this uses will require you to manually enter them, some of
 
 I made this little CMS for fun for myself, so expect a lot of the code to be garbage quality, cobbled-together and poorly commented. Contributions are welcome! Fork the code, [grab an issue from the list][2] and make a pull request when you're done. Cheers! :)
 
+**Quick setup**: create mygamecollection.inc.php that defines the following constants:
+- DB_HOST, DB_NAME, DB_USER, DB_PASS for database credentials
+- FORM_PASSWORD if you want to password-protect data upload and entry
+- load up the page in your browser and following the instructions for your first import
+
 [1]: https://www.trueachievements.com/
 [2]: https://github.com/mrbellek/mygamecollection/issues
 [3]: https://www.trueachievements.com/forum/viewthread.aspx?tid=907135
