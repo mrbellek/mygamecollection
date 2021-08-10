@@ -1,15 +1,14 @@
 <?php
 namespace MyGameCollection\Lib\Import;
 
+use Exception;
 use MyGameCollection\Lib\Database;
 use MyGameCollection\Lib\Game;
 
 class Price
 {
-    public function importJsonIntoDatabase(Database $oDatabase, string $json) {
-
-        global $oDatabase;
-
+    public function importJsonIntoDatabase(Database $oDatabase, string $json): array
+    {
         try {
             $prices = json_decode($json);
         } catch (Exception $e) {
@@ -59,12 +58,24 @@ class Price
                      * - game now unavailable
                      */
                     switch (true) {
-                        case ($changes['status']['old'] === false): $games_new[] = $game; break;
-                        case ($changes['status']['new'] == 'sale'): $games_discounted[] = $game; break;
-                        case ($changes['status']['old'] == 'sale'): $games_undiscounted[] = $game; break;
-                        case ($changes['status']['new'] == 'delisted'): $games_delisted[] = $game; break;
-                        case (in_array($changes['status']['old'], ['delisted', 'unavailable', 'region-locked'])): $games_availabled[] = $game; break;
-                        case (in_array($changes['status']['new'], ['unavailable', 'region-locked'])): $games_unavailabled[] = $game; break;
+                        case ($changes['status']['old'] === false):
+                            $games_new[] = $game;
+                            break;
+                        case ($changes['status']['new'] == 'sale'):
+                            $games_discounted[] = $game;
+                            break;
+                        case ($changes['status']['old'] == 'sale'):
+                            $games_undiscounted[] = $game;
+                            break;
+                        case ($changes['status']['new'] == 'delisted'):
+                            $games_delisted[] = $game;
+                            break;
+                        case (in_array($changes['status']['old'], ['delisted', 'unavailable', 'region-locked'])):
+                            $games_availabled[] = $game;
+                            break;
+                        case (in_array($changes['status']['new'], ['unavailable', 'region-locked'])):
+                            $games_unavailabled[] = $game;
+                            break;
                     }
                 }
                 if ($changes['price']) {

@@ -6,12 +6,6 @@
  * If you get outdated info, delete the prices json cache file and try again.
  *
  * TODO:
- * v some stats like most expensive, how many free games, how many delisted
- * v make this mess into classes and functions
- * v pick right bundle when available (cheapest)
- * v fetch real session cookie instead of forging an old one
- * v curl
- * v IMPORTANT: rewrite where needed to use list view instead of image view for basic game info
  * . sales?
  * . write everything to database instead of exporting as .json
  * - error reporting at the end

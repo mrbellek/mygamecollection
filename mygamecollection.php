@@ -1,7 +1,7 @@
 <?php
 namespace MyGameCollection;
 
-use \DateTime;
+use DateTime;
 use MyGameCollection\Lib\Database;
 use MyGameCollection\Lib\Game;
 use MyGameCollection\Lib\Logger;

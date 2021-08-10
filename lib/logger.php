@@ -8,7 +8,8 @@ use MyGameCollection\Lib\Database;
  */
 class Logger
 {
-    private $bInBrowser;
+    private bool $bInBrowser;
+    private Database $db;
 
     /**
      * Determine if we're in browser or CLI at start
@@ -17,17 +18,17 @@ class Logger
      */
     public function __construct()
     {
-        $this->bInBrowser = !empty($_SERVER['DOCUMENT_ROOT']) ? true : false;
+        $this->bInBrowser = !empty($_SERVER['DOCUMENT_ROOT']);
     }
 
-    private function getDatabase()
+    private function getDatabase(): void
     {
         if (empty($this->db)) {
             $this->db = new Database(false);
         }
     }
 
-    public function write($iLevel, $sError, $aSource = [])
+    public function write($iLevel, $sError, $aSource = []): void
     {
         $this->getDatabase();
 
@@ -54,7 +55,7 @@ class Logger
         );
     }
 
-    private function getErrorLevelName($iLevel)
+    private function getErrorLevelName(int $iLevel): string
     {
         $aErrorLevels = [
             1 => 'FATAL',
@@ -65,7 +66,7 @@ class Logger
             6 => 'TRACE',
         ];
 
-        return (isset($aErrorLevels[$iLevel]) ? $aErrorLevels[$iLevel] : '?');
+        return $aErrorLevels[$iLevel] ?? '?';
     }
 
     /**
@@ -75,7 +76,7 @@ class Logger
      *
      * @return void
      */
-    public function output()
+    public function output(): void
     {
         $aArgs = func_get_args();
 
@@ -88,7 +89,7 @@ class Logger
         call_user_func_array('printf', $aArgs);
     }
 
-    public function view()
+    public function view(): array
     {
         $this->getDatabase();
 
@@ -101,7 +102,7 @@ class Logger
 
     }
 
-    public function search($sSearch)
+    public function search($sSearch): array
     {
         $this->getDatabase();
 

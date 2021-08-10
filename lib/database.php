@@ -1,7 +1,8 @@
 <?php
 namespace MyGameCollection\Lib;
 
-use \PDO;
+use PDO;
+use Exception;
 use MyGameCollection\Lib\Logger;
 
 /**
@@ -14,7 +15,7 @@ class Database
 {
     public function __construct()
     {
-        $this->logger = new Logger;
+        $this->logger = new Logger();
     }
 
     /**
@@ -23,7 +24,7 @@ class Database
      * @throws Exception
      * @return bool
      */
-    public function connect() : bool
+    public function connect(): bool
     {
         $this->checkConfig();
 
@@ -71,7 +72,7 @@ class Database
      *
      * @return mixed
      */
-    public function query($sQuery, $aData = [])
+    public function query(string $sQuery, array $aData = [])
     {
         if (empty($this->oPDO)) {
             $this->connect();
@@ -133,7 +134,7 @@ class Database
      * @param array $aData
      * @return array
      */
-    public function query_single(string $sQuery, array $aData = []) : array
+    public function query_single(string $sQuery, array $aData = []): array
     {
         $aResult = $this->query($sQuery, $aData);
 
@@ -147,14 +148,14 @@ class Database
      * @param array $aData
      * @return mixed
      */
-    public function query_value($sQuery, $aData = [])
+    public function query_value(string $sQuery, array $aData = [])
     {
         $aResult = $this->query($sQuery, $aData);
 
         return $aResult ? reset($aResult[0]) : false;
     }
 
-    private function checkConfig()
+    private function checkConfig(): bool
     {
         if (!defined('DB_HOST') || !defined('DB_NAME') ||
             !defined('DB_USER') || !defined('DB_PASS')) {
@@ -167,7 +168,7 @@ class Database
         return true;
     }
 
-    private function validIp4OrIp6Hostname($host)
+    private function validIp4OrIp6Hostname(string $host): bool
     {
         if ($this->gethostbyname6($host)) {
             return true;
@@ -191,6 +192,6 @@ class Database
             }
         }
 
-        return count($ipv6) > 0 ? $ipv6[0] : false;
+        return count($ipv6) > 0 ? $ipv6[0] : null;
     }
 }

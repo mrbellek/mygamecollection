@@ -3,10 +3,12 @@ namespace MyGameCollection\Lib;
  
 class Request
 {
-    private $queryVars = [];
-    private $postVars = [];
-    private $cookies = [];
-    private $files = [];
+    private array $queryVars = [];
+    private array $postVars = [];
+    private array $cookies = [];
+    private array $files = [];
+
+    private array $postBody = [];
 
     public function __construct()
     {
@@ -62,43 +64,43 @@ class Request
         }
     }
 
-    public function isGet() : bool
+    public function isGet(): bool
     {
         return filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'GET';
     }
 
-    public function isPost() : bool
+    public function isPost(): bool
     {
         return filter_input(INPUT_SERVER, 'REQUEST_METHOD') == 'POST';
     }
 
-    public function getInt($var) : int
+    public function getInt($var): int
     {
         return (isset($this->queryVars[$var]) ? filter_var($this->queryVars[$var], FILTER_SANITIZE_NUMBER_INT) : 0);
     }
 
-    public function getStr($var) : string
+    public function getStr($var): string
     {
         return (isset($this->queryVars[$var]) ? filter_var($this->queryVars[$var], FILTER_SANITIZE_STRING) : '');
     }
 
-    public function postInt($var) : int
+    public function postInt($var): int
     {
         return (isset($this->postVars[$var]) ? filter_var($this->postVars[$var], FILTER_SANITIZE_NUMBER_INT) : 0);
     }
 
-    public function postStr($var) : string
+    public function postStr($var): string
     {
         return (isset($this->postVars[$var]) ? filter_var($this->postVars[$var], FILTER_SANITIZE_STRING) : '');
     }
 
-    public function cookie($name) : string
+    public function cookie($name): string
     {
-        return (isset($this->cookies[$name]) ? $this->cookies[$name] : '');
+        return $this->cookies[$name] ?? '';
     }
 
-    public function file($field) : array
+    public function file($field): array
     {
-        return (isset($this->files[$field]) ? $this->files[$field] : []);
+        return $this->files[$field] ?? [];
     }
 }
