@@ -27,7 +27,7 @@ class XboxCalculator
     private $gamepage = 'https://www.trueachievements.com/game/%s/achievements';
     private $pricepage = 'https://www.trueachievements.com/ajaxfunctions.aspx/ContentRecord_Regional';
 
-    private $gamecollectionFullList = 'https://www.trueachievements.com/gamer/%s/gamecollection?executeformfunction&function=AjaxList&params=oGameCollection%%7C%%26ddlSortBy%%3DTitlename%%26ddlDLCInclusionSetting%%3DDLCIOwn%%26sddGameMediaID%%3D%%20%%26ddlStartedStatus%%3D0%%26asdGamePropertyID%%3D-1%%26GameView%%3DoptListView%%26chkColTitleimage%%3DTrue%%26chkColTitlename%%3DTrue%%26chkColPlatform%%3DTrue%%26chkColSiteScore%%3DTrue%%26chkColOfficialScore%%3DTrue%%26chkColItems%%3DTrue%%26chkColCompletionpercentage%%3DTrue%%26chkColMyrating%%3DTrue%%26chkColDatestarted%%3DTrue%%26chkColDatecompleted%%3DTrue%%26chkColLastunlock%%3DTrue%%26chkColOwnershipstatus%%3DTrue%%26chkColMedia%%3DTrue%%26chkColPlaystatus%%3DTrue%%26chkColGamerscompletedpercentage%%3DTrue%%26chkColCompletionestimate%%3DTrue%%26chkColWalkthrough%%3DTrue%%26chkColSiteratio%%3DTrue%%26chkColSiterating%%3DTrue%%26chkColUnobtainables%%3DTrue%%26txtBaseComparisonGamerID%%3D71675%%26oGameCollection_Order%%3DTitlename%%26oGameCollection_Page%%3D1%%26oGameCollection_ItemsPerPage%%3D99999%%26oGameCollection_ResponsiveMode%%3DFalse%%26oGameCollection_ShowAll%%3DFalse%%26txtGamerID%%3D%s%%26txtGameRegionID%%3D%s%%26txtUseAchievementsForProgress%%3DTrue';
+    private $gamecollectionFullList = 'https://www.trueachievements.com/gamer/%1$s/gamecollection?executeformfunction&function=AjaxList&params=oGameCollection%%7C%%26ddlSortBy%%3DTitlename%%26ddlDLCInclusionSetting%%3DNoDLC%%26ddlPlatformIDs%%3D%%26sddOwnerShipStatusIDs%%3D%%26sddPlayStatusIDs%%3D%%26ddlContestStatus%%3DAny%%20status%%26ddlGenreIDs%%3D%%26sddGameMediaID%%3D%%20%%26ddlStartedStatus%%3D0%%26asdGamePropertyID%%3D-1%%26GameView%%3DoptListView%%26MultiEditMode%%3DoptSingleEdit%%26chkColTitleimage%%3DTrue%%26chkColTitlename%%3DTrue%%26chkColPlatform%%3DTrue%%26chkColSiteScore%%3DTrue%%26chkColOfficialScore%%3DTrue%%26chkColItems%%3DTrue%%26chkColCompletionpercentage%%3DTrue%%26chkColMyrating%%3DTrue%%26chkColTimeplayed%%3DTrue%%26chkColLastunlock%%3DTrue%%26chkColOwnershipstatus%%3DTrue%%26chkColPlaystatus%%3DTrue%%26chkColCompletionestimate%%3DTrue%%26chkColGamenotes%%3DTrue%%26txtBaseComparisonGamerID%%3D%3$s%%26oGameCollection_Order%%3DTitlename%%26oGameCollection_Page%%3D%2$s%%26oGameCollection_ItemsPerPage%%3D100%%26oGameCollection_TimeZone%%3DW.%%20Europe%%20Standard%%20Time%%26oGameCollection_ShowAll%%3DFalse%%26txtGamerID%%3D%3$s%%26txtGameRegionID%%3D%4$s%%26txtUseAchievementsForProgress%%3DFalse%%26txtContestID%%3D0';
 
     //regions for ajax price request
     private $regions = [
@@ -50,8 +50,8 @@ class XboxCalculator
 
     //internal global vars
     private $gamerid;
-    private $games;
-    private $basexpath;
+    private $games; //array
+    private $basexpaths; //array
     private $skipcache = true;
 
     public function __construct()
@@ -83,8 +83,6 @@ class XboxCalculator
 
     public function run()
     {
-        //$this->skipcache = true;
-
         /*try {
             $this->oPDO = new PDO(sprintf('mysql:host=%s;dbname=%s', DB_HOST, DB_NAME), DB_USER, DB_PASS);
         } catch (Exception $e) {
@@ -250,9 +248,8 @@ class XboxCalculator
         //return;
 
         //this may seem skippable but we need the request header cookies for subsequent requests
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
         $dom->loadHTML($this->getUrl(sprintf($this->gamecollection, $this->gamertag)));
-        usleep(100000);
 
         $xpath = new DOMXPath($dom);
         $rsslink = $xpath->query('//link[@type="application/rss+xml"][2]');
@@ -266,29 +263,53 @@ class XboxCalculator
 
     private function fetchGameCollection()
     {
-        if (!is_file('./xboxcalculator-cache.html') || $this->skipcache) {
+        if ($this->skipcache) {
+            @unlink('./xboxcalculator-cache-page*.html');
+        }
+
+        if (!is_file('./xboxcalculator-cache-page001.html')) {
             print('Fetching list view..' . PHP_EOL);
-            $html = $this->getUrl(sprintf($this->gamecollectionFullList, $this->gamertag, $this->gamerid, $this->regions[$this->region]));
-            if ($html) {
-                file_put_contents('./xboxcalculator-cache.html', $html);
+            for ($page = 1; $page < 100; $page++) {
+                print('.');
+                $html = $this->getUrl(sprintf($this->gamecollectionFullList,
+                    $this->gamertag,
+                    $page,
+                    $this->gamerid,
+                    $this->regions[$this->region]
+                ));
+                if ($html && strpos($html, 'class="warningspanel"') === false) {
+                    file_put_contents(sprintf('./xboxcalculator-cache-page%03d.html', $page), $html);
+                } else {
+                    printf(PHP_EOL . 'Fetched last of %d pages.' . PHP_EOL, $page);
+                    break;
+                }
             }
         } else {
-            printf('LOADING LIST VIEW FROM CACHE..' . PHP_EOL);
-            $html = file_get_contents('./xboxcalculator-cache.html');
+            $pagecount = count(glob('./xboxcalculator-cache-page*.html'));
+            printf('Using cached list view of %d pages..' . PHP_EOL, $pagecount);
         }
-        $dom = new DOMDocument;
-        $dom->loadHTML($html);
 
-        $this->basexpath = new DOMXPath($dom);
-        $this->games = $this->basexpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
+        //load html files into xml object array, because we can't combine DOMNodeList objects
+        $dom = new DOMDocument();
+        $gamecount = 0;
+        foreach (glob('./xboxcalculator-cache-page*.html') as $htmlfile) {
+            $dom->loadHTMLFile($htmlfile);
+            $basexpath = new DOMXPath($dom);
+            $this->basexpaths[] = $basexpath;
 
-        printf('Done - fetched %s games.' . PHP_EOL, $this->games->length);
+            //get the number of games on this page for total count
+            $games = $basexpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
+            $gamecount += $games->length;
+        }
+
+        printf('Done - fetched %s games.' . PHP_EOL, $gamecount);
     }
 
     private function fetchPrices()
     {
         $prices = [];
         $pricecachefile = sprintf('./xboxcalculator-prices-%s.json', strtolower($this->region));
+
         if (is_file($pricecachefile) && !$this->skipcache) {
             print('Loading cached prices..' . PHP_EOL);
             $prices = json_decode(file_get_contents($pricecachefile), true);
@@ -304,90 +325,92 @@ class XboxCalculator
         $unavailablecount = 0;
 
         $i = 0;
-        foreach ($this->games as $tablerow) {
-            $status = 'available';
-            $gameinfo = $this->parseBasicInfo($tablerow);
-            list($gameid, $title, $url) = $gameinfo;
+        foreach ($this->basexpaths as $basexpath) {
+            $games = $basexpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
+            foreach ($games as $tablerow) {
+                $status = 'available';
+                $gameinfo = $this->parseBasicInfo($basexpath, $tablerow);
+                list($gameid, $title, $url) = $gameinfo;
 
-            if ($gameid > 0) {
-                $skipPriceCheck = false;
-                if (isset($prices[$gameid])) {
-                    $lastTimestamp = $prices[$gameid]['timestamp'];
-                    $price = $prices[$gameid]['price'];
-                    //skip price check if price is not older than a week
-                    if (new DateTime($lastTimestamp) > (new DateTime)->sub(new DateInterval('P7D')) && !$this->skipcache) {
-                        $skipPriceCheck = true;
+                if ($gameid > 0) {
+                    $skipPriceCheck = false;
+                    if (isset($prices[$gameid])) {
+                        $lastTimestamp = $prices[$gameid]['timestamp'];
+                        $price = $prices[$gameid]['price'];
+                        //skip price check if price is not older than a week
+                        if (new DateTime($lastTimestamp) > (new DateTime)->sub(new DateInterval('P7D')) && !$this->skipcache) {
+                            $skipPriceCheck = true;
+                        }
                     }
-                }
 
-                if (!$skipPriceCheck) {
-                    $timestamp = (new DateTime)->format('Y-m-d H:i:s');
+                    if (!$skipPriceCheck) {
+                        $timestamp = (new DateTime)->format('Y-m-d H:i:s');
 
-                    $priceInfo = $this->fetchPriceInfo($gameid, $title);
-                    list($price, $status, $saleFrom) = $priceInfo;
-                    if (is_numeric($price)) {
-                        //check because price can also be 'Free'
-                        $totalworth += $price;
+                        $priceInfo = $this->fetchPriceInfo($gameid, $title);
+                        list($price, $status, $saleFrom) = $priceInfo;
+                        if (is_numeric($price)) {
+                            //check because price can also be 'Free'
+                            $totalworth += $price;
+                        }
+
+                    } else {
+                        //use cached data, don't modify entry
+                        $price = $prices[$gameid]['price'];
+                        $status = $prices[$gameid]['status'];
+                        $saleFrom = $prices[$gameid]['saleFrom'];
+                        $timestamp = $prices[$gameid]['timestamp'];
+                        if (preg_match('/\d+[.,]\d+/', $price, $match)) {
+                            $price = $match[0];
+                            $totalworth += $price;
+                        }
                     }
-                    $status = $status;
-
                 } else {
-                    //use cached data, don't modify entry
-                    $price = $prices[$gameid]['price'];
-                    $status = $prices[$gameid]['status'];
-                    $saleFrom = $prices[$gameid]['saleFrom'];
-                    $timestamp = $prices[$gameid]['timestamp'];
-                    if (preg_match('/\d+[.,]\d+/', $price, $match)) {
-                        $price = $match[0];
-                        $totalworth += $price;
-                    }
+                    printf('- %s: Unable to find game id!' . PHP_EOL, $title);
+                    $status = 'error';
+                    $price = null;
                 }
-            } else {
-                printf('- %s: Unable to find game id!' . PHP_EOL, $title);
-                $status = 'error';
-                $price = null;
-            }
 
-            $gamePrice = [
-                'id' => $gameid,
-                'name' => $title,
-                'url' => $url,
-                'price' => number_format((double) $price, 2),
-                'saleFrom' => ($status == 'sale' ? (double) $saleFrom : null),
-                'status' => $status,
-                'timestamp' => $timestamp,
-            ];
-            $prices[$gameid] = $gamePrice;
+                $gamePrice = [
+                    'id' => $gameid,
+                    'name' => $title,
+                    'url' => $url,
+                    'price' => number_format((double) $price, 2),
+                    'saleFrom' => ($status == 'sale' ? (double) $saleFrom : null),
+                    'status' => $status,
+                    'timestamp' => $timestamp,
+                ];
+                $prices[$gameid] = $gamePrice;
 
-            if (is_numeric($price) && $price > $highestpricedgame['price']) {
-                $highestpricedgame = $gamePrice;
-            }
+                if (is_numeric($price) && $price > $highestpricedgame['price']) {
+                    $highestpricedgame = $gamePrice;
+                }
 
-            if (strtolower(trim($price)) == 'free') {
-                $freegamescount++;
-            }
+                if (strtolower(trim($price)) == 'free') {
+                    $freegamescount++;
+                }
 
-            switch ($status) {
-                default:
-                case 'available':
-                    break;
-                case 'sale':
-                    $salecount++;
-                    $totalsaved += ($saleFrom - (is_numeric($price) ? $price : 0));
-                    break;
-                case 'delisted':
-                    $delistedcount++;
-                    break;
-                case 'region-locked':
-                case 'unavailable':
-                case 'error':
-                    $unavailablecount++;
-                    break;
-            }
+                switch ($status) {
+                    default:
+                    case 'available':
+                        break;
+                    case 'sale':
+                        $salecount++;
+                        $totalsaved += ($saleFrom - (is_numeric($price) ? $price : 0));
+                        break;
+                    case 'delisted':
+                        $delistedcount++;
+                        break;
+                    case 'region-locked':
+                    case 'unavailable':
+                    case 'error':
+                        $unavailablecount++;
+                        break;
+                }
 
-            $i++;
-            if ($i > 10) {
-                //break;
+                $i++;
+                if ($i > 10) {
+                    //break;
+                }
             }
         }
 
@@ -411,7 +434,7 @@ class XboxCalculator
     /**
      * parse some basic info from a game node on the game collection page
      */
-    private function parseBasicInfo($tablerow)
+    private function parseBasicInfo($basexpath, $tablerow)
     {
         /*
          * cells:
@@ -436,11 +459,11 @@ class XboxCalculator
          * 18 - site rating (class rating)
          * 19 - unobtainables
          */
-        $namelink = $this->basexpath->query('td[@class="smallgame"]/a', $tablerow);
+        $namelink = $basexpath->query('td[@class="smallgame"]/a', $tablerow);
         $name = $namelink->item(0)->textContent;
         $url = $namelink->item(0)->getAttribute('href');
 
-        $cells = $this->basexpath->query('td', $tablerow);
+        $cells = $basexpath->query('td', $tablerow);
 
         //2 - gameid + platform
         $temp = $cells->item(2);
@@ -452,7 +475,7 @@ class XboxCalculator
         //return just this since the gamecollection csv will have the rest anyway and is way easier to parse
         return [$gameid, $name, $url];
 
-        $temp = $this->basexpath->query('img', $temp);
+        $temp = $basexpath->query('img', $temp);
         $platform = $temp->item(0)->getAttribute('title');
 
         //3 - trueachievements score unlocked + total
@@ -475,7 +498,7 @@ class XboxCalculator
 
         //7 - my rating
         $my_rating = 0;
-        $temp = $this->basexpath->query('div', $cells->item(7));
+        $temp = $basexpath->query('div', $cells->item(7));
         if (preg_match('/rating-([0-9-]+)-stars/', $temp->item(0)->getAttribute('class'), $m)) {
             $my_rating = str_replace('-', '.', $m[1]);
         }
@@ -498,13 +521,13 @@ class XboxCalculator
         //15 - completion estimate
         $completion_estimate = $cells->item(15)->textContent;
         //16 - walkthrough url
-        $temp = $this->basexpath->query('a', $cells->item(16));
+        $temp = $basexpath->query('a', $cells->item(16));
         $walkthrough = $temp->item(0)->getAttribute('href');
         //17 - site ratio
         $site_ratio = $cells->item(17)->textContent;
         //18 - site rating
         $site_rating = 0;
-        $temp = $this->basexpath->query('div', $cells->item(18));
+        $temp = $basexpath->query('div', $cells->item(18));
         if (preg_match('/rating-([0-9-]+)-stars/', $temp->item(0)->getAttribute('class'), $m)) {
             $site_rating = str_replace('-', '.', $m[1]);
         }
@@ -692,6 +715,7 @@ class XboxCalculator
         }
 
         curl_setopt_array($this->curl, [
+            CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => false,
