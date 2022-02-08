@@ -378,6 +378,8 @@ if ($id = $oRequest->getInt('id')) {
             $sQuery .= 'AND platform = "Xbox One" ORDER BY name'; break;
         case '360':
             $sQuery .= 'AND platform = "Xbox 360" ORDER BY name'; break;
+        case 'xsx':
+            $sQuery .= 'AND platform = "Xbox Series X|S" ORDER BY name'; break;
         case 'win':
             $sQuery .= 'AND platform LIKE "Win%" ORDER BY name'; break;
         case 'bc':

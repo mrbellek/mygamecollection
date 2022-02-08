@@ -47,6 +47,7 @@
                         <a class="btn btn-default <?= ($sShow == 'unavailable' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=unavailable">Unavailable games</a>
                         <a class="btn btn-warning <?= ($sShow == 'xb1' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=xb1">Xbox One games</a>
                         <a class="btn btn-warning <?= ($sShow == '360' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=360">Xbox 360 games</a>
+                        <a class="btn btn-warning <?= ($sShow == 'xsx' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=xsx">Xbox Series X|S games</a>
                         <a class="btn btn-warning <?= ($sShow == 'win' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=win">Windows games</a>
                         <a class="btn btn-warning <?= ($sShow == 'bc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=bc">Backwards compatible games</a>
                         <a class="btn btn-warning <?= ($sShow == 'nonbc' ? 'active' : '') ?>" href="<?= $sThisFile ?>?show=nonbc">Not backwards compatible games</a>
@@ -151,6 +152,8 @@
                             $sPlatform = 'xb1';
                         } elseif ($aGame['platform'] == 'Xbox 360') {
                             $sPlatform = 'x36';
+                        } elseif ($aGame['platform'] == 'Xbox Series X|S') {
+                            $sPlatform = 'xsx';
                         } elseif ($aGame['platform'] == 'Windows') {
                             $sPlatform = 'win';
                         } else {
