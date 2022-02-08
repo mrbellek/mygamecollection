@@ -31,7 +31,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `mygamecollection` (
   `id` int(11) NOT NULL,
   `name` varchar(120) NOT NULL,
-  `platform` enum('Xbox 360','Xbox One','Android','Windows','Web') NOT NULL,
+  `platform` enum('Xbox 360','Xbox One','Android','Windows','Web','Xbox Series X|S') NOT NULL,
   `backcompat` int(11) DEFAULT NULL,
   `kinect_required` int(11) DEFAULT NULL,
   `peripheral_required` int(11) DEFAULT NULL,
@@ -75,4 +75,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
- 
