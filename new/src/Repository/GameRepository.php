@@ -117,6 +117,24 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findRecent(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->orderBy('g.created', 'DESC')
+            ->setMaxResults(100)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findPaid(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.purchasedPrice > 0')
+            ->orderBy('g.purchasedPrice', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Game[] Returns an array of Game objects
 //     */

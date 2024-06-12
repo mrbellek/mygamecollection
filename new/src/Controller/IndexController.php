@@ -6,6 +6,8 @@ namespace App\Controller;
 /**
  * TODO:
  * - pagination
+ * - remaining filters
+ * - import (see test.php)
  * - proper sorting by completion estimate (also for hoursPlayed)
  * - proper sorting by hours played (by hoursPlayed or completionEstimate)
  * - sorting by complex things (e.g. mostPlayed and easiest/hardest filters)
@@ -81,7 +83,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("notstarted", name: "filter_notstarted")]
+    #[Route("/notstarted", name: "filter_notstarted")]
     public function notStartedFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -90,7 +92,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("bestrating", name: "filter_bestrating")]
+    #[Route("/bestrating", name: "filter_bestrating")]
     public function bestRatingFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -99,7 +101,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("notstartedbestrating", name: "filter_notstartedbestrating")]
+    #[Route("/notstartedbestrating", name: "filter_notstartedbestrating")]
     public function notStartedBestRatingFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -108,7 +110,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("shortest", name: "filter_shortest")]
+    #[Route("/shortest", name: "filter_shortest")]
     public function shortestFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -117,7 +119,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("shortestnotstarted", name: "filter_notstartedshortest")]
+    #[Route("/shortestnotstarted", name: "filter_notstartedshortest")]
     public function shortestNotStartedFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -126,7 +128,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("longest", name: "filter_longest")]
+    #[Route("/longest", name: "filter_longest")]
     public function longestFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -135,7 +137,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("mostplayed", name: "filter_mostplayed")]
+    #[Route("/mostplayed", name: "filter_mostplayed")]
     public function mostPlayedFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -144,7 +146,7 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("easiest", name: "filter_easiest")]
+    #[Route("/easiest", name: "filter_easiest")]
     public function easiestFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
@@ -153,11 +155,29 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
-    #[Route("hardest", name: "filter_hardest")]
+    #[Route("/hardest", name: "filter_hardest")]
     public function hardestFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
         $games = $gameRepository->findHardest();
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/recent", name: "filter_recent")]
+    public function recentFilter(ManagerRegistry $doctrine): Response
+    {
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findRecent();
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/paid", name: "filter_paid")]
+    public function paidFilter(ManagerRegistry $doctrine): Response
+    {
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findPaid();
 
         return $this->renderPageWithResults($games);
     }
