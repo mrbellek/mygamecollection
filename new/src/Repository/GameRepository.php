@@ -21,6 +21,16 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
     
+    public function findBySearch(string $searchTerm): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.name LIKE :search')
+            ->setParameter(':search', '%' . $searchTerm . '%')
+            ->orderBy('g.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    
     public function findIncompleteGames(): array
     {
         return $this->createQueryBuilder('g')
@@ -131,6 +141,26 @@ class GameRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('g')
             ->where('g.purchasedPrice > 0')
             ->orderBy('g.purchasedPrice', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findWithWalkthrough(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.walkthroughUrl != :blank')
+            ->orderBy('g.name', 'ASC')
+            ->setParameter(':blank', '')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findNotCompletedDlc(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.hasDlc = 1')
+            ->andWhere('g.dlcCompletionPercentage < 100')
+            ->orderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
     }

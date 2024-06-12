@@ -7,6 +7,7 @@ namespace App\Controller;
  * TODO:
  * - pagination
  * - remaining filters
+ * - price/purchase info
  * - import (see test.php)
  * - proper sorting by completion estimate (also for hoursPlayed)
  * - proper sorting by hours played (by hoursPlayed or completionEstimate)
@@ -15,6 +16,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,11 +67,179 @@ class IndexController extends AbstractController
         return $this->renderPageWithResults($games);
     }
 
+    #[Route("/search")]
+    public function searchFilter(ManagerRegistry $doctrine, \Symfony\Component\HttpFoundation\Request $request): Response
+    {
+        $searchTerm = $request->query->get('search');
+        if (is_null($searchTerm) || trim($searchTerm) === '') {
+            return $this->indexAction($doctrine);
+        }
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBySearch($searchTerm);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/all", name: "index")]
+    public function allFilter(ManagerRegistry $doctrine): Response
+    {
+        return $this->indexAction($doctrine);
+    }
+
     #[Route("/completed", name: "filter_completed")]
     public function completedFilter(ManagerRegistry $doctrine): Response
     {
         $gameRepository = $doctrine->getRepository(Game::class);
         $games = $gameRepository->findBy(['completionPercentage' => 100], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/xb1", name: "filter_xb1")]
+    public function xboxOneFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['platform' => 'Xbox One'], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/360", name: "filter_360")]
+    public function xbox360Filter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['platform' => 'Xbox 360'], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/xsx", name: "filter_xsx")]
+    public function xboxSeriesSX(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['platform' => 'Xbox Series X|S'], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/win", name: "filter_win")]
+    public function windowsFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['platform' => 'Windows'], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/bc", name: "filter_bc")]
+    public function backwardsCompatibleFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['backwardsCompatible' => 1], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nonbc", name: "filter_nonbc")]
+    public function notBackwardsCompatibleFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['backwardsCompatible' => 0], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nonbckinect", name: "filter_nonbckinect")]
+    public function notBackwardsCompatibleKinectFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['backwardsCompatible' => 0, 'kinectRequired' => 1], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nonbcperiph", name: "filter_nonbcperiph")]
+    public function notBackwardsCompatiblePeripheralFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['backwardsCompatible' => 0, 'peripheralRequired' => 1], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nonbconline", name: "filter_nonbconline")]
+    public function notBackwardsCompatibleOnlineMultiplayerFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['backwardsCompatible' => 0, 'onlineMultiplayer' => 1], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/walkthrough", name: "filter_walkthrough")]
+    public function walktroughFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findWithWalkthrough();
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nowalkthrough", name: "filter_nowalkthrough")]
+    public function noWalkthroughFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['walkthroughUrl' => ''], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/nodlc", name: "filter_nodlc")]
+    public function noDlcFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['hasDlc' => 0], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/withdlc", name: "filter_withdlc")]
+    public function withDlcFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['hasDlc' => 1], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/dlccompleted", name: "filter_dlccompleted")]
+    public function dlcCompletedFilter(ManagerRegistry $doctrine): Response
+    {
+
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findBy(['hasDlc' => 1, 'dlcCompletionPercentage' => 100], ['name' => 'ASC']);
+
+        return $this->renderPageWithResults($games);
+    }
+
+    #[Route("/dlcnotcompleted", name: "filter_dlcnotcompleted")]
+    public function dlcNotCompletedFilter(ManagerRegistry $doctrine): Response
+    {
+        $gameRepository = $doctrine->getRepository(Game::class);
+        $games = $gameRepository->findNotCompletedDlc();
 
         return $this->renderPageWithResults($games);
     }
