@@ -24,47 +24,45 @@
 </div>
 
 <div class="form-group" style="line-height: 3em;">
-    <form action="/search/" method="get" class="form-inline">
-        <a class="btn btn-success active" href="/all">All games</a>
-        <a class="btn btn-success" href="/completed">Completed games</a>
+    <form action="/search/{{ page }}" method="get" class="form-inline">
+        <a class="btn btn-success {% if show == 'all' %}active{% endif %}" href="/all">All games</a>
+        <a class="btn btn-success {% if show == 'completed' %}active{% endif %}" href="/completed">Completed games</a>
         <!--a class="btn btn-success" href="?show=shortlist">Shortlist</a-->
-        <a class="btn btn-info" href="/incomplete">Incomplete games</a>
-        <a class="btn btn-info" href="/notstarted">Not started games</a>
-        <a class="btn btn-info" href="/bestrating">Best games</a>
-        <a class="btn btn-info" href="/notstartedbestrating">Best not started games</a>
-        <a class="btn btn-info" href="/shortest">Shortest games</a>
-        <a class="btn btn-info" href="/shortestnotstarted">Shortest not started games</a>
-        <a class="btn btn-info" href="/longest">Longest games</a>
-        <a class="btn btn-info" href="/mostplayed">Most played</a>
-        <a class="btn btn-info" href="/easiest">Easiest</a>
-        <a class="btn btn-info" href="/hardest">Hardest</a>
-        <a class="btn btn-info" href="/recent">Recent</a>
-        <a class="btn btn-default" href="/paid">Purchased games</a>
-        <a class="btn btn-default" href="/free">Free games</a>
-        <a class="btn btn-default" href="/sale">On sale</a>
-        <a class="btn btn-default" href="/physical">Physical games</a>
-        <a class="btn btn-default" href="/sold">Sold games</a>
-        <a class="btn btn-default" href="/unavailable">Unavailable games</a>
-        <a class="btn btn-warning" href="/xb1">Xbox One games</a>
-        <a class="btn btn-warning" href="/360">Xbox 360 games</a>
-        <a class="btn btn-warning" href="/xsx">Xbox Series X|S games</a>
-        <a class="btn btn-warning" href="/win">Windows games</a>
-        <a class="btn btn-warning" href="/bc">Backwards compatible games</a>
-        <a class="btn btn-warning" href="/nonbc">Not backwards compatible games</a>
-        <a class="btn btn-warning" href="/nonbckinect">Non-BC games with Kinect</a>
-        <a class="btn btn-warning" href="/nonbcperiph">Non-BC games with peripheral</a>
-        <a class="btn btn-danger" href="/nonbconline">Non-BC games with online multiplayer</a>
-        <a class="btn btn-success" href="/walkthrough">With walkthrough</a>
-        <a class="btn btn-warning" href="/nowalkthrough">Without walkthrough</a>
-        <a class="btn btn-success" href="/nodlc">Without DLC</a>
-        <a class="btn btn-warning" href="/withdlc">With DLC</a>
-        <a class="btn btn-success" href="/dlccompleted">DLC completed</a>
-        <a class="btn btn-warning" href="/dlcnotcompleted">DLC not completed</a>
-	{% if newAddedCount is defined %}
+        <a class="btn btn-info {% if show == 'incomplete' %}active{% endif %}" href="/incomplete">Incomplete games</a>
+        <a class="btn btn-info {% if show == 'notstarted' %}active{% endif %}" href="/notstarted">Not started games</a>
+        <a class="btn btn-info {% if show == 'bestrating' %}active{% endif %}" href="/bestrating">Best games</a>
+        <a class="btn btn-info {% if show == 'notstartedbestrating' %}active{% endif %}" href="/notstartedbestrating">Best not started games</a>
+        <a class="btn btn-info {% if show == 'shortest' %}active{% endif %}" href="/shortest">Shortest games</a>
+        <a class="btn btn-info {% if show == 'shortestnotstarted' %}active{% endif %}" href="/shortestnotstarted">Shortest not started games</a>
+        <a class="btn btn-info {% if show == 'longest' %}active{% endif %}" href="/longest">Longest games</a>
+        <a class="btn btn-info {% if show == 'mostplayed' %}active{% endif %}" href="/mostplayed">Most played</a>
+        <a class="btn btn-info {% if show == 'easiest' %}active{% endif %}" href="/easiest">Easiest</a>
+        <a class="btn btn-info {% if show == 'hardest' %}active{% endif %}" href="/hardest">Hardest</a>
+        <a class="btn btn-info {% if show == 'recent' %}active{% endif %}" href="/recent">Recent</a>
+        <a class="btn btn-default {% if show == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
+        <a class="btn btn-default {% if show == 'free' %}active{% endif %}" href="/free">Free games</a>
+        <a class="btn btn-default {% if show == 'onsale' %}active{% endif %}" href="/onsale">On sale</a>
+        <a class="btn btn-default {% if show == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
+        <a class="btn btn-default {% if show == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
+        <a class="btn btn-default {% if show == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
+        <a class="btn btn-warning {% if show == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
+        <a class="btn btn-warning {% if show == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
+        <a class="btn btn-warning {% if show == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
+        <a class="btn btn-warning {% if show == 'win' %}active{% endif %}" href="/win">Windows games</a>
+        <a class="btn btn-warning {% if show == 'bc' %}active{% endif %}" href="/bc">Backwards compatible games</a>
+        <a class="btn btn-warning {% if show == 'nonbc' %}active{% endif %}" href="/nonbc">Not backwards compatible games</a>
+        <a class="btn btn-warning {% if show == 'nonbckinect' %}active{% endif %}" href="/nonbckinect">Non-BC games with Kinect</a>
+        <a class="btn btn-warning {% if show == 'nonbcperiph' %}active{% endif %}" href="/nonbcperiph">Non-BC games with peripheral</a>
+        <a class="btn btn-danger {% if show == 'nonbconline' %}active{% endif %}" href="/nonbconline">Non-BC games with online multiplayer</a>
+        <a class="btn btn-success {% if show == 'walkthrough' %}active{% endif %}" href="/walkthrough">With walkthrough</a>
+        <a class="btn btn-warning {% if show == 'nowalkthrough' %}active{% endif %}" href="/nowalkthrough">Without walkthrough</a>
+        <a class="btn btn-success {% if show == 'nodlc' %}active{% endif %}" href="/nodlc">Without DLC</a>
+        <a class="btn btn-warning {% if show == 'withdlc' %}active{% endif %}" href="/withdlc">With DLC</a>
+        <a class="btn btn-success {% if show == 'dlccompleted' %}active{% endif %}" href="/dlccompleted">DLC completed</a>
+        <a class="btn btn-warning {% if show == 'dlcnotcompleted' %}active{% endif %}" href="/dlcnotcompleted">DLC not completed</a>
+        {% if newAddedCount is defined %}
             <a class="btn btn-danger" href="?show=new">Without TA game id <span class="badge">{{ newAddedCount }}</span></a><br/>
-    {% endif %}
-        <input type="hidden" name="page" value="{{ pageNum }}" />
-        <input type="hidden" name="show" value="{{ show }}" />
+        {% endif %}
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
             <input class="btn btn-info" name="submit" type="submit" value="Search" />
@@ -90,32 +88,23 @@
     <div role="alert" class="alert alert-danger">{{ errorMsg }}</div>
 {% endif %}
 
-{% if count > perpage %}
+{% if games.haveToPaginate %}
 <nav style="text-align: center;">
     <ul class="pagination">
-    <!--?php for ($i = 1; $i <= ceil($iCount / $iPerPage); $i++) : ?>
-        <?php if ($i == $iPage): ?>
-        <li class="active"><span><?= $i ?></span></li>
-        <?php else: ?>
-        <li><a href="<?= $sThisFile ?>?page=<?= $i ?><?= (@$sSearch ? "&search=" . $sSearch : '') ?><?= (@$sShow ? "&show=" . $sShow : '') ?>"><?= $i ?></a></li>
-        <?php endif; ?>
-    <?php endfor; ?-->
+        {% if page > 2 %}<li><a href="/{{ show }}/{{ 1 }}">1</a></li>{% endif %}
+        {% if page > 3 %}<li><a href="/{{ show }}/{{ 2 }}">2</a></li>{% endif %}
+        {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
+
+        {% if page > 1 %}<li><a href="/{{ show }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+        <li class="active"><span>{{ page }}</span></li>
+        {% if page < games.getNbPages %}<li><a href="/{{ show }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+
+        {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
+        {% if page < games.getNbPages - 2 %}<li><a href="/{{ show }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 1 %}<li><a href="/{{ show }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
     </ul>
 </nav>
 {% endif %}
-
-<!--?php if (!$aGames && !$sShow && !$sSearch): ?>
-    <?php require 'firstrun.php'; ?>
-<?php elseif (!$aGames && $sSearch): ?>
-    <!-- search has no results - ->
-<?php elseif (!$aGames && $sShow): ?>
-    <!-- filter has no results - ->
-<?php else: ?-->
-
-<!--?php if ($sShow == 'new' && $aGames): ?>
-<p>This filter shows games that were imported into your library without their corresponding TA game id. To fix this,
-delete them from here, run the price scraper, import the .json file and then import your game collection .csv again.</p>
-<?php endif; ?-->
 
 <table class="table table-condensed table-hover">
 
@@ -179,183 +168,26 @@ delete them from here, run the price scraper, import the .json file and then imp
 		    {{ game.currentPrice|format_currency('EUR') }}
 		{% endif %}
 	    </td>
-	    <td>
-		shortlist
-	    </td>
+        <td><!-- current price --></td>
+	    <!--td>shortlist</td-->
 	</tr>
     {% endfor %}
-    <!--?php foreach ($aGames as $aGame): ?>
-        <?php //show entire row green if completed, show cell yellow if started
-        if ($aGame['completion_perc'] == 100) {
-            $sGameStatus = "success";
-            $sGameCompStatus = '';
-        } elseif ($aGame['completion_perc'] == 0) {
-            $sGameStatus = '';
-            $sGameCompStatus = '';
-        } else {
-            $sGameStatus = '';
-            $sGameCompStatus = 'warning';
-        }
-        //show cell colour based on platform
-        if ($aGame['platform'] == 'Xbox One') {
-            $sPlatform = 'xb1';
-        } elseif ($aGame['platform'] == 'Xbox 360') {
-            $sPlatform = 'x36';
-        } elseif ($aGame['platform'] == 'Xbox Series X|S') {
-            $sPlatform = 'xsx';
-        } elseif ($aGame['platform'] == 'Windows') {
-            $sPlatform = 'win';
-        } else {
-            $sPlatform = 'mob';
-        }
-        //show yellow or red for long completions
-        $sCompletionEstimate = '';
-        if (in_array($aGame['completion_estimate'], [
-            '100-120 hours',
-            '120-150 hours',
-            '150-200 hours',
-            '200+ hours',
-        ])) {
-            $sCompletionEstimate = 'danger';
-        } elseif (in_array($aGame['completion_estimate'], [
-            '40-50 hours',
-            '50-60 hours',
-            '60-80 hours',
-            '80-100 hours',
-        ])) {
-            $sCompletionEstimate = 'warning';
-        }
-        //show 360 games with kinect/peripheral as yellow and non-BC with online achievements red
-        $sBackcompatStatus = '';
-        if ($aGame['platform'] == 'Xbox 360' && ($aGame['kinect_required'] || $aGame['peripheral_required']) && !$aGame['online_multiplayer']) {
-            $aBackcompatStatus = 'warning';
-        } elseif ($aGame['platform'] == 'Xbox 360' && $aGame['backcompat'] !== '1' && $aGame['online_multiplayer']) {
-            $sBackcompatStatus = 'danger';
-        } elseif ($aGame['platform'] == 'Xbox 360' && $aGame['backcompat']) {
-            $sBackcompatStatus = 'success';
-        }
-        //show physical games as yellow, sold as red
-        $aGameFormat = '';
-        if ($aGame['format'] == 'Sold') {
-            $aGameFormat = 'danger';
-        } elseif ($aGame['format'] == 'Disc') {
-            $aGameFormat = 'warning';
-        }
-        //show dlc icon if present, red if not complete, orange if partial, green if completed
-        $sDlcStatus = '';
-        if ($aGame['dlc']) {
-            if ($aGame['dlc_completion'] == 100) {
-                $sDlcStatus = 'green';
-                $sDlcCompletion = '100%';
-            } else {
-                $sDlcStatus = ($aGame['dlc_completion'] == 0 ? 'red' : 'orange');
-                $sDlcCompletion = $aGame['dlc_completion'] . '%';
-            }
-        }
-        $hoursPlayed = '';
-        if ($aGame['hours_played']) {
-            $hoursPlayed = sprintf('title="%d hours played"', $aGame['hours_played']);
-        }
-        $sRatioType = 'green';
-        $dRatio = 0;
-        if (!empty($aGame['gamerscore_total'])) {
-            $dRatio = floatval($aGame['ta_total']) / floatval($aGame['gamerscore_total']);
-        }
-        switch (true) {
-            case $dRatio < 2:
-                $sRatioType = 'ratio-veryeasy';
-                break;
-            case $dRatio < 3:
-                $sRatioType = 'ratio-easy';
-                break;
-            case $dRatio < 4:
-                $sRatioType = 'ratio-medium';
-                break;
-            case $dRatio < 5:
-                $sRatioType = 'ratio-hard';
-                break;
-            default;
-                $sRatioType = 'ratio-veryhard';
-                break;
-        }
-        ?>
-        <tr class="table-striped <?= $sGameStatus ?>">
-        <td>
-            <a href="<?= $aGame['game_url'] ?>" target="_blank"><?= $aGame['name'] ?></a>
-            <?php if ($aGame['walkthrough_url']): ?>
-                <a href="<?= $aGame['walkthrough_url'] ?>" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
-            <?php endif; ?>
-            </td>
-            <td class="<?= $sPlatform ?> hidden-xs"><?= $aGame['platform'] ?></td>
-            <td class="hidden-xs <?= $sRatioType ?>"><?= number_format($dRatio, 2) ?></td>
-            <td class="<?= $sGameCompStatus ?> text-center text-nowrap"><?= $aGame['completion_perc'] ?> %</td>
-            <td class="<?= $sCompletionEstimate ?>">
-                <span class="hidden-xs" <?= $hoursPlayed ?>><?= $aGame['completion_estimate'] ?></span>
-                <span class="visible-xs text-nowrap"><?= str_replace(' hours', ' h', $aGame['completion_estimate']) ?></span>
-            </td>
-            <td>
-            <?php if ($aGame['dlc']): ?>
-                <span style="color: <?= $sDlcStatus ?>;" title="<?= $sDlcCompletion ?>" class="glyphicon glyphicon-plus"></span></td>
-            <?php endif; ?>
-            </td>
-            <?php if ($aGame['platform'] == 'Xbox 360'): ?>
-                <td class="<?= $sBackcompatStatus ?>"><?= int2glyph($aGame['backcompat'], 'glyphicon-refresh') ?></td>
-                <td class="<?= $sBackcompatStatus ?>"><?= int2glyph($aGame['kinect_required'], 'glyphicon-eye-open') ?></td>
-                <td class="<?= $sBackcompatStatus ?>"><?= int2glyph($aGame['peripheral_required'], 'glyphicon-music') ?></td>
-                <td class="<?= $sBackcompatStatus ?>"><?= int2glyph(abs($aGame['online_multiplayer'] - 1), 'glyphicon-cloud-upload') ?></td>
-            <?php else: ?>
-                <td /> <td /> <td /> <td />
-            <?php endif; ?>
-            <td class="<?= $aGameFormat ?> hidden-xs"><?= $aGame['format'] ?></td>
-            <td class="hidden-xs">
-                <?php if ($aGame['purchased_price'] > 0): ?>
-                    <?= format_currency($aGame['purchased_price']) ?>
-                <?php endif; ?>
-            </td>
-            <td class="hidden-xs">
-                <?php if ($aGame['status'] == 'delisted'): ?>
-                    <i title="<?= $aGame['status'] ?>" class="glyphicon glyphicon-ban-circle text-danger"></i>
-                <?php elseif ($aGame['status'] == 'region-locked'): ?>
-                    <i title="<?= $aGame['status'] ?>" class="glyphicon glyphicon glyphicon-globe text-danger"></i>
-                <?php else: ?>
-                    <?php if ($aGame['current_price'] > 0): ?>
-                        <?= format_currency($aGame['current_price']) ?>
-                    <?php else: ?>
-                        <span class="text-success">free</span>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </td>
-            <td>
-                <?php if ($sShow == 'shortlist'): ?>
-                    <a href="?shortlistup=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                    <a href="?shortlistdown=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-arrow-down"></span></a>
-                <?php else: ?>
-                    <?php if ($aGame['shortlist_order'] > 0): ?>
-                        <a href="?shortlistdel=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-star"></span></a>
-                    <?php else: ?>
-                        <a href="?shortlistadd=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>"><span class="glyphicon glyphicon-star-empty"></span></a>
-                    <?php endif; ?>
-                        <a href="?id=<?= $aGame['id'] ?>&page=<?= $iPage ?>&show=<?= $sShow ?>&search=<?= $sSearch ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-                <?php endif; ?>
-            </td>
-        </tr>
-    <?php endforeach; ?-->
 </table>
 
-<!--?php endif; ?-->
-
-<!-- ============== PAGINATION ============== -->
-
-{% if count > perpage %}
+{% if games.haveToPaginate %}
 <nav style="text-align: center;">
     <ul class="pagination">
-    <!--?php for ($i = 1; $i <= ceil($iCount / $iPerPage); $i++) : ?>
-        <?php if ($i == $iPage): ?>
-        <li class="active"><span><?= $i ?></span></li>
-        <?php else: ?>
-        <li><a href="<?= $sThisFile ?>?page=<?= $i ?><?= (@$sSearch ? "&search=" . $sSearch : '') ?><?= (@$sShow ? "&show=" . $sShow : '') ?>"><?= $i ?></a></li>
-        <?php endif; ?>
-    <?php endfor; ?-->
+        {% if page > 2 %}<li><a href="/{{ show }}/{{ 1 }}">1</a></li>{% endif %}
+        {% if page > 3 %}<li><a href="/{{ show }}/{{ 2 }}">2</a></li>{% endif %}
+        {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
+
+        {% if page > 1 %}<li><a href="/{{ show }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+        <li class="active"><span>{{ page }}</span></li>
+        {% if page < games.getNbPages %}<li><a href="/{{ show }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+
+        {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
+        {% if page < games.getNbPages - 2 %}<li><a href="/{{ show }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 1 %}<li><a href="/{{ show }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
     </ul>
 </nav>
 {% endif %}

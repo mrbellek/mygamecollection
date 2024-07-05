@@ -93,36 +93,15 @@ class GameRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('g')
             ->where('g.completionEstimate != :blank')
             ->andWhere('g.completionEstimate > 100')
-            ->orderBy('g.completionEstimate', 'DESC')
-            ->orderBy('g.name', 'ASC')
             ->setParameter(':blank', '')
             ->getQuery()
             ->getResult();
     }
 
-    public function findMostPlayed(): array
-    {
-        return $this->createQueryBuilder('g')
-            ->orderBy('g.hoursPlayed', 'DESC')
-            //->orderBy('g.completionEstimate', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findEasiest(): array
+    public function findWithNonZeroTaTotal(): array
     {
         return $this->createQueryBuilder('g')
             ->where('g.taTotal > 0')
-            ->orderBy('g.taTotal', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findHardest(): array
-    {
-        return $this->createQueryBuilder('g')
-            ->where('g.taTotal > 0')
-            ->orderBy('g.taTotal', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -165,28 +144,22 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-//    /**
-//     * @return Game[] Returns an array of Game objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findOnSale(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.status = :sale')
+            ->setParameter(':sale', 'sale')
+            ->orderBy('g.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Game
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findFree(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.purchasedPrice = 0')
+            ->orderBy('g.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
