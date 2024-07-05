@@ -3,7 +3,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+/**
+ * TODO:
+ * - encapsulation for updating game
+ */
+
 use DateTime;
+use App\Enum\CompletionEstimate as CompletionEstimateEnum;
+use App\Enum\Platform as PlatformEnum;
 use App\Repository\GameRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,11 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "mygamecollection")]
 class Game
 {
-    public const STATUS_AVAILABLE = 'available';
-    public const STATUS_DELISTED = 'delisted';
-    public const STATUS_REGION_LOCKED = 'region-locked';
-    public const STATUS_SALE = 'sale';
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -126,11 +128,12 @@ class Game
    public function getPlatformClass(): string
    {
        return match($this->platform) {
-           'Xbox 360' => 'x36',
-           'Xbox One' => 'xb1',
-           'Xbox Series X|S' => 'xsx',
-           'Windows' => 'win',
-           default => 'mob',
+           PlatformEnum::PLATFORM_360 => 'x36',
+           PlatformEnum::PLATFORM_XB1 => 'xb1',
+           PlatformEnum::PLATFORM_XSX => 'xsx',
+           PlatformEnum::PLATFORM_WIN => 'win',
+           PlatformEnum::PLATFORM_ANDROID,
+           PlatformEnum::PLATFORM_WEB => 'mob',
        };
    }
 
@@ -148,7 +151,7 @@ class Game
    {
       return $this->kinectRequired;
    }
-
+   
    public function getKinectRequiredClass(): string
    {
        return $this->kinectRequired == true ? 'red' : 'green';
@@ -184,36 +187,42 @@ class Game
        };
    }
 
-   public function getCompletionPercentage(): int
-   {
-      return $this->completionPercentage;
-   }
+    public function getCompletionPercentage(): int
+    {
+        return $this->completionPercentage;
+    }
 
-   public function getCompletionPercentageClass(): string
-   {
-       return match($this->completionPercentage) {
-           0 => '',
-           100 => 'success',
-           default => 'warning',
-       };
-   }
+    public function getCompletionPercentageClass(): string
+    {
+        return match($this->completionPercentage) {
+            0 => '',
+            100 => 'success',
+            default => 'warning',
+        };
+    }
 
-   public function getCompletionEstimate(): string
-   {
-      return $this->completionEstimate;
-   }
+    public function getCompletionEstimate(): string
+    {
+        return $this->completionEstimate;
+    }
 
-   public function getCompletionEstimateClass(): string
-   {
-       return match($this->completionEstimate) {
-           '100-120 hours',
-           '120-150 hours',
-           '150-200 hours',
-           '200+ hours' => 'danger',
-           '40-50 hours',
-           '50-60 hours',
-           '60-80 hours',
-           '80-100 hours' => 'warning',
+    public function getCompletionEstimateClass(): string
+    {
+        return match($this->completionEstimate) {
+            CompletionEstimateEnum::COMP_EST_1000H,
+            CompletionEstimateEnum::COMP_EST_750H,
+            CompletionEstimateEnum::COMP_EST_500H,
+            CompletionEstimateEnum::COMP_EST_300H,
+            CompletionEstimateEnum::COMP_EST_200H, 
+            CompletionEstimateEnum::COMP_EST_150H, 
+            CompletionEstimateEnum::COMP_EST_120H, 
+            CompletionEstimateEnum::COMP_EST_100H => 'danger',
+
+            CompletionEstimateEnum::COMP_EST_40H,
+            CompletionEstimateEnum::COMP_EST_50H,
+            CompletionEstimateEnum::COMP_EST_60H,
+            CompletionEstimateEnum::COMP_EST_80H => 'warning',
+
            default => '',
        };
    }
@@ -289,6 +298,7 @@ class Game
 
    public function getFormatClass(): string
    {
+       //@TODO fix, 'sold' isn't a format option. maybe status?
        return match($this->format) {
            'Sold' => 'danger',
            'Disc' => 'warning',
@@ -356,5 +366,40 @@ class Game
            ($ratio < 5) => 'ratio-hard',
            default => 'ratio-veryhard',
        };
+   }
+
+   public function setKinectRequired(?bool $kinect): self
+   {
+       $this->kinectRequired = $kinect;
+
+       return $this;
+   }
+
+   public function setPeripheralRequired(?bool $periph): self
+   {
+       $this->peripheralRequired = $periph;
+
+       return $this;
+   }
+   
+   public function setOnlineMultiplayer(?bool $online): self
+   {
+       $this->onlineMultiplayer = $online;
+
+       return $this;
+   }
+
+   public function setPurchasedPrice(?float $price): self
+   {
+       $this->purchasedPrice = $price;
+
+       return $this;
+   }
+
+   public function setLastModified(DateTimeInterface $timestamp): self
+   {
+       $this->lastModified = DateTime::createFromInterface($timestamp);
+
+       return $this;
    }
 }

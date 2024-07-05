@@ -16,10 +16,10 @@
     <span class="btn btn-danger">Most expensive current:<br/>{{ stats.most_expensive_current.name }} <span class="badge">{{ stats.most_expensive_current.price|format_currency('EUR') }}</span></span>
     {% endif %}
     {% if not stats.spent_year is empty %}
-    <span class="btn btn-warning">Money spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join(', ') }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Money spent last month:<br/><span class="badge" title="{{ stats.spent_month_tooltip|join(', ') }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Money spent last 6 months:<br/><span class="badge" title="{{ stats.spent_6month_tooltip|join(', ') }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Money spent last year:<br/><span class="badge">{{ stats.spent_year|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join(', ') }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last month:<br/><span class="badge" title="{{ stats.spent_month_tooltip|join(', ') }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge" title="{{ stats.spent_6month_tooltip|join(', ') }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last year:<br/><span class="badge">{{ stats.spent_year|format_currency('EUR') }}</span></span>
     {% endif %}
 </div>
 
@@ -66,17 +66,17 @@
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
             <input class="btn btn-info" name="submit" type="submit" value="Search" />
-            <a href="?" class="btn btn-default">Clear</a>
+            <a href="/all/{{ page }}" class="btn btn-default">Clear</a>
         </span>
     </form>
-    <form method="post" enctype="multipart/form-data" class="form-inline">
+    <!--form method="post" enctype="multipart/form-data" class="form-inline">
         <input type="file" name="upload" style="width: auto; display: inline;" id="upload" class="form-control hidden-xs" />
-	{% if form_password is defined %}
+        {% if form_password is defined %}
             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
         {% endif %}
         <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import prices JSON" />
         <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import game collection CSV" />
-    </form>
+    </form-->
 </div>
 
 <a name="content"></a>
@@ -125,51 +125,58 @@
         <th></th>
     </tr>
     {% for game in games %}
-	{% set gameStatus = '' %}
-	{% set gameCompletionStatus = '' %}
 	<tr class="table-striped {{ game.completionPercentageClass }}">
 	    <td>
-		<a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a>
-		{% if game.walkthroughUrl is not empty %}
-		    <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
-        {% endif %}
+            <a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a>
+            {% if game.walkthroughUrl is not empty %}
+                <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
+            {% endif %}
 	    </td>
 	    <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
 	    <td class="hidden-xs {{ game.ratioClass }}">
-		{{ game.ratio|round(2) }}
+            {{ game.ratio|round(2) }}
 	    </td>
 	    <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
 	    <td class="{{ game.completionEstimateClass }}">
-		<span class="hidden-xs" title="{{ game.hoursPlayed }} hours played">{{ game.completionEstimate }}</span>
-		<span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
+            <span class="hidden-xs" title="{{ game.hoursPlayed }} hours played">{{ game.completionEstimate }}</span>
+            <span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
 	    </td>
 	    <td>
-	    {% if game.hasDlc %}
-		<span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="glyphicon glyphicon-plus"></span></td>
-	    {% endif %}
+            {% if game.hasDlc %}
+            <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="glyphicon glyphicon-plus"></span></td>
+            {% endif %}
 	    </td>
 	    {% if game.platform == 'Xbox 360' %}
-		<td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="glyphicon glyphicon-refresh" /></td>
-		<td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="glyphicon glyphicon-eye-open" /></td>
+            <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="glyphicon glyphicon-refresh" /></td>
+            <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="glyphicon glyphicon-eye-open" /></td>
 	        <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="glyphicon glyphicon-music" /></td>
 	        <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="glyphicon glyphicon-cloud-upload" /></td>
-            {% else %}
-		<td /><td /><td /><td />
+        {% else %}
+            <td /><td /><td /><td />
 	    {% endif %}
 	    <td class="hidden-xs {{ game.formatClass }}">{{ game.format }}</td>
+        <td class="hidden-xs">
+            {% if game.purchasedPrice == 0 %}
+                <span class="text-success">free</span>
+            {% else %}
+                {{ game.purchasedPrice|format_currency('EUR') }}
+            {% endif %}
+        </td>
 	    <td class="hidden-xs">
-		{% if game.status == 'delisted' %}
-		    <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
-		{% elseif game.status == 'region-locked' %}
-		    <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
-		{% elseif game.currentPrice == 0 %}
-		    <span class="text-success">free</span>
-		{% else %}
-		    {{ game.currentPrice|format_currency('EUR') }}
-		{% endif %}
+            {% if game.status == 'delisted' %}
+                <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
+            {% elseif game.status == 'region-locked' %}
+                <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
+            {% elseif game.currentPrice == 0 %}
+            {% else %}
+                {{ game.currentPrice|format_currency('EUR') }}
+            {% endif %}
 	    </td>
         <td><!-- current price --></td>
-	    <!--td>shortlist</td-->
+	    <!--td>shortlist</td--> 
+        <td>
+            <a href="/game/{{ game.id }}?show={{ show }}&page={{ page }}&search={{ search }}"><span class="glyphicon glyphicon-pencil"></span></a>
+        </td>
 	</tr>
     {% endfor %}
 </table>

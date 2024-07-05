@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Enum\Status as StatusEnum;
 use DateTime;
 
 class GameStatsService
@@ -20,10 +21,10 @@ class GameStatsService
 
         return [
             'on_sale' => count(array_filter($games, function(Game $game) {
-                return $game->getStatus() === Game::STATUS_SALE;
+                return $game->getStatus() === StatusEnum::STATUS_SALE;
             })),
             'delisted' => count(array_filter($games, function(Game $game) {
-                return $game->getStatus() === Game::STATUS_DELISTED;
+                return $game->getStatus() === StatusEnum::STATUS_DELISTED;
             })),
             'free' => count(array_filter($games, function(Game $game) {
                 return $game->getCurrentPrice() == 0;
@@ -38,8 +39,8 @@ class GameStatsService
                 return $game->getCurrentPrice();
             }, $games)),
             'total_saved' => $totalCurrentValue - $totalPurchased,
-            'average_purchased' => $totalPurchased / count($games),
-            'average_value' => $totalCurrentValue / count($games),
+            'average_purchased' => count($games) > 0 ? $totalPurchased / count($games) : 0,
+            'average_value' => count($games) > 0 ? $totalCurrentValue / count($games) : 0,
             'total_playtime' => array_sum(array_map(function(Game $game) {
                 return $game->getCompletionEstimate();
             }, $games)),
