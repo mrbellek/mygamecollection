@@ -11,6 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "mygamecollection")]
 class Game
 {
+    public const STATUS_AVAILABLE = 'available';
+    public const STATUS_DELISTED = 'delisted';
+    public const STATUS_REGION_LOCKED = 'region-locked';
+    public const STATUS_SALE = 'sale';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,28 +42,28 @@ class Game
     #[ORM\Column(name: "completion_perc")]
     private int $completionPercentage;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "completion_estimate")]
     private string $completionEstimate;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "hours_played")]
     private int $hoursPlayed;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "achievements_won")]
     private int $achievementsWon;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "achievements_total")]
     private int $achievementsTotal;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "gamerscore_won")]
     private int $gamerscoreWon;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "gamerscore_total")]
     private int $gamerscoreTotal;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "ta_score")]
     private int $taScore;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "ta_total")]
     private int $taTotal;
    
     #[ORM\Column(name: "dlc")]
@@ -67,10 +72,10 @@ class Game
     #[ORM\Column(name: "dlc_completion")]
     private int $dlcCompletionPercentage;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "completion_date")]
     private ?DateTime $completionDate = null;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "site_rating")]
     private float $siteRating;
    
     #[ORM\Column]
@@ -79,28 +84,28 @@ class Game
     #[ORM\Column]
     private string $status;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "purchased_price")]
     private ?float $purchasedPrice = null;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "current_price")]
     private ?float $currentPrice = null;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "regular_price")]
     private ?float $regularPrice = null;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "shortlist_order")]
     private int $shortlistOrder;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "walkthrough_url")]
     private string $walkthroughUrl;
    
-    #[ORM\Column]
+    #[ORM\Column(name: "game_url")]
     private string $gameUrl;
    
-    #[ORM\Column(type: "datetime")]
+    #[ORM\Column(name: "last_modified", type: "datetime")]
     private DateTime $lastModified;
    
-    #[ORM\Column(name: "date_created")]
+    #[ORM\Column(name: "date_created", type: "datetime")]
     private DateTime $created;
 
    public function getId(): ?int
@@ -129,44 +134,44 @@ class Game
        };
    }
 
-   public function isBackwardsCompatible(): bool
+   public function isBackwardsCompatible(): ?bool
    {
       return $this->backwardsCompatible;
    }
 
    public function getBackwardsCompatibleClass(): string
    {
-       return $this->backwardsCompatible == 1 ? 'green' : 'red';
+       return $this->backwardsCompatible == true ? 'green' : 'red';
    }
 
-   public function isKinectRequired(): bool
+   public function isKinectRequired(): ?bool
    {
       return $this->kinectRequired;
    }
 
    public function getKinectRequiredClass(): string
    {
-       return $this->kinectRequired == 1 ? 'red' : 'green';
+       return $this->kinectRequired == true ? 'red' : 'green';
    }
 
-   public function isPeripheralRequired(): bool
+   public function isPeripheralRequired(): ?bool
    {
       return $this->peripheralRequired;
    }
 
    public function getPeripheralRequiredClass(): string
    {
-       return $this->peripheralRequired == 1 ? 'red' : 'green';
+       return $this->peripheralRequired == true ? 'red' : 'green';
    }
 
-   public function isOnlineMultiplayer(): bool
+   public function isOnlineMultiplayer(): ?bool
    {
       return $this->onlineMultiplayer;
    }
 
    public function getOnlineMultiplayerClass(): string
    {
-       return $this->onlineMultiplayer == 1 ? 'red' : 'green';
+       return $this->onlineMultiplayer == true ? 'red' : 'green';
    }
 
    public function getBackwardsCompatibleCompleteClass(): string
@@ -218,34 +223,36 @@ class Game
        return $this->hoursPlayed;
    }
 
-
-   public function getGameUrl(): string
+   public function getAchievementsWon(): int
    {
-       return $this->gameUrl;
+       return $this->achievementsWon;
    }
 
-   public function getWalkthroughUrl(): ?string
+   public function getAchievementsTotal(): int
    {
-       return $this->walkthroughUrl;
+       return $this->achievementsTotal;
    }
 
-   public function getRatio(): float
+   public function getGamerscoreWon(): int
    {
-       return $this->gamerscoreTotal > 0 ? floatval($this->taTotal / $this->gamerscoreTotal) : 1;
+       return $this->gamerscoreWon;
    }
 
-   public function getRatioClass(): string
+   public function getGamerscoreTotal(): int
    {
-       $ratio = $this->getRatio();
-       return match(true) {
-           ($ratio < 2) => 'ratio-veryeasy',
-           ($ratio < 3) => 'ratio-easy',
-           ($ratio < 4) => 'ratio-medium',
-           ($ratio < 5) => 'ratio-hard',
-           default => 'ratio-veryhard',
-       };
+       return $this->gamerscoreTotal;
    }
 
+   public function getTaScore(): int
+   {
+       return $this->taScore;
+   }
+
+   public function getTaTotal(): int
+   {
+       return $this->taTotal;
+   }
+   
    public function hasDlc(): bool
    {
        return $this->hasDlc;
@@ -265,6 +272,16 @@ class Game
        };
    }
 
+   public function getCompletionDate(): ?DateTime
+   {
+       return $this->completionDate;
+   }
+
+   public function getSiteRating(): float
+   {
+       return $this->siteRating;
+   }
+   
    public function getFormat(): ?string
    {
        return $this->format;
@@ -284,8 +301,60 @@ class Game
        return $this->status;
    }
 
+   public function getPurchasedPrice(): ?float
+   {
+       return $this->purchasedPrice;
+   }
+
    public function getCurrentPrice(): ?float
    {
 	   return $this->currentPrice;
+   }
+
+   public function getRegularPrice(): ?float
+   {
+       return $this->regularPrice;
+   }
+
+   public function getShortlistOrder(): int
+   {
+       return $this->shortlistOrder;
+   }
+
+   public function getWalkthroughUrl(): ?string
+   {
+       return $this->walkthroughUrl;
+   }
+
+   public function getGameUrl(): string
+   {
+       return $this->gameUrl;
+   }
+
+   public function getLastModified(): DateTime
+   {
+       return $this->lastModified;
+   }
+
+   public function getCreated(): DateTime
+   {
+       return $this->created;
+   }
+
+   public function getRatio(): float
+   {
+       return $this->gamerscoreTotal > 0 ? floatval($this->taTotal / $this->gamerscoreTotal) : 1;
+   }
+
+   public function getRatioClass(): string
+   {
+       $ratio = $this->getRatio();
+       return match(true) {
+           ($ratio < 2) => 'ratio-veryeasy',
+           ($ratio < 3) => 'ratio-easy',
+           ($ratio < 4) => 'ratio-medium',
+           ($ratio < 5) => 'ratio-hard',
+           default => 'ratio-veryhard',
+       };
    }
 }
