@@ -14,6 +14,7 @@ namespace App\Controller;
 use App\Enum\Platform as PlatformEnum;
 use App\Repository\GameRepository;
 use App\Service\GameFilterService;
+use App\Service\GameScraperService;
 use App\Service\GameStatsService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,6 +31,7 @@ class IndexController extends AbstractController
 
     public function __construct(
         private readonly GameStatsService $gameStatsService,
+        private readonly GameFilterService $gameFilterService,
     ) {}
     
     public function renderListWithResults(
@@ -52,21 +54,19 @@ class IndexController extends AbstractController
     }
 
     #[Route("/", name: "index")]
-    public function indexAction(GameRepository $gameRepository): Response
+    public function index(): Response
     {
-        return $this->gameFilter($gameRepository, 'all', 1);
+        return $this->gameFilter('all', 1);
     }
 
-    #[Route("/search/{page}", name: "search", requirements: ['page' => '\d+'])]
-    public function searchFilter(GameRepository $gameRepository, Request $request, int $page = 1): Response
+    #[Route("/search/{term}/{page}", name: "search", requirements: ['page' => '\d+'])]
+    public function searchFilter(string $term, int $page = 1): Response
     {
-        //@TODO omzetten naar /search/[term]/[page]
-        $searchTerm = $request->query->get('search');
-        if (is_null($searchTerm) || trim($searchTerm) === '') {
-            return $this->gameFilter($gameRepository, 'all', $page);
+        if (is_null($term) || trim($term) === '') {
+            return $this->gameFilter('all', $page);
         }
 
-        return $this->renderListWithResults($gameRepository->findBySearch($searchTerm), 'search', $page);
+        return $this->renderListWithResults($gameRepository->findBySearch($term), 'search', $page);
     }
 
     #[Route("/game/{id}", name: "detail", requirements: ['page' => '\d+'], methods: ["GET"])]
@@ -139,9 +139,20 @@ class IndexController extends AbstractController
         }
     }
 
-    #[Route("/{filter}/{page}", name: "filter", requirements: ['page' => '\d+'])]
-    public function gameFilter(GameFilterService $gameService, string $filter, int $page = 1): Response
+    #[Route("/scrape", name: "scrape")]
+    public function scrape(GameScraperService $scraper): Response
     {
-        return $this->renderListWithResults($gameService->getGamesByFilter($filter), $filter, $page);
+        //@TODO somehow get symfony command to run in the browser?
+        $scrapedGames = $scraper->scrape('mrbellek');
+        dd(($scrapedGames));
+    }
+
+    /**
+     * NB: this route should be last in the controller
+     */
+    #[Route("/{filter}/{page}", name: "filter", requirements: ['page' => '\d+'])]
+    public function gameFilter(string $filter, int $page = 1): Response
+    {
+        return $this->renderListWithResults($this->gameFilterService->getGamesByFilter($filter), $filter, $page);
     }
 }
