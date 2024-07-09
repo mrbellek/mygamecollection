@@ -97,7 +97,7 @@ class GameImportCommand extends Command
 
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
-        $name = $namelink->item(0)->textContent;
+        $name = utf8_decode($namelink->item(0)->textContent);
         $output->writeLn(sprintf('parsing %s..', $name));
         $gameUrl = $this->taBaseUrl . $namelink->item(0)->getAttribute('href');
 
@@ -207,7 +207,7 @@ class GameImportCommand extends Command
         $hours = 0;
         $minutes = 0;
         $matches = [];
-        if (preg_match('/(\d+) hr (\d+) mins/', $hoursPlayed, $matches)) {
+        if (preg_match('/(\d+) hrs? (\d+) mins?/', $hoursPlayed, $matches)) {
             $hours = $matches[1];
             $minutes = $matches[2];
         }

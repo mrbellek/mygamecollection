@@ -111,8 +111,9 @@ class GameScraperService
     {
         $this->log(sprintf('Performing TA gamer id lookup by gamertag %s..', $gamertag));
 
-        //@TODO cache, remove
-        return '71675';
+        if ($this->debug === true) {
+            return '71675';
+        }
 
         $gamerHomepage = file_get_contents(sprintf('https://www.trueachievements.com/gamer/%s', $gamertag));
         $dom = new DOMDocument();
