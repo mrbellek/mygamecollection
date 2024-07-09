@@ -3,6 +3,15 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+/**
+ * TODO:
+ * - split up command into more services?
+ * - warn user if import is for different gamer id than database?
+ * - convert hoursPlayed field from int to float?
+ * - figure out better way to detect if game has dlc
+ * - make walkthroughUrl field nullable
+ */
+
 use App\Enum\Platform;
 use App\Entity\Game;
 use App\Factory\GameFactory;
@@ -10,6 +19,7 @@ use App\Service\GameScraperService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use DOMDocument;
+use DOMElement;
 use DOMXPath;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +30,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'app:import')]
 class GameImportCommand extends Command
 {
-    private string $taBaseUrl = 'https://www.trueachievements.com/';
+    private string $taBaseUrl = 'https://www.trueachievements.com';
 
     public function __construct(
         private readonly GameScraperService $scraper,
@@ -37,54 +47,55 @@ class GameImportCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        //get game collection for given gamertag
         $gamertag = $input->getArgument('gamertag');
-
         $gameCollectionPages = $this->scraper->scrape($gamertag);
-        $parsedGames = [];
+
         //loop through pages
+        $parsedGames = [];
         foreach ($gameCollectionPages as $gameCollectionPage) {
             $dom = new DOMDocument();
             $dom->loadHtml($gameCollectionPage);
 
+            //loop through games on page, convert to our game object
             $xpath = new DOMXPath($dom);
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
-
-            //loop through games on page
             foreach ($games as $tableRow) {
                 $parsedGames[] = $this->parseRowIntoGame($tableRow, $xpath, $output);
             }
         }
 
-        $this->persistGames($games);
+        //save to database and return
+        $this->persistGames($parsedGames, $output);
 
         return Command::SUCCESS;
     }
 
-    private function parseRowIntoGame($tableRow, $basexpath, OutputInterface $output): Game
-    {
+    private function parseRowIntoGame(
+        DOMElement $tableRow,
+        DOMXPath $basexpath,
+        OutputInterface $output
+    ): Game {
         /**
-         * cells:
-         * 0 - thumb picture
-         * 1 - name + url (class smallgame)
-         * 2 - platform (game id in id attribute as tdPlatform_xxxx)
-         * 3 - TA unlocked/total (class score)
-         * 4 - GS unlocked/total (class score)
-         * 5 - achievements unlocked/total (class score)
+         * These are the configured fields to get in the scraper service:
+         * 0 - thumb picture (unused)
+         * 1 - name + url
+         * 2 - platform + game id
+         * 3 - TA unlocked/total
+         * 4 - GS unlocked/total
+         * 5 - achievements unlocked/total
          * 6 - completion percentage
-         * 7 - my rating (class rating, nested div with class rating-[xxx]-stars)
-         * 8 - started date (class date)
-         * 9 - completed date (class date)
-         * 10 - last unlocked date (class date)
-         * 11 - ownership (class small)
-         * 12 - media (class small)
-         * 13 - play status (class small)
-         * 14 - site completion percentage
-         * 15 - completion estimate
-         * 16 - walkthrough link
-         * 17 - site ratio (class score)
-         * 18 - site rating (class rating)
-         * 19 - unobtainables
+         * 7 - hours played
+         * 8 - completion date
+         * 9 - ownership
+         * 10 - media
+         * 11 - completion estimate
+         * 12 - walkthrough url
+         * 13 - site ratio (currently unused, might add later)
+         * 14 - site rating
          **/
+
+        //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
         $name = $namelink->item(0)->textContent;
         $output->writeLn(sprintf('parsing %s..', $name));
@@ -140,7 +151,7 @@ class GameImportCommand extends Command
             $gameId,
             $name,
             $platform,
-            null,
+            null, //these 4 fields are user-provided
             null,
             null,
             null,
@@ -159,8 +170,8 @@ class GameImportCommand extends Command
             $siteRating,
             $media,
             'available',
-            null,
-            null,
+            null, //these 4 fields are currently unused, TA has asked me to
+            null, //stop scraping the price info
             null,
             0,
             $walkthroughUrl,
@@ -170,12 +181,25 @@ class GameImportCommand extends Command
         );
     }
 
-    private function persistGames(array $games): void
+    private function persistGames(array $games, OutputInterface $output): void
     {
-        //@TODO save games to database
-
         $manager = $this->doctrine->getManager();
-        dd($games);
+        $gameRepository = $manager->getRepository(Game::class);
+        $output->writeLn('Saving games to databae...');
+        foreach ($games as $game) {
+            $existingGame = $gameRepository->find($game->getId());
+            if ($existingGame instanceof Game) {
+                //game exists, update with new details
+                $existingGame->update($game);
+                $manager->persist($existingGame);
+            } else {
+                //insert new game
+                $manager->persist($game);
+            }
+        }
+        $manager->flush();
+        $output->writeLn(sprintf('%d games saved to database.', count($games)));
+
     }
 
     private function convertHoursPlayed(string $hoursPlayed): int
@@ -194,6 +218,7 @@ class GameImportCommand extends Command
 
     private function getHasDlc(int $gamerscoreTotal): bool
     {
+        //NB: this assumes a normal XB1 game, not XBLA games that have only 200G
         return $gamerscoreTotal > 1000;
     }
 
@@ -203,29 +228,34 @@ class GameImportCommand extends Command
         return $gamerscoreWon > 1000 && $gamerscoreTotal > 1000 ? intval(round(($gamerscoreWon - 1000) / ($gamerscoreTotal - 1000))) : 0;
     }
 
-    private function parseGameIdAndPlatform($basexpath, $cell): array
+    private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
     {
         $gameId = 0;
+        $m = [];
         if (preg_match('/_(\d+)$/', $cell->getAttribute('id'), $m)) {
             $gameId = intval($m[1]);
         }
 
         $platformCode = $basexpath->query('img', $cell)->item(0)->getAttribute('title');
         $platform = match($platformCode) {
-            'xbox-360' => Platform::PLATFORM_360,
-            'xbox-one' => Platform::PLATFORM_XB1,
-            'xbox-series-x-s' => Platform::PLATFORM_XSX,
-            'windows' => Platform::PLATFORM_WIN,
-            default => dd($platformCode), //@TODO complete this list
+            'xbox-360'          => Platform::PLATFORM_360,
+            'xbox-one'          => Platform::PLATFORM_XB1,
+            'xbox-series-x-s'   => Platform::PLATFORM_XSX,
+            'windows'           => Platform::PLATFORM_WIN,
+            'android'           => Platform::PLATFORM_ANDROID,
+            'web'               => Platform::PLATFORM_WEB,
+            'nintendo-switch'   => Platform::PLATFORM_SWITCH,
+            default             => throw new RuntimeException(sprintf('Invalid platform "%s" found.', $platformCode)),
         };
 
         return [$gameId, $platform];
     }
 
-    private function parseTaScore($cell): array
+    private function parseTaScore(DOMElement $cell): array
     {
         $taWon = 0;
         $taTotal = 0;
+        $m = [];
         if (preg_match('/(.+) \/ (.+)/', $cell->textContent, $m)) {
             $taWon = intval(str_replace(',', '', $m[1]));
             $taTotal = intval(str_replace(',', '', $m[2]));
@@ -234,10 +264,11 @@ class GameImportCommand extends Command
         return [$taWon, $taTotal];
     }
 
-    private function parseGamerscore($cell): array
+    private function parseGamerscore(DOMElement $cell): array
     {
         $gamerscoreWon = 0;
         $gamerscoreTotal = 0;
+        $m = [];
         if (preg_match('/(.+) \/ (.+)/', $cell->textContent, $m)) {
             $gamerscoreWon = intval(str_replace(',', '', $m[1]));
             $gamerscoreTotal = intval(str_replace(',', '', $m[2]));
@@ -246,10 +277,11 @@ class GameImportCommand extends Command
         return [$gamerscoreWon, $gamerscoreTotal];
     }
 
-    private function parseAchievements($cell): array
+    private function parseAchievements(DOMElement $cell): array
     {
         $achievementsWon = 0;
         $achievementsTotal = 0;
+        $m = [];
         if (preg_match('/(.+) \/ (.+)/', $cell->textContent, $m)) {
             $achievementsWon = intval($m[1]);
             $achievementsTotal = intval($m[2]);
@@ -258,24 +290,25 @@ class GameImportCommand extends Command
         return [$achievementsWon, $achievementsTotal];
     }
 
-    private function parseCompletionDate($cell): ?DateTime
+    private function parseCompletionDate(DOMElement $cell): ?DateTime
     {
         $dateCompleted = null;
         $dateCompletedRaw = $cell->textContent;
         if (strlen($dateCompletedRaw) > 0) {
+            //TA date here is UK format, e.g. 17 May 21 for 2017-05-17
             $dateCompleted = DateTime::createFromFormat('d M y', $dateCompletedRaw);
         }
 
         return $dateCompleted;
     }
 
-    private function parseWalkthroughUrl($basexpath, $cell): ?string
+    private function parseWalkthroughUrl(DOMXPath $basexpath, DOMElement $cell): ?string
     {
-        //@TODO walkthrough url can be NULL, but database field isnt nullable
+        //@TODO walkthrough url can be NULL, but database field isnt nullable yet
         $walkthroughUrl = '';
         $item = $basexpath->query('a', $cell)->item(0);
         if ($item !== null) {
-            $walkthroughUrl = $item->getAttribute('href');
+            $walkthroughUrl = $this->taBaseUrl . $item->getAttribute('href');
         }
 
         return $walkthroughUrl;

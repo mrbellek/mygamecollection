@@ -121,63 +121,76 @@
         <th><abbr title="No online multiplayer">O</abbr></th>
         <th class="hidden-xs">Media</th>
         <th class="hidden-xs">Paid</th>
-        <th class="hidden-xs">Price</th>
+        <!--th class="hidden-xs">Status</th-->
         <th></th>
     </tr>
     {% for game in games %}
-	<tr class="table-striped {{ game.completionPercentageClass }}">
-	    <td>
-            <a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a>
-            {% if game.walkthroughUrl is not empty %}
-                <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
-            {% endif %}
-	    </td>
-	    <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
-	    <td class="hidden-xs {{ game.ratioClass }}">
-            {{ game.ratio|round(2) }}
-	    </td>
-	    <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
-	    <td class="{{ game.completionEstimateClass }}">
-            <span class="hidden-xs" title="{{ game.hoursPlayed }} hours played">{{ game.completionEstimate }}</span>
-            <span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
-	    </td>
-	    <td>
-            {% if game.hasDlc %}
-            <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="glyphicon glyphicon-plus"></span></td>
-            {% endif %}
-	    </td>
-	    {% if game.platform == 'Xbox 360' %}
-            <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="glyphicon glyphicon-refresh" /></td>
-            <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="glyphicon glyphicon-eye-open" /></td>
-	        <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="glyphicon glyphicon-music" /></td>
-	        <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="glyphicon glyphicon-cloud-upload" /></td>
-        {% else %}
-            <td /><td /><td /><td />
-	    {% endif %}
-	    <td class="hidden-xs {{ game.formatClass }}">{{ game.format }}</td>
-        <td class="hidden-xs">
-            {% if game.purchasedPrice == 0 %}
-                <span class="text-success">free</span>
+        <tr class="table-striped {{ game.completionPercentageClass }}">
+            <td>
+                <a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a>
+                {% if game.walkthroughUrl is not empty %}
+                    <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
+                {% endif %}
+            </td>
+            <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
+            <td class="hidden-xs {{ game.ratioClass }}">
+                {{ game.ratio|round(2) }}
+            </td>
+            <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
+            <td class="{{ game.completionEstimateClass }}">
+                <span class="hidden-xs" title="{{ game.hoursPlayed }} hours played">{{ game.completionEstimate }}</span>
+                <span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
+            </td>
+            <td>
+                {% if game.hasDlc %}
+                <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="glyphicon glyphicon-plus"></span></td>
+                {% endif %}
+            </td>
+            {% if game.platform == 'Xbox 360' %}
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="glyphicon glyphicon-refresh" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="glyphicon glyphicon-eye-open" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="glyphicon glyphicon-music" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="glyphicon glyphicon-cloud-upload" /></td>
             {% else %}
-                {{ game.purchasedPrice|format_currency('EUR') }}
+                <td /><td /><td /><td />
             {% endif %}
-        </td>
-	    <td class="hidden-xs">
-            {% if game.status == 'delisted' %}
-                <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
-            {% elseif game.status == 'region-locked' %}
-                <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
-            {% elseif game.currentPrice == 0 %}
-            {% else %}
-                {{ game.currentPrice|format_currency('EUR') }}
-            {% endif %}
-	    </td>
-        <td><!-- current price --></td>
-	    <!--td>shortlist</td--> 
-        <td>
-            <a href="/game/{{ game.id }}?show={{ show }}&page={{ page }}&search={{ search }}"><span class="glyphicon glyphicon-pencil"></span></a>
-        </td>
-	</tr>
+            <td class="hidden-xs {{ game.formatClass }}">{{ game.format }}</td>
+            <td class="hidden-xs">
+                {% if game.purchasedPrice == 0 %}
+                    <span class="text-success">free</span>
+                {% else %}
+                    {{ game.purchasedPrice|format_currency('EUR') }}
+                {% endif %}
+            </td>
+            <!--td class="hidden-xs">
+                {% if game.status == 'delisted' %}
+                    <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
+                {% elseif game.status == 'region-locked' %}
+                    <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
+                {% elseif game.currentPrice == 0 %}
+                {% else %}
+                    {{ game.currentPrice|format_currency('EUR') }}
+                {% endif %}
+            </td-->
+            <!--td>current price</td-->
+            <!--td>shortlist</td-->
+            <td>
+                <a href="/game/{{ game.id }}?show={{ show }}&page={{ page }}&search={{ search }}"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="14">
+                <div role="alert" class="alert alert-info">
+                    <p>The current filter '{{ show }}' yields no results.</p>
+                    {% if show == 'all' %}
+                        <hr/>
+                        <p>If this is your first time opening this app, run this Symfony console command to import your game collection:</p>
+                        <p style="font-family: monospace;">> bin/console app:import [your gamertag]</p>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
     {% endfor %}
 </table>
 

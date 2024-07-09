@@ -5,10 +5,10 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - price/purchase info
- * - details page
- * - import (see test.php)
- * - limit results for certain filters if it makes no sense to just list everything (like mostPlaed)
+ * - limit results for certain filters if it makes no sense to just list everything (like mostPlayed)
+ * - fix search form, submits to /search/[page] instead of /search/[term]/[page]
+ * - form password protection
+ * - column sorting
  */
 
 use App\Enum\Platform as PlatformEnum;
@@ -19,6 +19,7 @@ use App\Service\GameStatsService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,7 +42,12 @@ class IndexController extends AbstractController
     ): Response {
 
         $adapter = new ArrayAdapter($games);
-        $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, self::PAGE_SIZE);
+        try {
+            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, self::PAGE_SIZE);
+        } catch (OutOfRangeCurrentPageException $e) {
+            $pageNum = 1;
+            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, self::PAGE_SIZE);
+        }
     
         return $this->render('index.html.twig', [
             'games' => $pagerfanta,
@@ -60,7 +66,7 @@ class IndexController extends AbstractController
     }
 
     #[Route("/search/{term}/{page}", name: "search", requirements: ['page' => '\d+'])]
-    public function searchFilter(string $term, int $page = 1): Response
+    public function searchFilter(GameRepository $gameRepository, string $term, int $page = 1): Response
     {
         if (is_null($term) || trim($term) === '') {
             return $this->gameFilter('all', $page);

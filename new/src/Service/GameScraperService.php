@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+/**
+ * TODO:
+ * - HashKey for POST request hardcoded? private? what is it? seems required
+ */
+
 use DOMDocument;
 use DOMXPath;
 use RuntimeException;
@@ -43,34 +48,58 @@ class GameScraperService
         'chkColSiterating'              => 'True',
     ];
     
-    public function __construct()
+    public function __construct(private readonly bool $debug = false)
     {
         //prevent DOMDocument from choking on invalid html
         libxml_use_internal_errors(true);
     }
 
+    private function log(string $message): void
+    {
+        printf($message . PHP_EOL);
+    }
+
     public function scrape(string $gamertag): array
     {
-        //@TODO cache temp, remove
-        if (is_readable('scrape.html')) {
-            return [file_get_contents('scrape.html')];
+        //return cached pages when debugging
+        if ($this->debug === true && is_readable('scrape1.html')) {
+            $caches = glob('scrape*.html');
+            $result = [];
+            foreach ($caches as $cache) {
+                $result[] = file_get_contents($cache);
+            }
+            return $result;
         }
 
         //fetch TA gamer id from TA
         $gamerId = $this->lookupGamerId($gamertag);
 
         //construct game collection url and fetch first page
-        //@TODO loop until no more pages
-        $url = $this->buildUrl($gamerId);
-        $curl = $this->initCurl($url, $gamerId);
-        $result = curl_exec($curl);
+        //loop until no more pages, indicates by result being:
+        // <div class="warningspanel">Sorry there are no matching titles</div>
+        //we *could* just load the html into DOMDocument and check for 0 games,
+        //but that would be loads slower.
+        $page = 1;
+        $scrapedPages = [];
+        do {
+            $url = $this->buildUrl($gamerId, $page);
+            $curl = $this->initCurl($url, $gamerId);
+
+            $this->log(sprintf('Importing TA game collection page %d..', $page));
+            $result = curl_exec($curl);
+            $scrapedPages[] = $result;
+
+            //cache scraped pages when debugging
+            if ($this->debug === true) {
+                file_put_contents(sprintf('scrape%d.html', $page), $result);
+            }
+            $page++;
+
+            //stop whe we hit the 'no matching titles' message, or pagecount is insane
+        } while (str_contains($result, 'warningspanel') === false && $page < 100);
         curl_close($curl);
 
-        //@TODO cache temp, remove
-        file_put_contents('scrape.html', $result);
-        dd(realpath('scrape.html'));
-
-        return [$result];
+        return $scrapedPages;
     }
     
     /**
@@ -80,6 +109,8 @@ class GameScraperService
      */
     private function lookupGamerId(string $gamertag): string
     {
+        $this->log(sprintf('Performing TA gamer id lookup by gamertag %s..', $gamertag));
+
         //@TODO cache, remove
         return '71675';
 
@@ -90,6 +121,7 @@ class GameScraperService
         $xpath = new DOMXPath($dom);
         $rsslink = $xpath->query('//link[@type="application/rss+xml"][2]');
         $linktarget = $rsslink[0]->getAttribute('href');
+        $matches = [];
         if (preg_match('/gamerid=(.+)/', $linktarget, $matches)) {
             $gamerId = $matches[1];
         } else {
@@ -124,7 +156,8 @@ class GameScraperService
 
     private function initCurl(string $url, string $gamerId)
     {
-        //@TODO post data is missing, should be in querystring as well as post
+        //TA page uses the parameters in query string as well as post body,
+        //but just the query string seems to work fine for us
         $curl = curl_init($url);
         curl_setopt_array($curl, [
             CURLOPT_POST => true,

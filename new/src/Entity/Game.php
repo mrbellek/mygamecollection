@@ -9,6 +9,7 @@ namespace App\Entity;
  */
 
 use DateTime;
+use DateTimeInterface;
 use App\Enum\CompletionEstimate as CompletionEstimateEnum;
 use App\Enum\Platform as PlatformEnum;
 use App\Repository\GameRepository;
@@ -404,5 +405,48 @@ class Game
         $this->lastModified = DateTime::createFromInterface($timestamp);
 
         return $this;
+    }
+
+    ///////////// ENCAPSULATION FUNCTIONS /////////////
+
+    /**
+     * Update existing game with new details
+     */
+    public function update(Game $game): void
+    {
+        $this->name = $game->getName();
+        $this->platform = $game->getPlatform();
+        $this->completionPercentage = $game->getCompletionPercentage();
+        $this->completionEstimate = $game->getCompletionEstimate();
+        $this->hoursPlayed = $game->getHoursPlayed();
+        $this->achievementsWon = $game->getAchievementsWon();
+        $this->achievementsTotal = $game->getAchievementsTotal();
+        $this->gamerscoreWon = $game->getGamerscoreWon();
+        $this->gamerscoreTotal = $game->getGamerscoreTotal();
+        $this->taScore = $game->getTaScore();
+        $this->taTotal = $game->getTaTotal();
+        $this->hasDlc = $game->hasDlc;
+        $this->dlcCompletionPercentage = $game->getDlcCompletion();
+        $this->completionDate = $game->getCompletionDate();
+        $this->siteRating = $game->getSiteRating();
+        $this->format = $game->getFormat();
+        $this->walkthroughUrl = $game->getWalkthroughUrl();
+        $this->gameUrl = $game->getGameUrl();
+        $this->lastModified = $game->getLastModified();
+
+        /** don't update these fields because they will be blank/default on import
+        if ($this->platform === PlatformEnum::PLATFORM_360) {
+            $this->backwardsCompatible = $game->isBackwardsCompatible();
+            $this->kinectRequired = $game->isKinectRequired();
+            $this->peripheralRequired = $game->isPeripheralRequired();
+            $this->onlineMultiplayer = $game->isOnlineMultiplayer();
+        }
+        $this->status = $game->getStatus();
+        $this->purchasedPrice = $game->getPurchasedPrice();
+        $this->currentPrice = $game->getCurrentPrice();
+        $this->regularPrice = $game->getRegularPrice();
+        $this->shortlistOrder = $game->getShortlistOrder();
+        $this->created = $game->getCreated();
+         */
     }
 }
