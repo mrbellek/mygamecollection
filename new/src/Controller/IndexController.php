@@ -6,9 +6,10 @@ namespace App\Controller;
 /**
  * TODO:
  * - limit results for certain filters if it makes no sense to just list everything (like mostPlayed)
- * - fix search form, submits to /search/[page] instead of /search/[term]/[page]
- * - form password protection
+ * - post-edit redirect url should go back to filter/page/search
+ * - flash messages dont have markup (form password)
  * - column sorting
+ * - game delete action + js confirm
  */
 
 use App\Enum\Platform as PlatformEnum;
@@ -18,9 +19,11 @@ use App\Service\GameScraperService;
 use App\Service\GameStatsService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,7 +31,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class IndexController extends AbstractController
 {
-    private const PAGE_SIZE = 25;
+    private const DEFAULT_PAGE_SIZE = 25;
 
     public function __construct(
         private readonly GameStatsService $gameStatsService,
@@ -39,14 +42,16 @@ class IndexController extends AbstractController
         array $games,
         string $filter = 'all',
         int $pageNum = 1,
+        string $search = '',
     ): Response {
 
+        $pageSize = intval($this->getParameter('app.page_size') ?? self::DEFAULT_PAGE_SIZE);
         $adapter = new ArrayAdapter($games);
         try {
-            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, self::PAGE_SIZE);
+            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         } catch (OutOfRangeCurrentPageException $e) {
             $pageNum = 1;
-            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, self::PAGE_SIZE);
+            $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         }
     
         return $this->render('index.html.twig', [
@@ -55,7 +60,8 @@ class IndexController extends AbstractController
             'stats' => $this->gameStatsService->getStats($games),
             'page' => $pageNum,
             'show' => $filter,
-            'search' => '',
+            'search' => $search,
+            'paginateSlug' => strlen($search) > 0 ? sprintf('%s/%s', $filter, $search) : $filter,
         ]);
     }
 
@@ -72,30 +78,40 @@ class IndexController extends AbstractController
             return $this->gameFilter('all', $page);
         }
 
-        return $this->renderListWithResults($gameRepository->findBySearch($term), 'search', $page);
+        return $this->renderListWithResults($gameRepository->findBySearch($term), 'search', $page, $term);
     }
 
     #[Route("/game/{id}", name: "detail", requirements: ['page' => '\d+'], methods: ["GET"])]
-    public function detail(GameRepository $gameRepository, int $id): Response
+    public function detail(GameRepository $gameRepository, Request $request, int $id): Response
     {
+        $show = $request->query->get('show', 'all');
+        $page = $request->query->getInt('page', 1);
+        $search = $request->query->get('search');
+
         $game = $gameRepository->find($id);
         if ($game === null) {
             throw new InvalidArgumentException(sprintf('Game with id %d was not found.', $id));
+        }
+
+        try {
+            $formPassword = $this->getParameter('app.form_password');
+        } catch (ServiceNotFoundException|InvalidArgumentException) {
+            $formPassword = null;
         }
 
         return $this->render('index.html.twig', [
             'id' => $id,
             'game' => $game,
 
-            //@TODO params for post-save redirect
-            'show' => 'all',
-            'page' => 1,
-            'search' => '',
-            'form_password' => 'test',
+            //params for post-save redirect
+            'show' => $show,
+            'page' => $page,
+            'search' => $search,
+            'use_form_password' => $formPassword !== null,
         ]);
     }
 
-    #[Route("/game/{id}", name: "defail_post", requirements: ['page' => '\d+'], methods: ["POST"])]
+    #[Route("/game/{id}", name: "detail_post", requirements: ['page' => '\d+'], methods: ["POST"])]
     public function detailPost(
         ManagerRegistry $doctrine,
         GameRepository $gameRepository,
@@ -113,33 +129,53 @@ class IndexController extends AbstractController
         $filter = $postData->get('show', 'all');
         $page = $postData->getInt('page', 1);
         $search = $postData->get('search');
+        $action = $postData->get('action');
+        $userFormPassword = $postData->get('password');
+
+        //password verification
+        $passwordVerificationOk = false;
+        try {
+            $formPassword = $this->getParameter('app.form_password');
+            if (!empty($formPassword) && $formPassword === $userFormPassword) {
+                $passwordVerificationOk = true;
+            }
+        } catch (ServiceNotFoundException|InvalidArgumentException) {
+            $passwordVerificationOk = false;
+        }
+
+        if ($passwordVerificationOk === false) {
+            $this->addFlash('error', 'The password was incorrect.');
+        }
+        
+        if ($action === 'Delete') {
+            return $this->delete($doctrine, $gameRepository, $id);
+        }
 
         $purchasedPrice = $postData->get('purchased_price');
 
-        //@TODO password verification
-        $formPassword = $postData->get('form_password');
-
+        $backwardsCompatible = null;
         $kinectRequired = null;
         $periphRequired = null;
         $onlineMultiplayer = null;
         if ($game->getPlatform() === PlatformEnum::PLATFORM_360) {
+            $backwardsCompatible = $postData->get('backcompat');
             $kinectRequired = $postData->get('kinect_required');
             $periphRequired = $postData->get('peripheral_required');
             $onlineMultiplayer = $postData->get('online_multiplayer');
         }
 
         $game->setPurchasedPrice(floatval($purchasedPrice));
-        $game->setKinectRequired($kinectRequired);
-        $game->setPeripheralRequired($periphRequired);
-        $game->setOnlineMultiplayer($onlineMultiplayer);
+        $game->setBackwardsCompatibleByString($backwardsCompatible);
+        $game->setKinectRequiredByString($kinectRequired);
+        $game->setPeripheralRequiredByString($periphRequired);
+        $game->setOnlineMultiplayerByString($onlineMultiplayer);
 
         $game->setLastModified(new DateTime());
         $manager->persist($game);
         $manager->flush();
 
         if (strlen($search) > 0) {
-            //@TODO convert to /search/[term]/[page]
-            return $this->redirect(sprintf('/search/%d', $page));
+            return $this->redirect(sprintf('/search/%s/%d', $search, $page));
         } else {
             return $this->redirect(sprintf('/%s/%d', $filter, $page));
         }

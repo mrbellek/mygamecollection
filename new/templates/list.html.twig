@@ -24,7 +24,7 @@
 </div>
 
 <div class="form-group" style="line-height: 3em;">
-    <form action="/search/{{ page }}" method="get" class="form-inline">
+    <form id="searchForm" action="/search/term/{{ page }}" method="get" class="form-inline">
         <a class="btn btn-success {% if show == 'all' %}active{% endif %}" href="/all">All games</a>
         <a class="btn btn-success {% if show == 'completed' %}active{% endif %}" href="/completed">Completed games</a>
         <!--a class="btn btn-success" href="?show=shortlist">Shortlist</a-->
@@ -65,8 +65,8 @@
         {% endif %}
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
-            <input class="btn btn-info" name="submit" type="submit" value="Search" />
-            <a href="/all/{{ page }}" class="btn btn-default">Clear</a>
+            <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
+            <a href="/all/1" class="btn btn-default">Clear</a>
         </span>
     </form>
     <!--form method="post" enctype="multipart/form-data" class="form-inline">
@@ -91,23 +91,22 @@
 {% if games.haveToPaginate %}
 <nav style="text-align: center;">
     <ul class="pagination">
-        {% if page > 2 %}<li><a href="/{{ show }}/{{ 1 }}">1</a></li>{% endif %}
-        {% if page > 3 %}<li><a href="/{{ show }}/{{ 2 }}">2</a></li>{% endif %}
+        {% if page > 2 %}<li><a href="/{{ paginateSlug }}/1">1</a></li>{% endif %}
+        {% if page > 3 %}<li><a href="/{{ paginateSlug }}/2">2</a></li>{% endif %}
         {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
 
-        {% if page > 1 %}<li><a href="/{{ show }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+        {% if page > 1 %}<li><a href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
         <li class="active"><span>{{ page }}</span></li>
-        {% if page < games.getNbPages %}<li><a href="/{{ show }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages %}<li><a href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
 
         {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
-        {% if page < games.getNbPages - 2 %}<li><a href="/{{ show }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
-        {% if page < games.getNbPages - 1 %}<li><a href="/{{ show }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 2 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 1 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
     </ul>
 </nav>
 {% endif %}
 
 <table class="table table-condensed table-hover">
-
     <tr>
         <th>Game name ({{ count }})</th>
         <th class="hidden-xs">Platform</th>
@@ -163,14 +162,14 @@
                 {% endif %}
             </td>
             <!--td class="hidden-xs">
-                {% if game.status == 'delisted' %}
+                {# if game.status == 'delisted' %}
                     <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
                 {% elseif game.status == 'region-locked' %}
                     <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
                 {% elseif game.currentPrice == 0 %}
                 {% else %}
                     {{ game.currentPrice|format_currency('EUR') }}
-                {% endif %}
+                {% endif #}
             </td-->
             <!--td>current price</td-->
             <!--td>shortlist</td-->
@@ -197,17 +196,26 @@
 {% if games.haveToPaginate %}
 <nav style="text-align: center;">
     <ul class="pagination">
-        {% if page > 2 %}<li><a href="/{{ show }}/{{ 1 }}">1</a></li>{% endif %}
-        {% if page > 3 %}<li><a href="/{{ show }}/{{ 2 }}">2</a></li>{% endif %}
+        {% if page > 2 %}<li><a href="/{{ paginateSlug }}/{{ 1 }}">1</a></li>{% endif %}
+        {% if page > 3 %}<li><a href="/{{ paginateSlug }}/{{ 2 }}">2</a></li>{% endif %}
         {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
 
-        {% if page > 1 %}<li><a href="/{{ show }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+        {% if page > 1 %}<li><a href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
         <li class="active"><span>{{ page }}</span></li>
-        {% if page < games.getNbPages %}<li><a href="/{{ show }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages %}<li><a href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
 
         {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
-        {% if page < games.getNbPages - 2 %}<li><a href="/{{ show }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
-        {% if page < games.getNbPages - 1 %}<li><a href="/{{ show }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 2 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+        {% if page < games.getNbPages - 1 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
     </ul>
 </nav>
 {% endif %}
+
+<script>
+    //@TODO move to main.js
+    $('#searchForm').on('submit', function() {
+        let search = $('#search').prop('value');
+        window.location.href = '/search/' + search + '/1';
+        return false;
+    });
+</script>

@@ -10,6 +10,7 @@ namespace App\Command;
  * - convert hoursPlayed field from int to float?
  * - figure out better way to detect if game has dlc
  * - make walkthroughUrl field nullable
+ * - keep track of removed games
  */
 
 use App\Enum\Platform;
@@ -98,7 +99,6 @@ class GameImportCommand extends Command
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
         $name = utf8_decode($namelink->item(0)->textContent);
-        $output->writeLn(sprintf('parsing %s..', $name));
         $gameUrl = $this->taBaseUrl . $namelink->item(0)->getAttribute('href');
 
         $cells = $basexpath->query('td', $tableRow);

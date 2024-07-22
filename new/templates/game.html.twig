@@ -17,7 +17,7 @@
             <select name="platform" id="platform" disabled class="form-control">
                 <option value="Xbox 360" {% if game.platform == 'Xbox 360' %}selected{% endif %}>Xbox 360</option>
                 <option value="Xbox One" {% if game.platform == 'Xbox One' %}selected{%  endif %} %}>Xbox One</option>
-                <option value="Xbox Series S|X" {% if game.platform == 'Xbox Series S|X' %}selected{%  endif %} %}>Xbox Series S|X</option>
+                <option value="Xbox Series X|S" {% if game.platform == 'Xbox Series X|S' %}selected{%  endif %} %}>Xbox Series S|X</option>
                 <option value="Android" {% if game.platform == 'Android' %}selected{%  endif %} %}>Android</option>
                 <option value="Windows" {% if game.platform == 'Windows' %}selected{%  endif %} %}>Windows</option>
                 <option value="Web" {% if game.platform == 'Web' %}selected{%  endif %} %}>Web</option>
@@ -96,8 +96,14 @@
             </div>
         </div>
     </div>
+            
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
 
-    {% if form_password %}
+    {% if use_form_password %}
         <div class="form-group">
             <label for="password" class="col-sm-2 control-label">Password</label>
             <div class="col-sm-10">
@@ -110,7 +116,11 @@
         <label class="col-sm-2 control-label">&nbsp;</label>
         <div class="col-sm-10">
             <input type="submit" name="action" value="Save" class="btn btn-primary" />
-            <a href="/{{ show }}/{{ page }}" class="btn btn-default">Cancel</a>
+            {% if search %}
+                <a href="/search/{{ search }}/{{ page }}" class="btn btn-default">Cancel</a>
+            {% else %}
+                <a href="/{{ show }}/{{ page }}" class="btn btn-default">Cancel</a>
+            {% endif %}
             <input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
         </div>
     </div>

@@ -372,6 +372,13 @@ class Game
         };
     }
 
+    public function setBackwardsCompatible(?bool $backcompat): self
+    {
+        $this->backwardsCompatible = $backcompat;
+
+        return $this;
+    }
+
     public function setKinectRequired(?bool $kinect): self
     {
         $this->kinectRequired = $kinect;
@@ -385,7 +392,7 @@ class Game
 
         return $this;
     }
-   
+    
     public function setOnlineMultiplayer(?bool $online): self
     {
         $this->onlineMultiplayer = $online;
@@ -448,5 +455,34 @@ class Game
         $this->shortlistOrder = $game->getShortlistOrder();
         $this->created = $game->getCreated();
          */
+    }
+
+    public function setBackwardsCompatibleByString(?string $backcompat): self
+    {
+        return $this->setBackwardsCompatible($this->stringToNullableBool($backcompat));
+    }
+
+    public function setKinectRequiredByString(?string $kinect): self
+    {
+        return $this->setKinectRequired($this->stringToNullableBool($kinect));
+    }
+
+    public function setPeripheralRequiredByString(?string $periph): self
+    {
+        return $this->setPeripheralRequired($this->stringToNullableBool($periph));
+    }
+   
+    public function setOnlineMultiplayerByString(?string $online): self
+    {
+        return $this->setOnlineMultiplayer($this->stringToNullableBool($online));
+    }
+
+    private function stringToNullableBool(?string $input): ?bool
+    {
+        return match($input) {
+            '0' => false,
+            '1' => true,
+            default => null,
+        };
     }
 }

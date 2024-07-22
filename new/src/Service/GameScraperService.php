@@ -48,7 +48,7 @@ class GameScraperService
         'chkColSiterating'              => 'True',
     ];
     
-    public function __construct(private readonly bool $debug = false)
+    public function __construct(private readonly bool $debug = true)
     {
         //prevent DOMDocument from choking on invalid html
         libxml_use_internal_errors(true);
