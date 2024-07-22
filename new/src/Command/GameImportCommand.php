@@ -7,7 +7,6 @@ namespace App\Command;
  * TODO:
  * - split up command into more services?
  * - warn user if import is for different gamer id than database?
- * - convert hoursPlayed field from int to float?
  * - figure out better way to detect if game has dlc
  */
 
@@ -196,9 +195,9 @@ class GameImportCommand extends Command
 
     }
 
-    private function convertHoursPlayed(string $hoursPlayed): int
+    private function convertHoursPlayed(string $hoursPlayed): float
     {
-        $hours = 0;
+        $hours = 0.0;
         $minutes = 0;
         $matches = [];
         if (preg_match('/(\d+) hrs? (\d+) mins?/', $hoursPlayed, $matches)) {
@@ -206,8 +205,7 @@ class GameImportCommand extends Command
             $minutes = $matches[2];
         }
 
-        //@TODO TA data is surprisingly accurate. convert to float?
-        return intval(round($hours + floatval($minutes) / 60));
+        return $hours + floatval($minutes) / 60;
     }
 
     private function getHasDlc(int $gamerscoreTotal): bool

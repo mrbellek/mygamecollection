@@ -136,7 +136,7 @@
             </td>
             <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
             <td class="{{ game.completionEstimateClass }}">
-                <span class="hidden-xs" title="{{ game.hoursPlayed }} hours played">{{ game.completionEstimate }}</span>
+                <span class="hidden-xs" title="{{ game.hoursPlayed|number_format(2) }} hours played">{{ game.completionEstimate }}</span>
                 <span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
             </td>
             <td>

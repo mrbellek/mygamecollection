@@ -50,7 +50,7 @@ class Game
         private string $completionEstimate,
        
         #[ORM\Column(name: "hours_played")]
-        private int $hoursPlayed,
+        private float $hoursPlayed,
        
         #[ORM\Column(name: "achievements_won")]
         private int $achievementsWon,
@@ -231,7 +231,7 @@ class Game
         };
     }
 
-    public function getHoursPlayed(): int
+    public function getHoursPlayed(): float
     {
         return $this->hoursPlayed;
     }

@@ -18,7 +18,7 @@ class GameFactory
         ?bool $onlineMultiplayer,
         int $completionPercentage,
         string $completionEstimate,
-        int $hoursPlayer,
+        float $hoursPlayer,
         int $achievementsWon,
         int $achievementsTotal,
         int $gamerscoreWon,
