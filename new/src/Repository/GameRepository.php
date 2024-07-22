@@ -37,8 +37,8 @@ class GameRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('g')
             ->where('g.completionPercentage > 0')
             ->andWhere('g.completionPercentage < 100')
-            ->orderBy('g.completionPercentage', 'DESC')
-            ->orderBy('g.name', 'ASC')
+            ->addOrderBy('g.completionPercentage', 'DESC')
+            ->addOrderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -47,8 +47,8 @@ class GameRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('g')
             ->where('g.siteRating > 4')
-            ->orderBy('g.siteRating', 'DESC')
-            ->orderBy('g.name', 'ASC')
+            ->addOrderBy('g.siteRating', 'DESC')
+            ->addOrderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -58,8 +58,8 @@ class GameRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('g')
             ->where('g.siteRating > 4')
             ->andWhere('g.completionPercentage = 0')
-            ->orderBy('g.siteRating', 'DESC')
-            ->orderBy('g.name', 'ASC')
+            ->addOrderBy('g.siteRating', 'DESC')
+            ->addOrderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -69,8 +69,8 @@ class GameRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('g')
             ->where('g.completionEstimate != :blank')
             ->andWhere('g.completionEstimate <= 10')
-            ->orderBy('g.completionEstimate', 'ASC')
-            ->orderBy('g.name', 'ASC')
+            ->addOrderBy('g.completionEstimate', 'ASC')
+            ->addOrderBy('g.name', 'ASC')
             ->setParameter(':blank', '')
             ->getQuery()
             ->getResult();
@@ -82,8 +82,8 @@ class GameRepository extends ServiceEntityRepository
             ->where('g.completionEstimate != :blank')
             ->andWhere('g.completionEstimate <= 10')
             ->andWhere('g.completionPercentage = 0')
-            ->orderBy('g.completionEstimate', 'ASC')
-            ->orderBy('g.name', 'ASC')
+            ->addOrderBy('g.completionEstimate', 'ASC')
+            ->addOrderBy('g.name', 'ASC')
             ->setParameter(':blank', '')
             ->getQuery()
             ->getResult();
