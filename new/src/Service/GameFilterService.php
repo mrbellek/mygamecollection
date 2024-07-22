@@ -38,7 +38,7 @@ class GameFilterService
             'onsale' => $this->gameRepository->findOnSale(),
             'physical' => $this->gameRepository->findBy(['format' => [FormatEnum::FORMAT_DISC, FormatEnum::FORMAT_BOTH, 'Sold']], ['name' => 'ASC']),
             'sold' => $this->gameRepository->findBy(['format' => 'Sold'], ['name' => 'ASC']), //@TODO this is wrong
-            'unavailable' => $this->gameRepository->findBy(['status' => [StatusEnum::STATUS_DELISTED, StatusEnum::STATUS_REGION_LOCKED]], ['name' => 'ASC']),
+            'unavailable' => $this->gameRepository->findUnavailable(),
             'xb1' => $this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XB1], ['name' => 'ASC']),
             '360' => $this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360], ['name' => 'ASC']),
             'xsx' => $this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XSX], ['name' => 'ASC']),

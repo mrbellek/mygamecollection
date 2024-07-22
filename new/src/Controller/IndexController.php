@@ -6,10 +6,11 @@ namespace App\Controller;
 /**
  * TODO:
  * - limit results for certain filters if it makes no sense to just list everything (like mostPlayed)
- * - post-edit redirect url should go back to filter/page/search
+ * - post-edit redirect url should go back to filter/page/search, without ugly slug
  * - flash messages dont have markup (form password)
  * - column sorting
  * - game delete action + js confirm
+ * - keep track of games that get removed from library
  */
 
 use App\Enum\Platform as PlatformEnum;

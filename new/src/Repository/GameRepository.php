@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Enum\Status as StatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -161,5 +162,20 @@ class GameRepository extends ServiceEntityRepository
             ->orderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findUnavailable(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.status IN (:status)')
+            ->setParameter('status', [
+                StatusEnum::STATUS_DELISTED,
+                StatusEnum::STATUS_REGION_LOCKED,
+                StatusEnum::STATUS_SOLD,
+            ])
+            ->orderBy('g.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
     }
 }

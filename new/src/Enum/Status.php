@@ -9,4 +9,5 @@ class Status
     public const STATUS_DELISTED = 'delisted';
     public const STATUS_REGION_LOCKED = 'region-locked';
     public const STATUS_SALE = 'sale';
+    public const STATUS_SOLD = 'sold';
 }

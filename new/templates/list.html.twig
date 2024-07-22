@@ -3,7 +3,6 @@
     <span class="btn btn-warning">Currently on sale<br/><span class="badge">{{ stats.on_sale }}</span></span>
     <span class="btn btn-success">Free games<br/><span class="badge">{{ stats.free }}</span></span>
     <span class="btn btn-success">Purchased for free<br/><span class="badge">{{ stats.purchased_free }}</span></span>
-    <span class="btn btn-danger">Delisted games<br/><span class="badge">{{ stats.delisted }}</span></span>
     <span class="btn btn-info">Total spent<br/><span class="badge">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
     <span class="btn btn-info">Total market value<br/><span class="badge">{{ stats.total_currentvalue|format_currency('EUR') }}</span></span>
     <span class="btn btn-success">Total saved:<br/><span class="badge">{{ stats.total_saved|format_currency('EUR') }}</span></span>
@@ -45,8 +44,8 @@
         <a class="btn btn-default {% if show == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
         <a class="btn btn-default {% if show == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
         <a class="btn btn-default {% if show == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
-        <a class="btn btn-warning {% if show == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
         <a class="btn btn-warning {% if show == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
+        <a class="btn btn-warning {% if show == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
         <a class="btn btn-warning {% if show == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
         <a class="btn btn-warning {% if show == 'win' %}active{% endif %}" href="/win">Windows games</a>
         <a class="btn btn-warning {% if show == 'bc' %}active{% endif %}" href="/bc">Backwards compatible games</a>

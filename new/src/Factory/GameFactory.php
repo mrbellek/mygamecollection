@@ -35,7 +35,7 @@ class GameFactory
         ?float $currentPrice,
         ?float $regularPrice,
         int $shortlistOrder,
-        string $walkthroughUrl,
+        ?string $walkthroughUrl,
         string $gameUrl,
         DateTime $lastModified,
         DateTime $created,

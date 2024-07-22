@@ -9,8 +9,6 @@ namespace App\Command;
  * - warn user if import is for different gamer id than database?
  * - convert hoursPlayed field from int to float?
  * - figure out better way to detect if game has dlc
- * - make walkthroughUrl field nullable
- * - keep track of removed games
  */
 
 use App\Enum\Platform;
@@ -125,14 +123,10 @@ class GameImportCommand extends Command
         $completionDate = $this->parseCompletionDate($cells->item(8));
 
         //9 - ownership status
-        $ownership = $cells->item(9)->textContent;
+        $status = $this->parseOwnershipStatus($cells->item(9)->textContent);
 
         //10 - media
         $media = $cells->item(10)->textContent;
-        //repurpase field to include games I sold
-        if ($ownership === 'No longer have') {
-            $media = 'Sold';
-        }
 
         //11 - completion estimate
         $completionEstimate = $cells->item(11)->textContent;
@@ -169,7 +163,7 @@ class GameImportCommand extends Command
             $completionDate,
             $siteRating,
             $media,
-            'available',
+            $status,
             null, //these 4 fields are currently unused, TA has asked me to
             null, //stop scraping the price info
             null,
@@ -304,13 +298,28 @@ class GameImportCommand extends Command
 
     private function parseWalkthroughUrl(DOMXPath $basexpath, DOMElement $cell): ?string
     {
-        //@TODO walkthrough url can be NULL, but database field isnt nullable yet
-        $walkthroughUrl = '';
+        $walkthroughUrl = null;
         $item = $basexpath->query('a', $cell)->item(0);
         if ($item !== null) {
             $walkthroughUrl = $this->taBaseUrl . $item->getAttribute('href');
         }
 
         return $walkthroughUrl;
+    }
+
+    private function parseOwnershipStatus(string $ownership): ?string
+    {
+        /**
+         * There's more options for this field, but they're no longer used
+         * since the price scraper was disabled (as requested by TA staff):
+         * - delisted
+         * - region-locked
+         */
+        $status = 'available';
+        if ($ownership === 'No longer have') {
+            $status = 'sold';
+        }
+
+        return $status;
     }
 }
