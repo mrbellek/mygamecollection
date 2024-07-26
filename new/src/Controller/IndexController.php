@@ -5,13 +5,13 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - limit results for certain filters if it makes no sense to just list everything (like mostPlayed)
  * - post-edit redirect url should go back to filter/page/search, without ugly slug
  * - flash messages dont have markup (form password)
  * - column sorting
- * - game delete action + js confirm
+ * - proper graphs for top stats instead of buttons
  */
 
+use App\Entity\Game;
 use App\Enum\Platform as PlatformEnum;
 use App\Repository\GameRepository;
 use App\Service\GameFilterService;
@@ -23,6 +23,7 @@ use InvalidArgumentException;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -90,7 +91,8 @@ class IndexController extends AbstractController
 
         $game = $gameRepository->find($id);
         if ($game === null) {
-            throw new InvalidArgumentException(sprintf('Game with id %d was not found.', $id));
+            $this->addFlash('error', sprintf('Game with id %d could not be found.', $id));
+            return $this->index();
         }
 
         try {
@@ -120,7 +122,8 @@ class IndexController extends AbstractController
     ): Response {
         $game = $gameRepository->find($id);
         if ($game === null) {
-            throw new InvalidArgumentException(sprntf('Game with id %d could not be found.', $id));
+            $this->addFlash('error', sprintf('Game with id %d could not be found.', $id));
+            return $this->index();
         }
 
         $manager = $doctrine->getManager();
@@ -145,12 +148,41 @@ class IndexController extends AbstractController
 
         if ($passwordVerificationOk === false) {
             $this->addFlash('error', 'The password was incorrect.');
+            return $this->detail($gameRepository, $request, $id);
         }
         
         if ($action === 'Delete') {
-            return $this->delete($doctrine, $gameRepository, $id);
+            try {
+                $this->delete($manager, $game);
+            } catch(RuntimeException $e) {
+                $this->addFlash('error', sprintf(
+                    'Deleting game %d failed (%s).',
+                    $id,
+                    $e->getMessage()
+                ));
+            }
+        } else {
+            //@TODO try/catch?
+            //@TODO check for invalid action?
+            $this->update($manager, $game, $request);
         }
 
+        if (strlen($search) > 0) {
+            return $this->redirect(sprintf('/search/%s/%d', $search, $page));
+        } else {
+            return $this->redirect(sprintf('/%s/%d', $filter, $page));
+        }
+    }
+
+    private function delete($manager, Game $game): void
+    {
+        $manager->remove($game);
+        $manager->flush();
+    }
+
+    private function update($manager, Game $game, Request $request): void
+    {
+        $postData = $request->request;
         $purchasedPrice = $postData->get('purchased_price');
 
         $backwardsCompatible = null;
@@ -173,12 +205,6 @@ class IndexController extends AbstractController
         $game->setLastModified(new DateTime());
         $manager->persist($game);
         $manager->flush();
-
-        if (strlen($search) > 0) {
-            return $this->redirect(sprintf('/search/%s/%d', $search, $page));
-        } else {
-            return $this->redirect(sprintf('/%s/%d', $filter, $page));
-        }
     }
 
     #[Route("/scrape", name: "scrape")]

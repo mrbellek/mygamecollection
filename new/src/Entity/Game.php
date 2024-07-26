@@ -21,10 +21,6 @@ class Game
 {
     public function __construct(
 
-        #[ORM\Id]
-        #[ORM\Column]
-        private ?int $id = null,
-   
         #[ORM\Column]
         private string $name,
        
@@ -76,9 +72,6 @@ class Game
         #[ORM\Column(name: "dlc_completion")]
         private int $dlcCompletionPercentage,
        
-        #[ORM\Column(name: "completion_date")]
-        private ?DateTime $completionDate = null,
-       
         #[ORM\Column(name: "site_rating")]
         private float $siteRating,
        
@@ -87,16 +80,7 @@ class Game
        
         #[ORM\Column]
         private string $status,
-       
-        #[ORM\Column(name: "purchased_price")]
-        private ?float $purchasedPrice = null,
-       
-        #[ORM\Column(name: "current_price")]
-        private ?float $currentPrice = null,
-       
-        #[ORM\Column(name: "regular_price")]
-        private ?float $regularPrice = null,
-       
+
         #[ORM\Column(name: "shortlist_order")]
         private int $shortlistOrder,
        
@@ -111,6 +95,22 @@ class Game
        
         #[ORM\Column(name: "date_created", type: "datetime")]
         private DateTime $created,
+
+        #[ORM\Id]
+        #[ORM\Column]
+        private ?int $id = null,
+   
+        #[ORM\Column(name: "completion_date")]
+        private ?DateTime $completionDate = null,
+       
+        #[ORM\Column(name: "purchased_price")]
+        private ?float $purchasedPrice = null,
+       
+        #[ORM\Column(name: "current_price")]
+        private ?float $currentPrice = null,
+       
+        #[ORM\Column(name: "regular_price")]
+        private ?float $regularPrice = null,
     ) {
     }
 

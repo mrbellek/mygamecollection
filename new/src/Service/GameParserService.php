@@ -9,6 +9,7 @@ use App\Factory\GameFactory;
 use DateTime;
 use DOMElement;
 use DOMXPath;
+use RuntimeException;
 
 class GameParserService
 {

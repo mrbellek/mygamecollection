@@ -126,7 +126,7 @@ class GameScraperService
         if (preg_match('/gamerid=(.+)/', $linktarget, $matches)) {
             $gamerId = $matches[1];
         } else {
-            throw new RuntimeException(sprintf('Unable to find gamerid for gamertag %s.', $this->gamertag));
+            throw new RuntimeException(sprintf('Unable to find gamerid for gamertag %s.', $gamertag));
         }
 
         return $gamerId;

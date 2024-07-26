@@ -80,6 +80,12 @@
 
 <a name="content"></a>
 
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="flash-{{ label }}">{{ message }}</div>
+    {% endfor %}
+{% endfor %}
+
 {% if successMsg is defined %}
     <div role="alert" class="alert alert-success">{{ successMsg }}</div>
 {% endif %}
