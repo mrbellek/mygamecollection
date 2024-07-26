@@ -6,7 +6,6 @@ namespace App\Service;
 use App\Entity\Game;
 use App\Enum\Format as FormatEnum;
 use App\Enum\Platform as PlatformEnum;
-use App\Enum\Status as StatusEnum;
 use App\Repository\GameRepository;
 use InvalidArgumentException;
 

@@ -54,7 +54,7 @@ class GameImportCommand extends Command
             $xpath = new DOMXPath($dom);
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
             foreach ($games as $tableRow) {
-                $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath, $output);
+                $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
                 $parsedGames[$parsedGame->getId()] = $parsedGame;
             }
         }
@@ -64,7 +64,7 @@ class GameImportCommand extends Command
         //generate and print a report with all the changes the import will be making
         $this->generateReport($currentGames, $parsedGames, $output);
 
-        //save new games and updates to database
+        //save new games and updated games to database
         $this->persistGames($parsedGames, $output);
 
         //remove deleted games from database
@@ -135,7 +135,7 @@ class GameImportCommand extends Command
     ): void {
         foreach ($parsedGames as $gameId => $parsedGame) {
             if (array_key_exists($gameId, $currentGames) === true) {
-                //game gets updated, get diff
+                //game gets updated, print diff
                 $this->printGameDiff($currentGames[$gameId], $parsedGame, $output);
             } else {
                 //game is new
