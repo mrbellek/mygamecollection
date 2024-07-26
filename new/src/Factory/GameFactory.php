@@ -59,18 +59,18 @@ class GameFactory
             $taTotal,
             $hasDlc,
             $dlcCompletionPercentage,
-            $completionDate,
             $siteRating,
             $format,
             $status,
-            $purchasedPrice,
-            $currentPrice,
-            $regularPrice,
             $shortlistOrder,
             $walkthroughUrl,
             $gameUrl,
             $lastModified,
             $created,
+            $completionDate,
+            $purchasedPrice,
+            $currentPrice,
+            $regularPrice,
         );
     }
 }

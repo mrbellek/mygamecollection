@@ -24,7 +24,7 @@ class GameFilterService
             'incomplete' => $this->gameRepository->findIncompleteGames(),
             'notstarted' => $this->gameRepository->findBy(['completionPercentage' => 0], ['name' => 'ASC']),
             'bestrating' => $this->gameRepository->findOrderByBestRating(),
-            'notstartedbestrating' => $this- $this->gameRepository->findNotStartedOrderByBestRating(),
+            'notstartedbestrating' => $this->gameRepository->findNotStartedOrderByBestRating(),
             'shortest' => $this->gameRepository->findShortest(),
             'shortestnotstarted' => $this->gameRepository->findShortestNotStarted(),
             'longest' => $this->getGamesByLongest(),
@@ -78,7 +78,8 @@ class GameFilterService
             $games = $this->gameRepository->findPlayed(),
             function (Game $game): bool {
                 $hoursPlayed = $game->getHoursPlayed();
-                if ($hoursPlayed === 0 && $game->getCompletionPercentage() === 100) {
+                //if hoursPlayed is blank and game is completed, use completion estimate as hoursPlayed
+                if ($hoursPlayed === 0.0 && $game->getCompletionPercentage() === 100) {
                     $hoursPlayed = intval($game->getCompletionEstimate());
                 }
                 return $hoursPlayed >= 80;
@@ -88,11 +89,11 @@ class GameFilterService
         //sort by hours played, or if missing (and game is completed) by comp estimate
         usort($games, function(Game $a, Game $b) {
             $hoursPlayedA = $a->getHoursPlayed();
-            if ($hoursPlayedA === 0 && $a->getCompletionPercentage() === 100) {
+            if ($hoursPlayedA === 0.0 && $a->getCompletionPercentage() === 100) {
                 $hoursPlayedA = intval($a->getCompletionEstimate());
             }
             $hoursPlayedB = $b->getHoursPlayed();
-            if ($hoursPlayedB === 0 && $b->getCompletionPercentage() === 100) {
+            if ($hoursPlayedB === 0.0 && $b->getCompletionPercentage() === 100) {
                 $hoursPlayedB = intval($b->getCompletionEstimate());
             }
             return $hoursPlayedB <=> $hoursPlayedA;

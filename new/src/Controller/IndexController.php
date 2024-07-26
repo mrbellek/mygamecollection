@@ -19,6 +19,7 @@ use App\Service\GameScraperService;
 use App\Service\GameStatsService;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
@@ -75,7 +76,7 @@ class IndexController extends AbstractController
     #[Route("/search/{term}/{page}", name: "search", requirements: ['page' => '\d+'])]
     public function searchFilter(GameRepository $gameRepository, string $term, int $page = 1): Response
     {
-        if (is_null($term) || trim($term) === '') {
+        if (trim($term) === '') {
             return $this->gameFilter('all', $page);
         }
 
@@ -174,13 +175,13 @@ class IndexController extends AbstractController
         }
     }
 
-    private function delete($manager, Game $game): void
+    private function delete(ObjectManager $manager, Game $game): void
     {
         $manager->remove($game);
         $manager->flush();
     }
 
-    private function update($manager, Game $game, Request $request): void
+    private function update(ObjectManager $manager, Game $game, Request $request): void
     {
         $postData = $request->request;
         $purchasedPrice = $postData->get('purchased_price');

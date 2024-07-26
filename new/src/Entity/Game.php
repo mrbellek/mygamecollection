@@ -21,6 +21,10 @@ class Game
 {
     public function __construct(
 
+        #[ORM\Id]
+        #[ORM\Column]
+        private int $id,
+
         #[ORM\Column]
         private string $name,
        
@@ -95,10 +99,6 @@ class Game
        
         #[ORM\Column(name: "date_created", type: "datetime")]
         private DateTime $created,
-
-        #[ORM\Id]
-        #[ORM\Column]
-        private ?int $id = null,
    
         #[ORM\Column(name: "completion_date")]
         private ?DateTime $completionDate = null,
@@ -138,6 +138,8 @@ class Game
             PlatformEnum::PLATFORM_WIN => 'win',
             PlatformEnum::PLATFORM_ANDROID,
             PlatformEnum::PLATFORM_WEB => 'mob',
+
+            default => 'xsx',
         };
     }
 

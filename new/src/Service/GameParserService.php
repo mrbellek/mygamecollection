@@ -7,7 +7,7 @@ use App\Entity\Game;
 use App\Enum\Platform;
 use App\Factory\GameFactory;
 use DateTime;
-use DOMElement;
+use DOMNode;
 use DOMXPath;
 use RuntimeException;
 
@@ -20,7 +20,7 @@ class GameParserService
     ) {}
 
     public function parseRowIntoGame(
-        DOMElement $tableRow,
+        DOMNode $tableRow,
         DOMXPath $basexpath,
     ): Game {
         /**
@@ -45,7 +45,7 @@ class GameParserService
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
         $name = utf8_decode($namelink->item(0)->textContent);
-        $gameUrl = $this->taBaseUrl . $namelink->item(0)->getAttribute('href');
+        $gameUrl = $this->taBaseUrl . $namelink->item(0)?->getAttribute('href');
 
         $cells = $basexpath->query('td', $tableRow);
 
@@ -151,7 +151,7 @@ class GameParserService
         return intval(round(($gamerscoreWon - 1000) * 100 / ($gamerscoreTotal - 1000)));
     }
 
-    private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
+    private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMNode $cell): array
     {
         $gameId = 0;
         $m = [];
@@ -174,7 +174,7 @@ class GameParserService
         return [$gameId, $platform];
     }
 
-    private function parseTaScore(DOMElement $cell): array
+    private function parseTaScore(DOMNode $cell): array
     {
         $taWon = 0;
         $taTotal = 0;
@@ -187,7 +187,7 @@ class GameParserService
         return [$taWon, $taTotal];
     }
 
-    private function parseGamerscore(DOMElement $cell): array
+    private function parseGamerscore(DOMNode $cell): array
     {
         $gamerscoreWon = 0;
         $gamerscoreTotal = 0;
@@ -200,7 +200,7 @@ class GameParserService
         return [$gamerscoreWon, $gamerscoreTotal];
     }
 
-    private function parseAchievements(DOMElement $cell): array
+    private function parseAchievements(DOMNode $cell): array
     {
         $achievementsWon = 0;
         $achievementsTotal = 0;
@@ -213,7 +213,7 @@ class GameParserService
         return [$achievementsWon, $achievementsTotal];
     }
 
-    private function parseCompletionDate(DOMElement $cell): ?DateTime
+    private function parseCompletionDate(DOMNode $cell): ?DateTime
     {
         $dateCompleted = null;
         $dateCompletedRaw = $cell->textContent;
@@ -226,7 +226,7 @@ class GameParserService
         return $dateCompleted;
     }
 
-    private function parseWalkthroughUrl(DOMXPath $basexpath, DOMElement $cell): ?string
+    private function parseWalkthroughUrl(DOMXPath $basexpath, DOMNode $cell): ?string
     {
         $walkthroughUrl = null;
         $item = $basexpath->query('a', $cell)->item(0);
@@ -237,7 +237,7 @@ class GameParserService
         return $walkthroughUrl;
     }
 
-    private function parseOwnershipStatus(string $ownership): ?string
+    private function parseOwnershipStatus(string $ownership): string
     {
         /**
          * There's more options for this field, but they're no longer used
