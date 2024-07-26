@@ -45,7 +45,7 @@ class GameParserService
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
         $name = utf8_decode($namelink->item(0)->textContent);
-        $gameUrl = $this->taBaseUrl . $namelink->item(0)?->getAttribute('href');
+        $gameUrl = $this->taBaseUrl . $namelink->item(0)->getAttribute('href');
 
         $cells = $basexpath->query('td', $tableRow);
 
