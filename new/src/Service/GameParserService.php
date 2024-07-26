@@ -144,7 +144,10 @@ class GameParserService
     private function getDlcCompletion(int $gamerscoreWon, int $gamerscoreTotal): int
     {
         //NB this assumes the base game is completed
-        return $gamerscoreWon > 1000 && $gamerscoreTotal > 1000 ? intval(round(($gamerscoreWon - 1000) / ($gamerscoreTotal - 1000))) : 0;
+        if ($gamerscoreWon <= 1000 || $gamerscoreTotal <= 1000) {
+            return 0;
+        }
+        return intval(round(($gamerscoreWon - 1000) * 100 / ($gamerscoreTotal - 1000)));
     }
 
     private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
@@ -215,7 +218,8 @@ class GameParserService
         $dateCompletedRaw = $cell->textContent;
         if (strlen($dateCompletedRaw) > 0) {
             //TA date here is UK format, e.g. 17 May 21 for 2017-05-17
-            $dateCompleted = DateTime::createFromFormat('d M y', $dateCompletedRaw);
+            //note that it can also display 'Today' or 'Yesterday'
+            $dateCompleted = new DateTime($dateCompletedRaw);
         }
 
         return $dateCompleted;

@@ -9,7 +9,7 @@
     <span class="btn btn-info">Average cost<br/><span class="badge">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
     <span class="btn btn-info">Average current value<br/><span class="badge">{{ stats.average_value|format_currency('EUR') }}</span></span>
     <span class="btn btn-info">Total estimated playtime<br/><span class="badge">{{ stats.total_playtime }} hours</span></span>
-    <span class="btn btn-info">Spent playtime<br/><span class="badge">{{ stats.spent_playtime }} hours</span></span>
+    <span class="btn btn-info">Spent playtime<br/><span class="badge">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
     {% if stats.most_expensive_purchase is defined %}
     <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge">{{ stats.most_expensive_purchase.price|format_currency('EUR') }}</span></span>
     <span class="btn btn-danger">Most expensive current:<br/>{{ stats.most_expensive_current.name }} <span class="badge">{{ stats.most_expensive_current.price|format_currency('EUR') }}</span></span>

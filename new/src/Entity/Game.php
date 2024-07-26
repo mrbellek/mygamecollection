@@ -437,6 +437,7 @@ class Game
         $this->completionDate = $game->getCompletionDate();
         $this->siteRating = $game->getSiteRating();
         $this->format = $game->getFormat();
+        $this->status = $game->getStatus();
         $this->walkthroughUrl = $game->getWalkthroughUrl();
         $this->gameUrl = $game->getGameUrl();
         $this->lastModified = $game->getLastModified();
@@ -448,7 +449,6 @@ class Game
             $this->peripheralRequired = $game->isPeripheralRequired();
             $this->onlineMultiplayer = $game->isOnlineMultiplayer();
         }
-        $this->status = $game->getStatus();
         $this->purchasedPrice = $game->getPurchasedPrice();
         $this->currentPrice = $game->getCurrentPrice();
         $this->regularPrice = $game->getRegularPrice();

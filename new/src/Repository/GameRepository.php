@@ -99,6 +99,14 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findPlayed(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.achievementsWon > 0')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findWithNonZeroTaTotal(): array
     {
         return $this->createQueryBuilder('g')

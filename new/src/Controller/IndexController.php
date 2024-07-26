@@ -10,7 +10,6 @@ namespace App\Controller;
  * - flash messages dont have markup (form password)
  * - column sorting
  * - game delete action + js confirm
- * - keep track of games that get removed from library
  */
 
 use App\Enum\Platform as PlatformEnum;

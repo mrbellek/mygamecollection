@@ -74,7 +74,19 @@ class GameFilterService
 
     private function getGamesByMostPlayed(): array
     {
-        $games = $this->gameRepository->findAll();
+        //get all started games and remove all played <100 horus
+        $games = array_filter(
+            $games = $this->gameRepository->findPlayed(),
+            function (Game $game): bool {
+                $hoursPlayed = $game->getHoursPlayed();
+                if ($hoursPlayed === 0 && $game->getCompletionPercentage() === 100) {
+                    $hoursPlayed = intval($game->getCompletionEstimate());
+                }
+                return $hoursPlayed >= 80;
+            }
+        );
+
+        //sort by hours played, or if missing (and game is completed) by comp estimate
         usort($games, function(Game $a, Game $b) {
             $hoursPlayedA = $a->getHoursPlayed();
             if ($hoursPlayedA === 0 && $a->getCompletionPercentage() === 100) {
