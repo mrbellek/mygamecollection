@@ -304,9 +304,7 @@ class Game
 
     public function getFormatClass(): string
     {
-        //@TODO fix, 'sold' isn't a format option. maybe status?
         return match($this->format) {
-            'Sold' => 'danger',
             'Disc' => 'warning',
             default => '',
         };

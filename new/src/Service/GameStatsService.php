@@ -3,63 +3,64 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+/**
+ * @TODO:
+ * - split up into functions for generic, completion, playtime, money spent etc
+ * - finish tooltips for money spent
+ */
 use App\Entity\Game;
+use App\Entity\GameCollection;
 use App\Enum\Status as StatusEnum;
 use DateTime;
 
 class GameStatsService
 {
-    // @TODO split up into functions for generic, completion, playtime, money spent etc
-    public function getStats(array $games): array
+    public function getStats(GameCollection $games): array
     {
         $totalPurchased = array_sum(array_map(function(Game $game) {
             return $game->getPurchasedPrice();
-        }, $games));
+        }, $games->toArray()));
         $totalCurrentValue = array_sum(array_map(function(Game $game) {
             return $game->getCurrentPrice();
-        }, $games));
+        }, $games->toArray()));
 
         return [
-            'on_sale' => count(array_filter($games, function(Game $game) {
+            'on_sale' => $games->filter(function(Game $game) {
                 return $game->getStatus() === StatusEnum::STATUS_SALE;
-            })),
-            'delisted' => count(array_filter($games, function(Game $game) {
+            })->count(),
+            'delisted' => $games->filter(function(Game $game) {
                 return $game->getStatus() === StatusEnum::STATUS_DELISTED;
-            })),
-            'free' => count(array_filter($games, function(Game $game) {
+            })->count(),
+            'free' => $games->filter(function(Game $game) {
                 return $game->getCurrentPrice() == 0;
-            })),
-            'purchased_free' => count(array_filter($games, function(Game $game) {
+            })->count(),
+            'purchased_free' => $games->filter(function(Game $game) {
                 return $game->getPurchasedPrice() == 0;
-            })),
-            'total_purchased' => array_sum(array_map(function(Game $game) {
-                return $game->getPurchasedPrice();
-            }, $games)),
-            'total_currentvalue' => array_sum(array_map(function(Game $game) {
-                return $game->getCurrentPrice();
-            }, $games)),
+            })->count(),
+            'total_purchased' => $totalPurchased,
+            'total_currentvalue' => $totalCurrentValue,
             'total_saved' => $totalCurrentValue - $totalPurchased,
-            'average_purchased' => count($games) > 0 ? $totalPurchased / count($games) : 0,
-            'average_value' => count($games) > 0 ? $totalCurrentValue / count($games) : 0,
+            'average_purchased' => $games->count() > 0 ? $totalPurchased / $games->count() : 0,
+            'average_value' => $games->count() > 0 ? $totalCurrentValue / $games->count() : 0,
             'total_playtime' => array_sum(array_map(function(Game $game) {
                 return $game->getCompletionEstimate();
-            }, $games)),
+            }, $games->toArray())),
             'spent_playtime' => array_sum(array_map(function(Game $game) {
                 return $game->getHoursPlayed();
-            }, $games)),
+            }, $games->toArray())),
 
             'spent_week' => array_sum(array_map(function (Game $game) {
                 return $game->getCreated() > new DateTime('-1 week') ? $game->getPurchasedPrice() : 0;
-            }, $games)),
+            }, $games->toArray())),
             'spent_month' => array_sum(array_map(function (Game $game) {
                 return $game->getCreated() > new DateTime('-1 month') ? $game->getPurchasedPrice() : 0;
-            }, $games)),
+            }, $games->toArray())),
             'spent_6month' => array_sum(array_map(function (Game $game) {
                 return $game->getCreated() > new DateTime('-6 month') ? $game->getPurchasedPrice() : 0;
-            }, $games)),
+            }, $games->toArray())),
             'spent_year' => array_sum(array_map(function (Game $game) {
                 return $game->getCreated() > new DateTime('-1 year') ? $game->getPurchasedPrice() : 0;
-            }, $games)),
+            }, $games->toArray())),
             'spent_week_tooltip' => [], //@TODO list of games
             'spent_month_tooltip' => [], //@TODO list of games
             'spent_6month_tooltip' => [], //@TODO list of games

@@ -12,6 +12,7 @@ namespace App\Controller;
  */
 
 use App\Entity\Game;
+use App\Entity\GameCollection;
 use App\Enum\Platform as PlatformEnum;
 use App\Repository\GameRepository;
 use App\Service\GameFilterService;
@@ -41,24 +42,24 @@ class IndexController extends AbstractController
     ) {}
     
     public function renderListWithResults(
-        array $games,
+        GameCollection $games,
         string $filter = 'all',
         int $pageNum = 1,
         string $search = '',
     ): Response {
 
         $pageSize = intval($this->getParameter('app.page_size') ?? self::DEFAULT_PAGE_SIZE);
-        $adapter = new ArrayAdapter($games);
+        $adapter = new ArrayAdapter($games->toArray());
         try {
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
-        } catch (OutOfRangeCurrentPageException $e) {
+        } catch (OutOfRangeCurrentPageException) {
             $pageNum = 1;
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         }
     
         return $this->render('index.html.twig', [
             'games' => $pagerfanta,
-            'count' => count($games),
+            'count' => $games->count(),
             'stats' => $this->gameStatsService->getStats($games),
             'page' => $pageNum,
             'show' => $filter,
@@ -80,7 +81,8 @@ class IndexController extends AbstractController
             return $this->gameFilter('all', $page);
         }
 
-        return $this->renderListWithResults($gameRepository->findBySearch($term), 'search', $page, $term);
+        $games = new GameCollection($gameRepository->findBySearch($term), 'search', $page, $term);
+        return $this->renderListWithResults($games, 'search', $page, $term);
     }
 
     #[Route("/game/{id}", name: "detail", requirements: ['page' => '\d+'], methods: ["GET"])]
@@ -222,6 +224,7 @@ class IndexController extends AbstractController
     #[Route("/{filter}/{page}", name: "filter", requirements: ['page' => '\d+'])]
     public function gameFilter(string $filter, int $page = 1): Response
     {
-        return $this->renderListWithResults($this->gameFilterService->getGamesByFilter($filter), $filter, $page);
+        $games = $this->gameFilterService->getGamesByFilter($filter);
+        return $this->renderListWithResults($games, $filter, $page);
     }
 }

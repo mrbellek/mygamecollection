@@ -7,7 +7,7 @@ namespace App\Command;
  * TODO:
  * - warn user if import is for different gamer id than database?
  * - figure out better way to detect if game has dlc
- * . keep track of changes, i.e. inserts, updates, deletes?
+ * - implement GameCollection here
  */
 
 use App\Entity\Game;
