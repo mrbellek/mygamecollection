@@ -7,10 +7,12 @@ namespace App\Command;
  * TODO:
  * - warn user if import is for different gamer id than database?
  * - figure out better way to detect if game has dlc
- * - implement GameCollection here
+ * . implement GameCollection here (foreach doesnt work yet)
+ * - game report seems broken after implementing Collection
  */
 
 use App\Entity\Game;
+use App\Entity\GameCollection;
 use App\Service\GameParserService;
 use App\Service\GameScraperService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -45,7 +47,7 @@ class GameImportCommand extends Command
         $gameCollectionPages = $this->scraper->scrape($gamertag);
 
         //loop through pages
-        $parsedGames = [];
+        $parsedArray = [];
         foreach ($gameCollectionPages as $gameCollectionPage) {
             $dom = new DOMDocument();
             $dom->loadHtml($gameCollectionPage);
@@ -55,11 +57,12 @@ class GameImportCommand extends Command
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
             foreach ($games as $tableRow) {
                 $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
-                $parsedGames[$parsedGame->getId()] = $parsedGame;
+                $parsedArray[$parsedGame->getId()] = $parsedGame;
             }
         }
 
-        $currentGames = $this->fetchGamesIntoAssArray();
+        $parsedGames = new GameCollection($parsedArray);
+        $currentGames = $this->fetchCurrentGames();
 
         //generate and print a report with all the changes the import will be making
         $this->generateReport($currentGames, $parsedGames, $output);
@@ -73,49 +76,46 @@ class GameImportCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function fetchGamesIntoAssArray(): array
+    private function fetchCurrentGames(): GameCollection
     {
         $manager = $this->doctrine->getManager();
         $gameRepository = $manager->getRepository(Game::class);
         $games = $gameRepository->findBy([], ['id' => 'ASC']);
 
-        $currentGames = [];
-        foreach ($games as $game) {
-            $currentGames[$game->getId()] = $game;
-        }
-
-        return $currentGames;
+        return new GameCollection($games);
     }
 
-    private function persistGames(array $games, OutputInterface $output): void
+    private function persistGames(GameCollection $games, OutputInterface $output): void
     {
         $manager = $this->doctrine->getManager();
         $gameRepository = $manager->getRepository(Game::class);
-        $output->writeLn('Saving games to databae...');
-        foreach ($games as $game) {
+        $output->writeLn('Saving games to database...');
+        foreach ($games->toArray() as $game) {
             $existingGame = $gameRepository->find($game->getId());
-            if ($existingGame instanceof Game) {
-                //game exists, update with new details
+            if ($existingGame instanceof Game && count($this->getGameDiff($existingGame, $game)) > 0) {
+                //game exists, update with new details if needed
                 $existingGame->update($game);
                 $manager->persist($existingGame);
+            } elseif ($existingGame instanceof Game) {
+                //no changes
             } else {
                 //insert new game
                 $manager->persist($game);
             }
         }
         $manager->flush();
-        $output->writeLn(sprintf('%d games saved to database.', count($games)));
+        $output->writeLn(sprintf('%d games saved to database.', $games->count()));
     }
 
     private function removeDeletedGames(
-        array $currentGames,
-        array $parsedGames,
+        GameCollection $currentGames,
+        GameCollection $parsedGames,
         OutputInterface $output
     ): void {
         $manager = $this->doctrine->getManager();
         $deletedCount = 0;
         foreach ($currentGames as $gameId => $currentGame) {
-            if (array_key_exists($gameId, $parsedGames) === false) {
+            if ($parsedGames->hasItem($gameId) === true) {
                 //game was deleted from collection
                 $manager->remove($currentGame);
                 $deletedCount++;
@@ -129,21 +129,21 @@ class GameImportCommand extends Command
     }
 
     private function generateReport(
-        array $currentGames,
-        array $parsedGames,
+        GameCollection $currentGames,
+        GameCollection $parsedGames,
         OutputInterface $output
     ): void {
         foreach ($parsedGames as $gameId => $parsedGame) {
-            if (array_key_exists($gameId, $currentGames) === true) {
+            if ($currentGames->hasItem($gameId) === true) {
                 //game gets updated, print diff
-                $this->printGameDiff($currentGames[$gameId], $parsedGame, $output);
+                $this->printGameDiff($currentGames->getItem($gameId), $parsedGame, $output);
             } else {
                 //game is new
                 $output->writeLn(sprintf('[%s] new game!', $parsedGame->getName()));
             }
         }
         foreach ($currentGames as $gameId => $currentGame) {
-            if (array_key_exists($gameId, $parsedGames) === false) {
+            if ($parsedGames->hasItem($gameId) === false) {
                 //game was deleted
                 $output->writeLn(sprintf('[%s] game removed', $currentGame->getName()));
             }
@@ -155,6 +155,21 @@ class GameImportCommand extends Command
         Game $parsedGame,
         OutputInterface $output
     ): void {
+        $changes = $this->getGameDiff($currentGame, $parsedGame);
+
+        foreach ($changes as $change) {
+            $output->writeLn(sprintf(
+                '[%s] %s',
+                $parsedGame->getName(),
+                $change
+            ));
+        }
+    }
+
+    private function getGameDiff(
+        Game $currentGame,
+        Game $parsedGame,
+    ): array {
         $changes = [];
         if ($currentGame->getName() !== $parsedGame->getName()) {
             //name changed
@@ -205,12 +220,6 @@ class GameImportCommand extends Command
             $changes[] = 'walkthrough added!';
         }
 
-        foreach ($changes as $change) {
-            $output->writeLn(sprintf(
-                '[%s] %s',
-                $parsedGame->getName(),
-                $change
-            ));
-        }
+        return $changes;
     }
 }

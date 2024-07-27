@@ -7,6 +7,7 @@ namespace App\Entity;
  * @TODO:
  * - change filter() to filterCount() if that's the only thing I use it for
  * - add map() or mapCount() maybe
+ * - extend from Doctrine Collection?
  */
 use App\Entity\Game;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,7 +26,8 @@ class GameCollection
 
     public function getIterator()
     {
-        return new ArrayCollection($this->games); 
+        //@TODO this doesn't seem to work. implement IteratorAggregate?
+        return new ArrayCollection($this->games);
     }
 
     public function toArray(): array
