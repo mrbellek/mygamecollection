@@ -5,58 +5,39 @@ namespace App\Entity;
 
 /**
  * @TODO:
- * - change filter() to filterCount() if that's the only thing I use it for
- * - add map() or mapCount() maybe
- * - extend from Doctrine Collection?
+ * - fix usort func
  */
 use App\Entity\Game;
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * A collection of games, not always the entire library (my game collection on TA)
+ * 
+ * we extend Doctrine ArrayColletion because it has a ton of useful functions,
+ * like first, offsetGet, offsetExists, count, map, reduce and filter.
  */
-class GameCollection
+class GameCollection extends ArrayCollection
 {
-    private array $games;
-
-    public function __construct(iterable $games)
+    public static function createAssociativeArray(array $games): self
     {
-        $this->games = iterator_to_array($games);
+        $elements = [];
+        /** @var Game $game **/
+        foreach ($games as $game) {
+            $elements[$game->getId()] = $game;
+        }
+
+        return new self($elements);
     }
 
-    public function getIterator()
+    public function filterCount(Closure $callable): int
     {
-        //@TODO this doesn't seem to work. implement IteratorAggregate?
-        return new ArrayCollection($this->games);
+        return $this->filter($callable)->count();
     }
-
-    public function toArray(): array
+    
+    public function usort(Closure $callable): void
     {
-        return $this->games;
-    }
-
-    public function getItem(int $gameId): ?Game
-    {
-        return $this->games[$gameId] ?? null;
-    }
-
-    public function hasItem(int $gameId): bool
-    {
-        return array_key_exists($gameId, $this->games);
-    }
-
-    public function count(): int
-    {
-        return count($this->games);
-    }
-
-    public function filter(callable $callback): GameCollection
-    {
-        return new self(array_filter($this->games, $callback));
-    }
-
-    public function usort(callable $callable): void
-    {
-        usort($this->games, $callable);
+        //@TODO this broke
+        //usort($this->elements, $callable);
     }
 }

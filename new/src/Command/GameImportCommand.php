@@ -5,7 +5,6 @@ namespace App\Command;
 
 /**
  * TODO:
- * - warn user if import is for different gamer id than database?
  * - figure out better way to detect if game has dlc
  * . implement GameCollection here (foreach doesnt work yet)
  * - game report seems broken after implementing Collection
@@ -18,6 +17,7 @@ use App\Service\GameScraperService;
 use Doctrine\Persistence\ManagerRegistry;
 use DOMDocument;
 use DOMXPath;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -61,8 +61,11 @@ class GameImportCommand extends Command
             }
         }
 
-        $parsedGames = new GameCollection($parsedArray);
+        $parsedGames = GameCollection::createAssociativeArray($parsedArray);
         $currentGames = $this->fetchCurrentGames();
+
+        //check if scraped gamerid is same as gamerid in database
+        $this->verifySameGamerAsInDatabase($currentGames, $parsedGames);
 
         //generate and print a report with all the changes the import will be making
         $this->generateReport($currentGames, $parsedGames, $output);
@@ -82,7 +85,7 @@ class GameImportCommand extends Command
         $gameRepository = $manager->getRepository(Game::class);
         $games = $gameRepository->findBy([], ['id' => 'ASC']);
 
-        return new GameCollection($games);
+        return GameCollection::createAssociativeArray($games);
     }
 
     private function persistGames(GameCollection $games, OutputInterface $output): void
@@ -115,7 +118,7 @@ class GameImportCommand extends Command
         $manager = $this->doctrine->getManager();
         $deletedCount = 0;
         foreach ($currentGames as $gameId => $currentGame) {
-            if ($parsedGames->hasItem($gameId) === true) {
+            if ($parsedGames->containsKey($gameId) === false) {
                 //game was deleted from collection
                 $manager->remove($currentGame);
                 $deletedCount++;
@@ -134,16 +137,16 @@ class GameImportCommand extends Command
         OutputInterface $output
     ): void {
         foreach ($parsedGames as $gameId => $parsedGame) {
-            if ($currentGames->hasItem($gameId) === true) {
+            if ($currentGames->containsKey($gameId) === true) {
                 //game gets updated, print diff
-                $this->printGameDiff($currentGames->getItem($gameId), $parsedGame, $output);
+                $this->printGameDiff($currentGames->offsetGet($gameId), $parsedGame, $output);
             } else {
                 //game is new
                 $output->writeLn(sprintf('[%s] new game!', $parsedGame->getName()));
             }
         }
         foreach ($currentGames as $gameId => $currentGame) {
-            if ($parsedGames->hasItem($gameId) === false) {
+            if ($parsedGames->containsKey($gameId) === false) {
                 //game was deleted
                 $output->writeLn(sprintf('[%s] game removed', $currentGame->getName()));
             }
@@ -221,5 +224,32 @@ class GameImportCommand extends Command
         }
 
         return $changes;
+    }
+
+    /**
+     * Safety check, see if the gamerid in the database matches the gamerid in the imported
+     * game collection. We can kludge this because game urls in the game collection
+     * end with gamerid=... on TA
+     * 
+     * @throws InvalidArgumentException
+     */
+    private function verifySameGamerAsInDatabase(GameCollection $currentGames, GameCollection $parsedGames): void
+    {
+        $currentGameUrl = $currentGames->first()->getGameUrl();
+        $currentGamerId = substr($currentGameUrl, strpos($currentGameUrl, 'gamerid=') + 8);
+        $parsedGameUrl = $parsedGames->first()->getGameUrl();
+        $parsedGamerId = substr($parsedGameUrl, strpos($parsedGameUrl, 'gamerid=' ) + 8);
+
+        if ($currentGamerId === '' || $parsedGamerId === '') {
+            return;
+        }
+
+        if ($currentGamerId !== $parsedGamerId) {
+            throw new InvalidArgumentException(sprintf(
+                'The given gamertag has a TA gamerid (%s) that\'s different from the gamerid in the database (%s). Import aborted.',
+                $parsedGamerId,
+                $currentGamerId
+            ));
+        }
     }
 }

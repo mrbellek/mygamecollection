@@ -24,47 +24,47 @@ class GameFilterService
     public function getGamesByFilter(string $filter): GameCollection
     {
         return match($filter) {
-            'all' => new GameCollection($this->gameRepository->findBy([], ['name' => 'ASC'])),
-            'completed' => new GameCollection($this->gameRepository->findBy(['completionPercentage' => 100], ['name' => 'ASC'])),
-            'incomplete' => new GameCollection($this->gameRepository->findIncompleteGames()),
-            'notstarted' => new GameCollection($this->gameRepository->findBy(['completionPercentage' => 0], ['name' => 'ASC'])),
-            'bestrating' => new GameCollection($this->gameRepository->findOrderByBestRating()),
-            'notstartedbestrating' => new GameCollection($this->gameRepository->findNotStartedOrderByBestRating()),
-            'shortest' => new GameCollection($this->gameRepository->findShortest()),
-            'shortestnotstarted' => new GameCollection($this->gameRepository->findShortestNotStarted()),
+            'all' => GameCollection::createAssociativeArray($this->gameRepository->findBy([], ['name' => 'ASC'])),
+            'completed' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['completionPercentage' => 100], ['name' => 'ASC'])),
+            'incomplete' => GameCollection::createAssociativeArray($this->gameRepository->findIncompleteGames()),
+            'notstarted' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['completionPercentage' => 0], ['name' => 'ASC'])),
+            'bestrating' => GameCollection::createAssociativeArray($this->gameRepository->findOrderByBestRating()),
+            'notstartedbestrating' => GameCollection::createAssociativeArray($this->gameRepository->findNotStartedOrderByBestRating()),
+            'shortest' => GameCollection::createAssociativeArray($this->gameRepository->findShortest()),
+            'shortestnotstarted' => GameCollection::createAssociativeArray($this->gameRepository->findShortestNotStarted()),
             'longest' => $this->getGamesByLongest(),
             'mostplayed' => $this->getGamesByMostPlayed(),
             'easiest' => $this->getGamesByEasiest(),
             'hardest' => $this->getGamesByHardest(),
-            'recent' => new GameCollection($this->gameRepository->findRecent()),
-            'paid' => new GameCollection($this->gameRepository->findPaid()),
-            'free' => new GameCollection($this->gameRepository->findFree()),
-            'onsale' => new GameCollection($this->gameRepository->findOnSale()),
-            'physical' => new GameCollection($this->gameRepository->findBy(['format' => [FormatEnum::FORMAT_DISC, FormatEnum::FORMAT_BOTH, 'Sold']], ['name' => 'ASC'])),
-            'sold' => new GameCollection($this->gameRepository->findBy(['status' => 'Sold'], ['name' => 'ASC'])),
-            'unavailable' => new GameCollection($this->gameRepository->findUnavailable()),
-            'xb1' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XB1], ['name' => 'ASC'])),
-            '360' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360], ['name' => 'ASC'])),
-            'xsx' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XSX], ['name' => 'ASC'])),
-            'win' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_WIN], ['name' => 'ASC'])),
-            'bc' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 1], ['name' => 'ASC'])),
-            'nonbc' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0], ['name' => 'ASC'])),
-            'nonbckinect' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'kinectRequired' => 1], ['name' => 'ASC'])),
-            'nonbcperiph' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'peripheralRequired' => 1], ['name' => 'ASC'])),
-            'nonbconline' => new GameCollection($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'onlineMultiplayer' => 1], ['name' => 'ASC'])),
-            'walkthrough' => new GameCollection($this->gameRepository->findWithWalkthrough()),
-            'nowalkthrough' => new GameCollection($this->gameRepository->findBy(['walkthroughUrl' => ''], ['name' => 'ASC'])),
-            'nodlc' => new GameCollection($this->gameRepository->findBy(['hasDlc' => 0], ['name' => 'ASC'])),
-            'withdlc' => new GameCollection($this->gameRepository->findBy(['hasDlc' => 1], ['name' => 'ASC'])),
-            'dlccompleted' => new GameCollection($this->gameRepository->findBy(['hasDlc' => 1, 'dlcCompletionPercentage' => 100], ['name' => 'ASC'])),
-            'dlcnotcompleted' => new GameCollection($this->gameRepository->findNotCompletedDlc()),
+            'recent' => GameCollection::createAssociativeArray($this->gameRepository->findRecent()),
+            'paid' => GameCollection::createAssociativeArray($this->gameRepository->findPaid()),
+            'free' => GameCollection::createAssociativeArray($this->gameRepository->findFree()),
+            'onsale' => GameCollection::createAssociativeArray($this->gameRepository->findOnSale()),
+            'physical' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['format' => [FormatEnum::FORMAT_DISC, FormatEnum::FORMAT_BOTH, 'Sold']], ['name' => 'ASC'])),
+            'sold' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['status' => 'Sold'], ['name' => 'ASC'])),
+            'unavailable' => GameCollection::createAssociativeArray($this->gameRepository->findUnavailable()),
+            'xb1' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XB1], ['name' => 'ASC'])),
+            '360' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360], ['name' => 'ASC'])),
+            'xsx' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_XSX], ['name' => 'ASC'])),
+            'win' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_WIN], ['name' => 'ASC'])),
+            'bc' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 1], ['name' => 'ASC'])),
+            'nonbc' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0], ['name' => 'ASC'])),
+            'nonbckinect' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'kinectRequired' => 1], ['name' => 'ASC'])),
+            'nonbcperiph' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'peripheralRequired' => 1], ['name' => 'ASC'])),
+            'nonbconline' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['platform' => PlatformEnum::PLATFORM_360, 'backwardsCompatible' => 0, 'onlineMultiplayer' => 1], ['name' => 'ASC'])),
+            'walkthrough' => GameCollection::createAssociativeArray($this->gameRepository->findWithWalkthrough()),
+            'nowalkthrough' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['walkthroughUrl' => ''], ['name' => 'ASC'])),
+            'nodlc' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['hasDlc' => 0], ['name' => 'ASC'])),
+            'withdlc' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['hasDlc' => 1], ['name' => 'ASC'])),
+            'dlccompleted' => GameCollection::createAssociativeArray($this->gameRepository->findBy(['hasDlc' => 1, 'dlcCompletionPercentage' => 100], ['name' => 'ASC'])),
+            'dlcnotcompleted' => GameCollection::createAssociativeArray($this->gameRepository->findNotCompletedDlc()),
             default => throw new InvalidArgumentException(sprintf('Error: filter "%s" is invalid.', $filter)),
         };
     }
 
     private function getGamesByLongest(): GameCollection
     {
-        $games = new GameCollection($this->gameRepository->findLongest());
+        $games = GameCollection::createAssociativeArray($this->gameRepository->findLongest());
         $games->usort(function(Game $a, Game $b) {
             if ($a->getCompletionEstimate() !== $b->getCompletionEstimate()) {
                 return $a->getCompletionEstimate() <=> $b->getCompletionEstimate();
@@ -79,7 +79,7 @@ class GameFilterService
     private function getGamesByMostPlayed(): GameCollection
     {
         //get all started games and remove all played <100 horus
-        $games = new GameCollection($this->gameRepository->findPlayed());
+        $games = GameCollection::createAssociativeArray($this->gameRepository->findPlayed());
         $games = $games->filter(function (Game $game): bool {
             $hoursPlayed = $game->getHoursPlayed();
             //if hoursPlayed is blank and game is completed, use completion estimate as hoursPlayed
@@ -107,7 +107,7 @@ class GameFilterService
 
     private function getGamesByEasiest(): GameCollection
     {
-        $games = new GameCollection($this->gameRepository->findWithNonZeroTaTotal());
+        $games = GameCollection::createAssociativeArray($this->gameRepository->findWithNonZeroTaTotal());
         $games = $games->filter(function(Game $game) {
             return $game->getTaTotal() / $game->getGamerscoreTotal() < 2;
         });
@@ -127,7 +127,7 @@ class GameFilterService
 
     private function getGamesByHardest(): GameCollection
     {
-        $games = new GameCollection($this->gameRepository->findWithNonZeroTaTotal());
+        $games = GameCollection::createAssociativeArray($this->gameRepository->findWithNonZeroTaTotal());
         $games = $games->filter(function(Game $game) {
             return $game->getTaTotal() / $game->getGamerscoreTotal() > 5;
         });
