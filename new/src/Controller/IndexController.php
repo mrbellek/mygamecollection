@@ -8,8 +8,6 @@ namespace App\Controller;
  * - get scraper command working in browser
  * - column sorting
  * - proper graphs for top stats instead of buttons
- * - custom exceptions
- * - catch exceptions and convert to flash message
  */
 
 use App\Entity\Game;
