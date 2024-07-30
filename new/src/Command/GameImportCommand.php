@@ -10,12 +10,14 @@ namespace App\Command;
 
 use App\Entity\Game;
 use App\Entity\GameCollection;
+use App\Exception\GamertagMismatchException;
+use App\Exception\InvalidPlatformValueException;
+use App\Exception\InvalidTAContentException;
 use App\Service\GameParserService;
 use App\Service\GameScraperService;
 use Doctrine\Persistence\ManagerRegistry;
 use DOMDocument;
 use DOMXPath;
-use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -42,7 +44,12 @@ class GameImportCommand extends Command
     {
         //get game collection for given gamertag
         $gamertag = $input->getArgument('gamertag');
-        $gameCollectionPages = $this->scraper->scrape($gamertag);
+        try {
+            $gameCollectionPages = $this->scraper->scrape($gamertag);
+        } catch (InvalidTAContentException $e) {
+            $output->writeLn($e->getMessage());
+            return Command::FAILURE;
+        }
 
         //loop through pages
         $parsedArray = [];
@@ -54,7 +61,12 @@ class GameImportCommand extends Command
             $xpath = new DOMXPath($dom);
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
             foreach ($games as $tableRow) {
-                $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
+                try {
+                    $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
+                } catch (InvalidPlatformValueException $e) {
+                    $output->writeLn($e->getMessage());
+                    return Command::FAILURE;
+                }
                 $parsedArray[$parsedGame->getId()] = $parsedGame;
             }
         }
@@ -63,7 +75,12 @@ class GameImportCommand extends Command
         $currentGames = $this->fetchCurrentGames();
 
         //check if scraped gamerid is same as gamerid in database
-        $this->verifySameGamerAsInDatabase($currentGames, $parsedGames);
+        try {
+            $this->verifySameGamerAsInDatabase($currentGames, $parsedGames);
+        } catch (GamertagMismatchException $e) {
+            $output->writeLn($e->getMessage());
+            return Command::FAILURE;
+        }
 
         //generate and print a report with all the changes the import will be making
         $this->generateReport($currentGames, $parsedGames, $output);
@@ -230,7 +247,7 @@ class GameImportCommand extends Command
      * game collection. We can kludge this because game urls in the game collection
      * end with gamerid=... on TA
      * 
-     * @throws InvalidArgumentException
+     * @throws GamertagMismatchException
      */
     private function verifySameGamerAsInDatabase(GameCollection $currentGames, GameCollection $parsedGames): void
     {
@@ -244,7 +261,7 @@ class GameImportCommand extends Command
         }
 
         if ($currentGamerId !== $parsedGamerId) {
-            throw new InvalidArgumentException(sprintf(
+            throw new GamertagMismatchException(sprintf(
                 'The given gamertag has a TA gamerid (%s) that\'s different from the gamerid in the database (%s). Import aborted.',
                 $parsedGamerId,
                 $currentGamerId

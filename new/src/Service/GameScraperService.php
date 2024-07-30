@@ -7,9 +7,9 @@ namespace App\Service;
  * TODO: HashKey for POST request hardcoded? private? what is it? seems required
  */
 
+use App\Exception\InvalidTAContentException;
 use DOMDocument;
 use DOMXPath;
-use RuntimeException;
 
 use function curl_close;
 use function curl_exec;
@@ -104,7 +104,7 @@ class GameScraperService
     /**
      * Lookup TA gamerId based on gamertag, there's a link tag in the header that has it
      * 
-     * @throws RuntimeException
+     * @throws InvalidTAContentException
      */
     private function lookupGamerId(string $gamertag): string
     {
@@ -125,7 +125,7 @@ class GameScraperService
         if (preg_match('/gamerid=(.+)/', $linktarget, $matches)) {
             $gamerId = $matches[1];
         } else {
-            throw new RuntimeException(sprintf('Unable to find gamerid for gamertag %s.', $gamertag));
+            throw new InvalidTAContentException(sprintf('Unable to find gamerid for gamertag %s.', $gamertag));
         }
 
         return $gamerId;

@@ -15,6 +15,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\GameCollection;
 use App\Enum\Platform as PlatformEnum;
+use App\Exception\InvalidFilterException;
 use App\Repository\GameRepository;
 use App\Service\GameFilterService;
 use App\Service\GameScraperService;
@@ -173,7 +174,8 @@ class IndexController extends AbstractController
         } elseif ($action === 'Save') {
             $this->update($manager, $game, $request);
         } else {
-            throw new InvalidArgumentException('Invalid POST action.');
+            $this->addFlash('danger', 'Invalid POST action.');
+            return $this->redirect('index');
         }
 
         if (strlen($search) > 0) {
@@ -233,7 +235,13 @@ class IndexController extends AbstractController
         string $filter,
         int $page = 1
     ): Response {
-        $games = $this->gameFilterService->getGamesByFilter($filter);
+        try {
+            $games = $this->gameFilterService->getGamesByFilter($filter);
+        } catch (InvalidFilterException) {
+            $this->addFlash('danger', sprintf('Invalid filter name "%s".', $filter));
+            return $this->redirectToRoute('index');
+        }
+
         return $this->renderListWithResults($request, $games, $filter, $page);
     }
 }

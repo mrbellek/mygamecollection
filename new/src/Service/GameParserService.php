@@ -5,11 +5,11 @@ namespace App\Service;
 
 use App\Entity\Game;
 use App\Enum\Platform;
+use App\Exception\InvalidPlatformValueException;
 use App\Factory\GameFactory;
 use DateTime;
 use DOMNode;
 use DOMXPath;
-use RuntimeException;
 
 class GameParserService
 {
@@ -151,6 +151,9 @@ class GameParserService
         return intval(round(($gamerscoreWon - 1000) * 100 / ($gamerscoreTotal - 1000)));
     }
 
+    /**
+     * @throws InvalidPlatformValueException
+     */
     private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMNode $cell): array
     {
         $gameId = 0;
@@ -168,7 +171,7 @@ class GameParserService
             'android'           => Platform::PLATFORM_ANDROID,
             'web'               => Platform::PLATFORM_WEB,
             'nintendo-switch'   => Platform::PLATFORM_SWITCH,
-            default             => throw new RuntimeException(sprintf('Invalid platform "%s" found.', $platformCode)),
+            default             => throw new InvalidPlatformValueException(sprintf('Invalid platform "%s" found.', $platformCode)),
         };
 
         return [$gameId, $platform];

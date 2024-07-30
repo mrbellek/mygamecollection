@@ -7,8 +7,8 @@ use App\Entity\Game;
 use App\Entity\GameCollection;
 use App\Enum\Format as FormatEnum;
 use App\Enum\Platform as PlatformEnum;
+use App\Exception\InvalidFilterException;
 use App\Repository\GameRepository;
-use InvalidArgumentException;
 
 class GameFilterService
 {
@@ -16,6 +16,9 @@ class GameFilterService
         private readonly GameRepository $gameRepository,
     ) {}
 
+    /**
+     * @throws InvalidFilterException
+     */
     public function getGamesByFilter(string $filter): GameCollection
     {
         return match($filter) {
@@ -53,7 +56,7 @@ class GameFilterService
             'withdlc' => GameCollection::createAssociative($this->gameRepository->findBy(['hasDlc' => 1], ['name' => 'ASC'])),
             'dlccompleted' => $this->getDlcCompleted(),
             'dlcnotcompleted' => GameCollection::createAssociative($this->gameRepository->findNotCompletedDlc()),
-            default => throw new InvalidArgumentException(sprintf('Error: filter "%s" is invalid.', $filter)),
+            default => throw new InvalidFilterException(sprintf('Error: filter "%s" is invalid.', $filter)),
         };
     }
 
