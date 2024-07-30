@@ -5,9 +5,11 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - post-edit redirect url should go back to filter/page/search, without ugly slug. use session?
+ * - get scraper command working in browser
  * - column sorting
  * - proper graphs for top stats instead of buttons
+ * - custom exceptions
+ * - catch exceptions and convert to flash message
  */
 
 use App\Entity\Game;
@@ -41,11 +43,16 @@ class IndexController extends AbstractController
     ) {}
     
     public function renderListWithResults(
+        Request $request,
         GameCollection $games,
         string $filter = 'all',
         int $pageNum = 1,
         string $search = '',
     ): Response {
+
+        $request->getSession()->set('pageNum', $pageNum);
+        $request->getSession()->set('filter', $filter);
+        $request->getSession()->set('search', $search);
 
         $pageSize = intval($this->getParameter('app.page_size') ?? self::DEFAULT_PAGE_SIZE);
         $adapter = new ArrayAdapter($games->toArray());
@@ -68,28 +75,28 @@ class IndexController extends AbstractController
     }
 
     #[Route("/", name: "index")]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return $this->gameFilter('all', 1);
+        return $this->gameFilter($request, 'all', 1);
     }
 
     #[Route("/search/{term}/{page}", name: "search", requirements: ['page' => '\d+'])]
-    public function searchFilter(GameRepository $gameRepository, string $term, int $page = 1): Response
+    public function searchFilter(GameRepository $gameRepository, Request $request, string $term, int $page = 1): Response
     {
         if (trim($term) === '') {
-            return $this->gameFilter('all', $page);
+            return $this->gameFilter($request, 'all', $page);
         }
 
         $games = GameCollection::createAssociative($gameRepository->findBySearch($term));
-        return $this->renderListWithResults($games, 'search', $page, $term);
+        return $this->renderListWithResults($request, $games, 'search', $page, $term);
     }
 
     #[Route("/game/{id}", name: "detail", requirements: ['page' => '\d+'], methods: ["GET"])]
     public function detail(GameRepository $gameRepository, Request $request, int $id): Response
     {
-        $show = $request->query->get('show', 'all');
-        $page = $request->query->getInt('page', 1);
-        $search = $request->query->get('search');
+        $show = $request->getSession()->get('filter', 'all');
+        $page = intval($request->getSession()->get('pageNum', 1));
+        $search = $request->getSession()->get('search');
 
         $game = $gameRepository->find($id);
         if ($game === null) {
@@ -163,10 +170,10 @@ class IndexController extends AbstractController
                     $e->getMessage()
                 ));
             }
-        } else {
-            //@TODO try/catch?
-            //@TODO check for invalid action?
+        } elseif ($action === 'Save') {
             $this->update($manager, $game, $request);
+        } else {
+            throw new InvalidArgumentException('Invalid POST action.');
         }
 
         if (strlen($search) > 0) {
@@ -221,9 +228,12 @@ class IndexController extends AbstractController
      * NB: this route should be last in the controller
      */
     #[Route("/{filter}/{page}", name: "filter", requirements: ['page' => '\d+'])]
-    public function gameFilter(string $filter, int $page = 1): Response
-    {
+    public function gameFilter(
+        Request $request,
+        string $filter,
+        int $page = 1
+    ): Response {
         $games = $this->gameFilterService->getGamesByFilter($filter);
-        return $this->renderListWithResults($games, $filter, $page);
+        return $this->renderListWithResults($request, $games, $filter, $page);
     }
 }
