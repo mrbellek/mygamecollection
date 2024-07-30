@@ -46,16 +46,10 @@ class GameStatsService
         $totalPurchased = $games->reduce(function (?float $sum, Game $game) {
             return $sum + $game->getPurchasedPrice();
         });
-        $totalCurrentValue = $games->reduce(function (?float $sum, Game $game) {
-            return $sum + $game->getCurrentPrice();
-        });
 
         return [
             'total_purchased' => $totalPurchased,
-            'total_currentvalue' => $totalCurrentValue,
-            'total_saved' => $totalCurrentValue - $totalPurchased,
             'average_purchased' => $games->count() > 0 ? $totalPurchased / $games->count() : 0,
-            'average_value' => $games->count() > 0 ? $totalCurrentValue / $games->count() : 0,
         ];
     }
 

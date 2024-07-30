@@ -3,15 +3,11 @@
     <span class="btn btn-success">Free games<br/><span class="badge">{{ stats.free }}</span></span>
     <span class="btn btn-success">Purchased for free<br/><span class="badge">{{ stats.purchased_free }}</span></span>
     <span class="btn btn-info">Total spent<br/><span class="badge">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
-    <span class="btn btn-info">Total market value<br/><span class="badge">{{ stats.total_currentvalue|format_currency('EUR') }}</span></span>
-    <span class="btn btn-success">Total saved:<br/><span class="badge">{{ stats.total_saved|format_currency('EUR') }}</span></span>
     <span class="btn btn-info">Average cost<br/><span class="badge">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
-    <span class="btn btn-info">Average current value<br/><span class="badge">{{ stats.average_value|format_currency('EUR') }}</span></span>
     <span class="btn btn-info">Total estimated playtime<br/><span class="badge">{{ stats.total_playtime }} hours</span></span>
     <span class="btn btn-info">Spent playtime<br/><span class="badge">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
     {% if stats.most_expensive_purchase is defined %}
     <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge">{{ stats.most_expensive_purchase.price|format_currency('EUR') }}</span></span>
-    <span class="btn btn-danger">Most expensive current:<br/>{{ stats.most_expensive_current.name }} <span class="badge">{{ stats.most_expensive_current.price|format_currency('EUR') }}</span></span>
     {% endif %}
     {% if not stats.spent_year is empty %}
     <span class="btn btn-warning">Spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
@@ -23,44 +19,40 @@
 
 <div class="form-group" style="line-height: 3em;">
     <form id="searchForm" action="/search/term/{{ page }}" method="get" class="form-inline">
-        <a class="btn btn-success {% if show == 'all' %}active{% endif %}" href="/all">All games</a>
-        <a class="btn btn-success {% if show == 'completed' %}active{% endif %}" href="/completed">Completed games</a>
-        <!--a class="btn btn-success" href="?show=shortlist">Shortlist</a-->
-        <a class="btn btn-info {% if show == 'incomplete' %}active{% endif %}" href="/incomplete">Incomplete games</a>
-        <a class="btn btn-info {% if show == 'notstarted' %}active{% endif %}" href="/notstarted">Not started games</a>
-        <a class="btn btn-info {% if show == 'bestrating' %}active{% endif %}" href="/bestrating">Best games</a>
-        <a class="btn btn-info {% if show == 'notstartedbestrating' %}active{% endif %}" href="/notstartedbestrating">Best not started games</a>
-        <a class="btn btn-info {% if show == 'shortest' %}active{% endif %}" href="/shortest">Shortest games</a>
-        <a class="btn btn-info {% if show == 'shortestnotstarted' %}active{% endif %}" href="/shortestnotstarted">Shortest not started games</a>
-        <a class="btn btn-info {% if show == 'longest' %}active{% endif %}" href="/longest">Longest games</a>
-        <a class="btn btn-info {% if show == 'mostplayed' %}active{% endif %}" href="/mostplayed">Most played</a>
-        <a class="btn btn-info {% if show == 'easiest' %}active{% endif %}" href="/easiest">Easiest</a>
-        <a class="btn btn-info {% if show == 'hardest' %}active{% endif %}" href="/hardest">Hardest</a>
-        <a class="btn btn-info {% if show == 'recent' %}active{% endif %}" href="/recent">Recent</a>
-        <a class="btn btn-default {% if show == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
-        <a class="btn btn-default {% if show == 'free' %}active{% endif %}" href="/free">Free games</a>
-        <a class="btn btn-default {% if show == 'onsale' %}active{% endif %}" href="/onsale">On sale</a>
-        <a class="btn btn-default {% if show == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
-        <a class="btn btn-default {% if show == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
-        <a class="btn btn-default {% if show == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
-        <a class="btn btn-warning {% if show == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
-        <a class="btn btn-warning {% if show == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
-        <a class="btn btn-warning {% if show == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
-        <a class="btn btn-warning {% if show == 'win' %}active{% endif %}" href="/win">Windows games</a>
-        <a class="btn btn-warning {% if show == 'bc' %}active{% endif %}" href="/bc">Backwards compatible games</a>
-        <a class="btn btn-warning {% if show == 'nonbc' %}active{% endif %}" href="/nonbc">Not backwards compatible games</a>
-        <a class="btn btn-warning {% if show == 'nonbckinect' %}active{% endif %}" href="/nonbckinect">Non-BC games with Kinect</a>
-        <a class="btn btn-warning {% if show == 'nonbcperiph' %}active{% endif %}" href="/nonbcperiph">Non-BC games with peripheral</a>
-        <a class="btn btn-danger {% if show == 'nonbconline' %}active{% endif %}" href="/nonbconline">Non-BC games with online multiplayer</a>
-        <a class="btn btn-success {% if show == 'walkthrough' %}active{% endif %}" href="/walkthrough">With walkthrough</a>
-        <a class="btn btn-warning {% if show == 'nowalkthrough' %}active{% endif %}" href="/nowalkthrough">Without walkthrough</a>
-        <a class="btn btn-success {% if show == 'nodlc' %}active{% endif %}" href="/nodlc">Without DLC</a>
-        <a class="btn btn-warning {% if show == 'withdlc' %}active{% endif %}" href="/withdlc">With DLC</a>
-        <a class="btn btn-success {% if show == 'dlccompleted' %}active{% endif %}" href="/dlccompleted">DLC completed</a>
-        <a class="btn btn-warning {% if show == 'dlcnotcompleted' %}active{% endif %}" href="/dlcnotcompleted">DLC not completed</a>
-        {% if newAddedCount is defined %}
-            <a class="btn btn-danger" href="?show=new">Without TA game id <span class="badge">{{ newAddedCount }}</span></a><br/>
-        {% endif %}
+        <a class="btn btn-success {% if filter == 'all' %}active{% endif %}" href="/all">All games</a>
+        <a class="btn btn-success {% if filter == 'completed' %}active{% endif %}" href="/completed">Completed games</a>
+        <a class="btn btn-info {% if filter == 'incomplete' %}active{% endif %}" href="/incomplete">Incomplete games</a>
+        <a class="btn btn-info {% if filter == 'notstarted' %}active{% endif %}" href="/notstarted">Not started games</a>
+        <a class="btn btn-info {% if filter == 'bestrating' %}active{% endif %}" href="/bestrating">Best games</a>
+        <a class="btn btn-info {% if filter == 'notstartedbestrating' %}active{% endif %}" href="/notstartedbestrating">Best not started games</a>
+        <a class="btn btn-info {% if filter == 'shortest' %}active{% endif %}" href="/shortest">Shortest games</a>
+        <a class="btn btn-info {% if filter == 'shortestnotstarted' %}active{% endif %}" href="/shortestnotstarted">Shortest not started games</a>
+        <a class="btn btn-info {% if filter == 'longest' %}active{% endif %}" href="/longest">Longest games</a>
+        <a class="btn btn-info {% if filter == 'mostplayed' %}active{% endif %}" href="/mostplayed">Most played</a>
+        <a class="btn btn-info {% if filter == 'easiest' %}active{% endif %}" href="/easiest">Easiest</a>
+        <a class="btn btn-info {% if filter == 'hardest' %}active{% endif %}" href="/hardest">Hardest</a>
+        <a class="btn btn-info {% if filter == 'recent' %}active{% endif %}" href="/recent">Recent</a>
+        <a class="btn btn-default {% if filter == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
+        <a class="btn btn-default {% if filter == 'free' %}active{% endif %}" href="/free">Free games</a>
+        <a class="btn btn-default {% if filter == 'onsale' %}active{% endif %}" href="/onsale">On sale</a>
+        <a class="btn btn-default {% if filter == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
+        <a class="btn btn-default {% if filter == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
+        <a class="btn btn-default {% if filter == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
+        <a class="btn btn-warning {% if filter == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
+        <a class="btn btn-warning {% if filter == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
+        <a class="btn btn-warning {% if filter == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
+        <a class="btn btn-warning {% if filter == 'win' %}active{% endif %}" href="/win">Windows games</a>
+        <a class="btn btn-warning {% if filter == 'bc' %}active{% endif %}" href="/bc">Backwards compatible games</a>
+        <a class="btn btn-warning {% if filter == 'nonbc' %}active{% endif %}" href="/nonbc">Not backwards compatible games</a>
+        <a class="btn btn-warning {% if filter == 'nonbckinect' %}active{% endif %}" href="/nonbckinect">Non-BC games with Kinect</a>
+        <a class="btn btn-warning {% if filter == 'nonbcperiph' %}active{% endif %}" href="/nonbcperiph">Non-BC games with peripheral</a>
+        <a class="btn btn-danger {% if filter == 'nonbconline' %}active{% endif %}" href="/nonbconline">Non-BC games with online multiplayer</a>
+        <a class="btn btn-success {% if filter == 'walkthrough' %}active{% endif %}" href="/walkthrough">With walkthrough</a>
+        <a class="btn btn-warning {% if filter == 'nowalkthrough' %}active{% endif %}" href="/nowalkthrough">Without walkthrough</a>
+        <a class="btn btn-success {% if filter == 'nodlc' %}active{% endif %}" href="/nodlc">Without DLC</a>
+        <a class="btn btn-warning {% if filter == 'withdlc' %}active{% endif %}" href="/withdlc">With DLC</a>
+        <a class="btn btn-success {% if filter == 'dlccompleted' %}active{% endif %}" href="/dlccompleted">DLC completed</a>
+        <a class="btn btn-warning {% if filter == 'dlcnotcompleted' %}active{% endif %}" href="/dlcnotcompleted">DLC not completed</a>
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
             <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
@@ -185,8 +177,8 @@
         <tr>
             <td colspan="14">
                 <div role="alert" class="alert alert-info">
-                    <p>The current filter '{{ show }}' yields no results.</p>
-                    {% if show == 'all' %}
+                    <p>The current filter '{{ filter }}' yields no results.</p>
+                    {% if filter == 'all' %}
                         <hr/>
                         <p>If this is your first time opening this app, run this Symfony console command to import your game collection:</p>
                         <p style="font-family: monospace;">> bin/console app:import [your gamertag]</p>

@@ -5,9 +5,9 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - get scraper command working in browser
- * - column sorting
+ * - get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
+ * - column sorting
  */
 
 use App\Entity\Game;
@@ -67,7 +67,7 @@ class IndexController extends AbstractController
             'count' => $games->count(),
             'stats' => $this->gameStatsService->getStats($games),
             'page' => $pageNum,
-            'show' => $filter,
+            'filter' => $filter,
             'search' => $search,
             'paginateSlug' => strlen($search) > 0 ? sprintf('%s/%s', $filter, $search) : $filter,
         ]);
@@ -93,7 +93,7 @@ class IndexController extends AbstractController
     #[Route("/game/{id}", name: "detail", requirements: ['page' => '\d+'], methods: ["GET"])]
     public function detail(GameRepository $gameRepository, Request $request, int $id): Response
     {
-        $show = $request->getSession()->get('filter', 'all');
+        $filter = $request->getSession()->get('filter', 'all');
         $page = intval($request->getSession()->get('pageNum', 1));
         $search = $request->getSession()->get('search');
 
@@ -114,7 +114,7 @@ class IndexController extends AbstractController
             'game' => $game,
 
             //params for post-save redirect
-            'show' => $show,
+            'filter' => $filter,
             'page' => $page,
             'search' => $search,
             'use_form_password' => $formPassword !== null,
@@ -137,7 +137,7 @@ class IndexController extends AbstractController
         $manager = $doctrine->getManager();
 
         $postData = $request->request;
-        $filter = $postData->get('show', 'all');
+        $filter = $postData->get('filter', 'all');
         $page = $postData->getInt('page', 1);
         $search = $postData->get('search');
         $action = $postData->get('action');

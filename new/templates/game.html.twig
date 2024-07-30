@@ -1,6 +1,6 @@
 <form method="post" class="form-horizontal" role="form">
     <input type="hidden" name="id" value="{{ id }}" />
-    <input type="hidden" name="show" value="{{ show }}" />
+    <input type="hidden" name="filter" value="{{ filter }}" />
     <input type="hidden" name="page" value="{{ page }}" />
     <input type="hidden" name="search" value="{{ search }}" />
 
@@ -119,7 +119,7 @@
             {% if search %}
                 <a href="/search/{{ search }}/{{ page }}" class="btn btn-default">Cancel</a>
             {% else %}
-                <a href="/{{ show }}/{{ page }}" class="btn btn-default">Cancel</a>
+                <a href="/{{ filter }}/{{ page }}" class="btn btn-default">Cancel</a>
             {% endif %}
             <input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
         </div>
