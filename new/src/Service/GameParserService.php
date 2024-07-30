@@ -3,12 +3,20 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+/**
+ * TODO:
+ * - calling getAttribute on a DOMNode element seems to confuse PHPStan,
+ *   because that functions seems to belong with DOMElement... even though
+ *   one is a subclass of the other. used some @var typehints as a workaround.
+ */
+
 use App\Entity\Game;
 use App\Enum\Platform;
 use App\Exception\InvalidPlatformValueException;
 use App\Factory\GameFactory;
 use DateTime;
 use DOMNode;
+use DOMElement;
 use DOMXPath;
 
 class GameParserService
@@ -45,12 +53,16 @@ class GameParserService
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
         $name = utf8_decode($namelink->item(0)->textContent);
-        $gameUrl = $this->taBaseUrl . $namelink->item(0)->getAttribute('href');
+        /** @var DOMElement $gameUrlElm **/
+        $gameUrlElm =  $namelink->item(0);
+        $gameUrl = $this->taBaseUrl . $gameUrlElm->getAttribute('href');
 
         $cells = $basexpath->query('td', $tableRow);
 
         //2 - gameid + platforom
-        [$gameId, $platform] = $this->parseGameIdAndPlatform($basexpath, $cells->item(2));
+        /** @var DOMElement $platformCell */
+        $platformCell = $cells->item(2);
+        [$gameId, $platform] = $this->parseGameIdAndPlatform($basexpath, $platformCell);
 
         //3 - trueachievements score unlocked + total
         [$taWon, $taTotal] = $this->parseTaScore($cells->item(3));
@@ -154,7 +166,7 @@ class GameParserService
     /**
      * @throws InvalidPlatformValueException
      */
-    private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMNode $cell): array
+    private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
     {
         $gameId = 0;
         $m = [];
@@ -162,7 +174,9 @@ class GameParserService
             $gameId = intval($m[1]);
         }
 
-        $platformCode = $basexpath->query('img', $cell)->item(0)->getAttribute('title');
+        /** @var DOMElement $platformCodeCell */
+        $platformCodeCell = $basexpath->query('img', $cell)->item(0);
+        $platformCode = $platformCodeCell->getAttribute('title');
         $platform = match($platformCode) {
             'xbox-360'          => Platform::PLATFORM_360,
             'xbox-one'          => Platform::PLATFORM_XB1,
@@ -232,6 +246,7 @@ class GameParserService
     private function parseWalkthroughUrl(DOMXPath $basexpath, DOMNode $cell): ?string
     {
         $walkthroughUrl = null;
+        /** @var DOMElement $item */
         $item = $basexpath->query('a', $cell)->item(0);
         if ($item !== null) {
             $walkthroughUrl = $this->taBaseUrl . $item->getAttribute('href');
