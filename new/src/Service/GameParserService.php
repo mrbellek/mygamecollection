@@ -83,7 +83,7 @@ class GameParserService
         $walkthroughUrl = $this->parseWalkthroughUrl($basexpath, $cells->item(12));
 
         //13 - site ratio
-        //@TODO add column?
+        //@TODO add column? currently just calculating it
         //$siteRatio = $cells->item(13)->textContent;
 
         //14 - site rating

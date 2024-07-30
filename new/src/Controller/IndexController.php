@@ -5,8 +5,7 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - post-edit redirect url should go back to filter/page/search, without ugly slug
- * - flash messages dont have markup (form password)
+ * - post-edit redirect url should go back to filter/page/search, without ugly slug. use session?
  * - column sorting
  * - proper graphs for top stats instead of buttons
  */
@@ -94,7 +93,7 @@ class IndexController extends AbstractController
 
         $game = $gameRepository->find($id);
         if ($game === null) {
-            $this->addFlash('error', sprintf('Game with id %d could not be found.', $id));
+            $this->addFlash('danger', sprintf('Game with id %d could not be found.', $id));
             return $this->index();
         }
 
@@ -125,7 +124,7 @@ class IndexController extends AbstractController
     ): Response {
         $game = $gameRepository->find($id);
         if ($game === null) {
-            $this->addFlash('error', sprintf('Game with id %d could not be found.', $id));
+            $this->addFlash('danger', sprintf('Game with id %d could not be found.', $id));
             return $this->index();
         }
 
@@ -150,7 +149,7 @@ class IndexController extends AbstractController
         }
 
         if ($passwordVerificationOk === false) {
-            $this->addFlash('error', 'The password was incorrect.');
+            $this->addFlash('danger', 'The password was incorrect.');
             return $this->detail($gameRepository, $request, $id);
         }
         
@@ -158,7 +157,7 @@ class IndexController extends AbstractController
             try {
                 $this->delete($manager, $game);
             } catch(RuntimeException $e) {
-                $this->addFlash('error', sprintf(
+                $this->addFlash('danger', sprintf(
                     'Deleting game %d failed (%s).',
                     $id,
                     $e->getMessage()

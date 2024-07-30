@@ -4,6 +4,12 @@
     <input type="hidden" name="page" value="{{ page }}" />
     <input type="hidden" name="search" value="{{ search }}" />
 
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
     <div class="form-group">
         <label for="name" class="col-sm-2 control-label">Name</label>
         <div class="col-sm-10">
@@ -97,12 +103,6 @@
         </div>
     </div>
             
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="flash-{{ label }}">{{ message }}</div>
-        {% endfor %}
-    {% endfor %}
-
     {% if use_form_password %}
         <div class="form-group">
             <label for="password" class="col-sm-2 control-label">Password</label>

@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 /**
- * TODO:
- * - HashKey for POST request hardcoded? private? what is it? seems required
+ * TODO: HashKey for POST request hardcoded? private? what is it? seems required
  */
 
 use DOMDocument;
