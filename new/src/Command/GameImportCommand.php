@@ -185,6 +185,9 @@ class GameImportCommand extends Command
         }
     }
 
+    /**
+     * @return array<string>
+     */
     private function getGameDiff(
         Game $currentGame,
         Game $parsedGame,

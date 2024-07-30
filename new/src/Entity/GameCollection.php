@@ -15,6 +15,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class GameCollection extends ArrayCollection
 {
+    /**
+     * @param array<Game> $games
+     */
     public static function createAssociative(array $games): self
     {
         $elements = [];

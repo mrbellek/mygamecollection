@@ -22,6 +22,9 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
     
+    /**
+     * @return array<Game>
+     */
     public function findBySearch(string $searchTerm): array
     {
         return $this->createQueryBuilder('g')
@@ -32,6 +35,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
     
+    /**
+     * @return array<Game>
+     */
     public function findIncompleteGames(): array
     {
         return $this->createQueryBuilder('g')
@@ -43,6 +49,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findOrderByBestRating(): array
     {
         return $this->createQueryBuilder('g')
@@ -53,6 +62,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findNotStartedOrderByBestRating(): array
     {
         return $this->createQueryBuilder('g')
@@ -64,6 +76,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findShortest(): array
     {
         return $this->createQueryBuilder('g')
@@ -76,6 +91,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findShortestNotStarted(): array
     {
         return $this->createQueryBuilder('g')
@@ -89,6 +107,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findLongest(): array
     {
         return $this->createQueryBuilder('g')
@@ -99,6 +120,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findPlayed(): array
     {
         return $this->createQueryBuilder('g')
@@ -107,6 +131,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findWithNonZeroTaTotal(): array
     {
         return $this->createQueryBuilder('g')
@@ -115,6 +142,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findRecent(): array
     {
         return $this->createQueryBuilder('g')
@@ -124,6 +154,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findPaid(): array
     {
         return $this->createQueryBuilder('g')
@@ -133,6 +166,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findWithWalkthrough(): array
     {
         return $this->createQueryBuilder('g')
@@ -143,6 +179,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findNotCompletedDlc(): array
     {
         return $this->createQueryBuilder('g')
@@ -153,6 +192,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findOnSale(): array
     {
         return $this->createQueryBuilder('g')
@@ -163,6 +205,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findFree(): array
     {
         return $this->createQueryBuilder('g')
@@ -172,6 +217,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<Game>
+     */
     public function findUnavailable(): array
     {
         return $this->createQueryBuilder('g')

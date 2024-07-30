@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace App\Factory;
 
+/**
+ * @TODO: add some validation? if the typehints aren't enouguh
+ */
+
 use App\Entity\Game;
 use DateTime;
 

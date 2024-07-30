@@ -62,6 +62,7 @@ class GameParserService
         //2 - gameid + platforom
         /** @var DOMElement $platformCell */
         $platformCell = $cells->item(2);
+        /** @var int $gameId */
         [$gameId, $platform] = $this->parseGameIdAndPlatform($basexpath, $platformCell);
 
         //3 - trueachievements score unlocked + total
@@ -164,6 +165,7 @@ class GameParserService
     }
 
     /**
+     * @return array<int, string>
      * @throws InvalidPlatformValueException
      */
     private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
@@ -191,6 +193,9 @@ class GameParserService
         return [$gameId, $platform];
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function parseTaScore(DOMNode $cell): array
     {
         $taWon = 0;
@@ -204,6 +209,9 @@ class GameParserService
         return [$taWon, $taTotal];
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function parseGamerscore(DOMNode $cell): array
     {
         $gamerscoreWon = 0;
@@ -217,6 +225,9 @@ class GameParserService
         return [$gamerscoreWon, $gamerscoreTotal];
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function parseAchievements(DOMNode $cell): array
     {
         $achievementsWon = 0;
@@ -246,7 +257,7 @@ class GameParserService
     private function parseWalkthroughUrl(DOMXPath $basexpath, DOMNode $cell): ?string
     {
         $walkthroughUrl = null;
-        /** @var DOMElement $item */
+        /** @var ?DOMElement $item */
         $item = $basexpath->query('a', $cell)->item(0);
         if ($item !== null) {
             $walkthroughUrl = $this->taBaseUrl . $item->getAttribute('href');

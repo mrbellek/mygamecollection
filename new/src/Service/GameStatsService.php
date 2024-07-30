@@ -10,6 +10,9 @@ use DateTime;
 
 class GameStatsService
 {
+    /**
+     * @return array<string|int|float>
+     */
     public function getStats(GameCollection $games): array
     {
         return array_merge(
@@ -19,6 +22,9 @@ class GameStatsService
         );
     }
 
+    /**
+     * @return array<float|int>
+     */
     private function getGenericStats(GameCollection $games): array
     {
         return [
@@ -41,6 +47,9 @@ class GameStatsService
         ];
     }
 
+    /**
+     * @return array<float>
+     */
     private function getPurchasedStats(GameCollection $games): array
     {
         $totalPurchased = $games->reduce(function (?float $sum, Game $game) {
@@ -53,6 +62,9 @@ class GameStatsService
         ];
     }
 
+    /**
+     * @return array<string|float>
+     */
     private function getSpentStats(GameCollection $games): array
     {
         $gamesBoughtLastWeek = $games->filter(function (Game $game) {

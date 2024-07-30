@@ -19,6 +19,10 @@ use function curl_setopt_array;
 class GameScraperService
 {
     private string $baseUrl = 'https://www.trueachievements.com/gamer/mrbellek/gamecollection?executeformfunction&function=AjaxList&params=';
+
+    /**
+     * @var array<string>
+     */
     private array $parameters = [
         'ddlSortBy'                     => 'Titlename',
         'ddlDLCInclusionSetting'        => 'AllDLC',
@@ -58,6 +62,9 @@ class GameScraperService
         printf($message . PHP_EOL);
     }
 
+    /**
+     * @return array<string>
+     */
     public function scrape(string $gamertag): array
     {
         //return cached pages when debugging
@@ -154,6 +161,9 @@ class GameScraperService
             );
     }
 
+    /**
+     * @return \CurlHandle
+     */
     private function initCurl(string $url, string $gamerId)
     {
         //TA page uses the parameters in query string as well as post body,
