@@ -3,11 +3,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-/**
- * TODO:
- * - encapsulation for updating game
- */
-
 use DateTime;
 use DateTimeInterface;
 use App\Enum\CompletionEstimate as CompletionEstimateEnum;

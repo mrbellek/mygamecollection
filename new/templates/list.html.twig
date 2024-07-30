@@ -1,6 +1,5 @@
 <div class="form-group text-center" style="line-height: 5em;">
     <span class="btn btn-info">Total games<br/><span class="badge">{{ count }}</span></span>
-    <span class="btn btn-warning">Currently on sale<br/><span class="badge">{{ stats.on_sale }}</span></span>
     <span class="btn btn-success">Free games<br/><span class="badge">{{ stats.free }}</span></span>
     <span class="btn btn-success">Purchased for free<br/><span class="badge">{{ stats.purchased_free }}</span></span>
     <span class="btn btn-info">Total spent<br/><span class="badge">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
@@ -15,9 +14,9 @@
     <span class="btn btn-danger">Most expensive current:<br/>{{ stats.most_expensive_current.name }} <span class="badge">{{ stats.most_expensive_current.price|format_currency('EUR') }}</span></span>
     {% endif %}
     {% if not stats.spent_year is empty %}
-    <span class="btn btn-warning">Spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join(', ') }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Spent last month:<br/><span class="badge" title="{{ stats.spent_month_tooltip|join(', ') }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge" title="{{ stats.spent_6month_tooltip|join(', ') }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last month:<br/><span class="badge" title="{{ stats.spent_month_tooltip|join("\n") }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge" title="{{ stats.spent_6month_tooltip|join("\n") }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
     <span class="btn btn-warning">Spent last year:<br/><span class="badge">{{ stats.spent_year|format_currency('EUR') }}</span></span>
     {% endif %}
 </div>

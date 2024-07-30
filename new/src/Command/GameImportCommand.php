@@ -6,8 +6,6 @@ namespace App\Command;
 /**
  * TODO:
  * - figure out better way to detect if game has dlc
- * . implement GameCollection here (foreach doesnt work yet)
- * - game report seems broken after implementing Collection
  */
 
 use App\Entity\Game;
@@ -61,7 +59,7 @@ class GameImportCommand extends Command
             }
         }
 
-        $parsedGames = GameCollection::createAssociativeArray($parsedArray);
+        $parsedGames = GameCollection::createAssociative($parsedArray);
         $currentGames = $this->fetchCurrentGames();
 
         //check if scraped gamerid is same as gamerid in database
@@ -85,7 +83,7 @@ class GameImportCommand extends Command
         $gameRepository = $manager->getRepository(Game::class);
         $games = $gameRepository->findBy([], ['id' => 'ASC']);
 
-        return GameCollection::createAssociativeArray($games);
+        return GameCollection::createAssociative($games);
     }
 
     private function persistGames(GameCollection $games, OutputInterface $output): void
@@ -93,9 +91,10 @@ class GameImportCommand extends Command
         $manager = $this->doctrine->getManager();
         $gameRepository = $manager->getRepository(Game::class);
         $output->writeLn('Saving games to database...');
-        foreach ($games->toArray() as $game) {
+        foreach ($games as $game) {
             $existingGame = $gameRepository->find($game->getId());
-            if ($existingGame instanceof Game && count($this->getGameDiff($existingGame, $game)) > 0) {
+            $gameHasChanges = count($this->getGameDiff($existingGame, $game)) > 0;
+            if ($existingGame instanceof Game && $gameHasChanges) {
                 //game exists, update with new details if needed
                 $existingGame->update($game);
                 $manager->persist($existingGame);

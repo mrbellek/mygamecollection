@@ -3,10 +3,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-/**
- * @TODO:
- * - fix usort func
- */
 use App\Entity\Game;
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class GameCollection extends ArrayCollection
 {
-    public static function createAssociativeArray(array $games): self
+    public static function createAssociative(array $games): self
     {
         $elements = [];
         /** @var Game $game **/
@@ -35,9 +31,11 @@ class GameCollection extends ArrayCollection
         return $this->filter($callable)->count();
     }
     
-    public function usort(Closure $callable): void
+    public function usort(Closure $callable): GameCollection
     {
-        //@TODO this broke
-        //usort($this->elements, $callable);
+        $elements = $this->toArray();
+        usort($elements, $callable);
+
+        return new self($elements);
     }
 }

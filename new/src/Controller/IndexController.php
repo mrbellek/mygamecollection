@@ -81,7 +81,7 @@ class IndexController extends AbstractController
             return $this->gameFilter('all', $page);
         }
 
-        $games = GameCollection::createAssociativeArray($gameRepository->findBySearch($term));
+        $games = GameCollection::createAssociative($gameRepository->findBySearch($term));
         return $this->renderListWithResults($games, 'search', $page, $term);
     }
 
