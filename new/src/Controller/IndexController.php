@@ -101,7 +101,7 @@ class IndexController extends AbstractController
         $game = $gameRepository->find($id);
         if ($game === null) {
             $this->addFlash('danger', sprintf('Game with id %d could not be found.', $id));
-            return $this->index();
+            return $this->index($request);
         }
 
         try {
@@ -132,7 +132,7 @@ class IndexController extends AbstractController
         $game = $gameRepository->find($id);
         if ($game === null) {
             $this->addFlash('danger', sprintf('Game with id %d could not be found.', $id));
-            return $this->index();
+            return $this->index($request);
         }
 
         $manager = $doctrine->getManager();
