@@ -17,6 +17,7 @@ use App\Service\GameParserService;
 use App\Service\GameScraperService;
 use Doctrine\Persistence\ManagerRegistry;
 use DOMDocument;
+use DOMNodeList;
 use DOMXPath;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -60,14 +61,11 @@ class GameImportCommand extends Command
             //loop through games on page, convert to our game object
             $xpath = new DOMXPath($dom);
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
-            foreach ($games as $tableRow) {
-                try {
-                    $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
-                } catch (InvalidPlatformValueException $e) {
-                    $output->writeLn($e->getMessage());
-                    return Command::FAILURE;
-                }
-                $parsedArray[$parsedGame->getId()] = $parsedGame;
+            try {
+                $parsedArray = array_merge($parsedArray, $this->parseRowsIntoGames($games, $xpath));
+            } catch (InvalidPlatformValueException $e) {
+                $output->writeLn($e->getMessage());
+                return Command::FAILURE;
             }
         }
 
@@ -92,6 +90,24 @@ class GameImportCommand extends Command
         $this->removeDeletedGames($currentGames, $parsedGames, $output);
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @return array<int, Game>
+     */
+    private function parseRowsIntoGames(DOMNodeList|false $games, DOMXPath $xpath): array
+    {
+        if ($games === false || count($games) === 0) {
+            return [];
+        }
+
+        $parsedArray = [];
+        foreach ($games as $tableRow) {
+            $parsedGame = $this->gameParserService->parseRowIntoGame($tableRow, $xpath);
+            $parsedArray[$parsedGame->getId()] = $parsedGame;
+        }
+
+        return $parsedArray;
     }
 
     private function fetchCurrentGames(): GameCollection

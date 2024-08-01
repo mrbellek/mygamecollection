@@ -138,12 +138,12 @@ class GameParserService
 
     private function convertHoursPlayed(string $hoursPlayed): float
     {
-        $hours = 0.0;
+        $hours = 0;
         $minutes = 0;
         $matches = [];
         if (preg_match('/(\d+) hrs? (\d+) mins?/', $hoursPlayed, $matches)) {
-            $hours = $matches[1];
-            $minutes = $matches[2];
+            $hours = intval($matches[1]);
+            $minutes = intval($matches[2]);
         }
 
         return $hours + floatval($minutes) / 60;

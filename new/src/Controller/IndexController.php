@@ -137,11 +137,11 @@ class IndexController extends AbstractController
         $manager = $doctrine->getManager();
 
         $postData = $request->request;
-        $filter = $postData->get('filter', 'all');
+        $filter = $postData->getAlnum('filter', 'all');
         $page = $postData->getInt('page', 1);
-        $search = $postData->get('search');
-        $action = $postData->get('action');
-        $userFormPassword = $postData->get('password');
+        $search = $postData->getAlnum('search');
+        $action = $postData->getAlnum('action');
+        $userFormPassword = $postData->getAlnum('password');
 
         //password verification
         $passwordVerificationOk = false;
@@ -199,10 +199,10 @@ class IndexController extends AbstractController
         $periphRequired = null;
         $onlineMultiplayer = null;
         if ($game->getPlatform() === PlatformEnum::PLATFORM_360) {
-            $backwardsCompatible = $postData->get('backcompat');
-            $kinectRequired = $postData->get('kinect_required');
-            $periphRequired = $postData->get('peripheral_required');
-            $onlineMultiplayer = $postData->get('online_multiplayer');
+            $backwardsCompatible = $postData->getAlnum('backcompat');
+            $kinectRequired = $postData->getAlnum('kinect_required');
+            $periphRequired = $postData->getAlnum('peripheral_required');
+            $onlineMultiplayer = $postData->getAlnum('online_multiplayer');
         }
 
         $game->setPurchasedPrice(floatval($purchasedPrice));
