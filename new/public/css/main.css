@@ -1,3 +1,4 @@
+/** list page **/
 span.btn { cursor: default; }
 .table tbody tr > td.xb1 { background-color: #777 !important; color: white; }
 .table tbody tr > td.xsx { background-color: #107c10 !important; color: white; }
@@ -13,3 +14,6 @@ span.btn { cursor: default; }
 .table tbody tr > td.ratio-medium { background-color: orange; }
 .table tbody tr > td.ratio-hard { background-color: pink; }
 .table tbody tr > td.ratio-veryhard { background-color: red; }
+
+/** game page **/
+div.row { margin-bottom: 0.75em; }

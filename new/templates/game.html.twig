@@ -10,16 +10,20 @@
         {% endfor %}
     {% endfor %}
 
-    <div class="form-group">
-        <label for="name" class="col-sm-2 control-label">Name</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col col-sm-2">
+            <label for="name" class="col-form-label d-flex justify-content-end">Name</label>
+        </div>
+        <div class="col col-sm-8">
             <input type="text" id="name" name="name" class="form-control" disabled value="{{ game.name }}" required />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="platform" class="col-sm-2 control-label">Platform</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col col-sm-2">
+            <label for="platform" class="col-form-label d-flex justify-content-end">Platform</label>
+        </div>
+        <div class="col col-sm-8">
             <select name="platform" id="platform" disabled class="form-control">
                 <option value="Xbox 360" {% if game.platform == 'Xbox 360' %}selected{% endif %}>Xbox 360</option>
                 <option value="Xbox One" {% if game.platform == 'Xbox One' %}selected{%  endif %} %}>Xbox One</option>
@@ -32,256 +36,323 @@
     </div>
 
     {% if game.platform == 'Xbox 360' %}
-    <div class="form-group">
-        <label for="backcompat1" class="col-sm-2 control-label">Backwards compatible</label>
-        <div class="col-sm-10">
-            <label class="radio-inline">
-                <input type="radio" id="backcompat1" name="backcompat" value="1" {% if game.isBackwardsCompatible is same as(true) %}checked{% endif %}><b>Yes</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="backcompat2" name="backcompat" value="0" {% if game.isBackwardsCompatible is same as(false) %}checked{% endif %}><b>No</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="backcompat3" name="backcompat" value="" {% if game.isBackwardsCompatible is null %}checked{% endif %}>N/A
-            </label>
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="backcompat1" class="col-form-label d-flex justify-content-end">Backwards compatible</label>
+        </div>
+        <div class="col-sm-8">
+            <div class="form-check form-check-inline">
+                <input class=form-check-radio" type="radio" id="backcompat1" name="backcompat" value="1" {% if game.isBackwardsCompatible is same as(true) %}checked{% endif %}>
+                <label class="form-check-label"><b>Yes</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class=form-check-radio" type="radio" id="backcompat2" name="backcompat" value="0" {% if game.isBackwardsCompatible is same as(false) %}checked{% endif %}>
+                <label class="form-check-label"><b>No</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class=form-check-radio" type="radio" id="backcompat3" name="backcompat" value="" {% if game.isBackwardsCompatible is null %}checked{% endif %}>
+                <label class="form-check-label">N/A</label>
+            </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="kinect1" class="col-sm-2 control-label">Kinect required</label>
-        <div class="col-sm-10">
-            <label class="radio-inline">
-                <input type="radio" id="kinect1" name="kinect_required" value="1" {% if game.isKinectRequired is same as(true) %}checked{% endif %}><b>Yes</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="kinect2" name="kinect_required" value="0" {% if game.isKinectRequired is same as(false) %}checked{% endif %}><b>No</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="kinect3" name="kinect_required" value="" {% if game.isKinectRequired is null %}checked{% endif %}>N/A
-            </label>
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="kinect1" class="col-form-label d-flex justify-content-end">Kinect required</label>
+        </div>
+        <div class="col-sm-8">
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="kinect1" name="kinect_required" value="1" {% if game.isKinectRequired is same as(true) %}checked{% endif %}>
+                <label class="form-check-label"><b>Yes</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="kinect2" name="kinect_required" value="0" {% if game.isKinectRequired is same as(false) %}checked{% endif %}>
+                <label class="form-check-label"><b>No</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="kinect3" name="kinect_required" value="" {% if game.isKinectRequired is null %}checked{% endif %}>
+                <label class="form-check-label">N/A</label>
+            </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="periph1" class="col-sm-2 control-label">Peripheral required</label>
-        <div class="col-sm-10">
-            <label class="radio-inline">
-                <input type="radio" id="peripheral1" name="peripheral_required" value="1" {% if game.isPeripheralRequired is same as(true) %}checked{% endif %}><b>Yes</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="peripheral2" name="peripheral_required" value="0" {% if game.isPeripheralRequired is same as(false) %}checked{% endif %}><b>No</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="peripheral3" name="peripheral_required" value="" {% if game.isPeripheralRequired is null %}checked{% endif %}>N/A
-            </label>
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="periph1" class="col-form-label d-flex justify-content-end">Peripheral required</label>
+        </div>
+        <div class="col-sm-8">
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="peripheral1" name="peripheral_required" value="1" {% if game.isPeripheralRequired is same as(true) %}checked{% endif %}>
+                <label class="form-check-label"><b>Yes</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="peripheral2" name="peripheral_required" value="0" {% if game.isPeripheralRequired is same as(false) %}checked{% endif %}>
+                <label class="form-check-label"><b>No</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="peripheral3" name="peripheral_required" value="" {% if game.isPeripheralRequired is null %}checked{% endif %}>
+                <label class="form-check-label">N/A</label>
+            </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="online1" class="col-sm-2 control-label">Online multiplayer achievements</label>
-        <div class="col-sm-10">
-            <label class="radio-inline">
-                <input type="radio" id="online1" name="online_multiplayer" value="1" {% if game.isOnlineMultiplayer is same as(true) %}checked{% endif %}><b>Yes</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="online2" name="online_multiplayer" value="0" {% if game.isOnlineMultiplayer is same as(false) %}checked{% endif %}><b>No</b>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="online3" name="online_multiplayer" value="" {% if game.isOnlineMultiplayer is null %}checked{% endif %}>N/A
-            </label>
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="online1" class="col-form-label d-flex justify-content-end">Online multiplayer</label>
+        </div>
+        <div class="col-sm-8">
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="online1" name="online_multiplayer" value="1" {% if game.isOnlineMultiplayer is same as(true) %}checked{% endif %}>
+                <label class="form-check-label"><b>Yes</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="online2" name="online_multiplayer" value="0" {% if game.isOnlineMultiplayer is same as(false) %}checked{% endif %}>
+                <label class="form-check-label"><b>No</b></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-radio" type="radio" id="online3" name="online_multiplayer" value="" {% if game.isOnlineMultiplayer is null %}checked{% endif %}>
+                <label class="form-check-label">N/A</label>
+            </div>
         </div>
     </div>
     {% endif %}
 
-    <div class="form-group">
-        <label for="purchased_price" class="col-sm-2 control-label">Purchased price</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="purchased_price" class="col-form-label d-flex justify-content-end">Purchased price</label>
+        </div>
+        <div class="col-sm-8">
             <div class="input-group">
-                <div class="input-group-addon">&euro;</div>
+                <div class="input-group-text">&euro;</div>
                 <input type="text" id="purchased_price" name="purchased_price" class="form-control" value="{{ game.purchasedPrice }}" />
             </div>
         </div>
     </div>
             
     {% if use_form_password %}
-        <div class="form-group">
-            <label for="password" class="col-sm-2 control-label">Password</label>
-            <div class="col-sm-10">
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label for="password" class="col-form-label d-flex justify-content-end">Password</label>
+            </div>
+            <div class="col-sm-8">
                 <input type="password" id="password" name="password" class="form-control" />
             </div>
         </div>
     {% endif %}
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label">&nbsp;</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label class="col-form-label d-flex justify-content-end">&nbsp;</label>
+        </div>
+        <div class="col-sm-8">
             <input type="submit" name="action" value="Save" class="btn btn-primary" />
             {% if search %}
-                <a href="/search/{{ search }}/{{ page }}" class="btn btn-default">Cancel</a>
+                <a href="/search/{{ search }}/{{ page }}" class="btn btn-light">Cancel</a>
             {% else %}
-                <a href="/{{ filter }}/{{ page }}" class="btn btn-default">Cancel</a>
+                <a href="/{{ filter }}/{{ page }}" class="btn btn-light">Cancel</a>
             {% endif %}
             <input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
         </div>
     </div>
 
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <div class="col-sm-10">
-                <hr class="col-sm-10" />
-                <h3 class="form-control-static"><b>TrueAchievement-provided data</b></h3>
-            </div>
+    <div class="form-group row">
+        <div class="col-sm-2">&nbsp;</div>
+        <div class="col-sm-8">
+            <hr class="col-sm-8" />
+            <h3 class="form-control-static"><b>TrueAchievement-provided data</b></h3>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="completion_perc" class="col-sm-2 control-label">Completion percentage</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="completion_perc" class="col-form-label d-flex justify-content-end">Completion percentage</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="completion_perc" name="completion_perc" disabled class="form-control" value="{{ game.completionPercentage }} %" required />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="completion_estimate" class="col-sm-2 control-label">Completion estimate</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="completion_estimate" class="col-form-label d-flex justify-content-end">Completion estimate</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" disabled class="form-control" value="{{ game.completionEstimate }}" required />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="hours_played" class="col-sm-2 control-label">Hours played</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="hours_played" class="col-form-label d-flex justify-content-end">Hours played</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="hours_played" name="hours_played" disabled class="form-control" value="{{ game.hoursPlayed }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="achievements_won" class="col-sm-2 control-label">Achievements won</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="achievements_won" class="col-form-label d-flex justify-content-end">Achievements won</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="achievements_won" name="achievements_won" disabled class="form-control" value="{{ game.achievementsWon }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="achievements_total" class="col-sm-2 control-label">Achievements total</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="achievements_total" class="col-form-label d-flex justify-content-end">Achievements total</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="achievements_total" name="achievements_total" disabled class="form-control" value="{{ game.achievementsTotal }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="gamerscore_won" class="col-sm-2 control-label">Gamerscore won</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="gamerscore_won" class="col-form-label d-flex justify-content-end">Gamerscore won</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="gamerscore_won" name="gamerscore_won" disabled class="form-control" value="{{ game.gamerscoreWon }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="gamerscore_total" class="col-sm-2 control-label">Gamerscore total</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="gamerscore_total" class="col-form-label d-flex justify-content-end">Gamerscore total</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="gamerscore_total" name="gamerscore_total" disabled class="form-control" value="{{ game.gamerscoreTotal }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="ta_score" class="col-sm-2 control-label">TrueAchievement score</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="ta_score" class="col-form-label d-flex justify-content-end">TrueAchievement score</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="ta_score" name="ta_score" class="form-control" disabled value="{{ game.taScore }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="completion_date" class="col-sm-2 control-label">Completion date</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="completion_date" class="col-form-label d-flex justify-content-end">Completion date</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="completion_date" name="completion_date" disabled class="form-control" value="{{ game.completionDate|format_date }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="dlc" class="col-sm-2 control-label">DLC available</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="dlc" class="col-form-label d-flex justify-content-end">DLC available</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="dlc" name="dlc" disabled class="form-control" value="{% if game.dlc %}yes{% else %}no{% endif %}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="dlc_completion" class="col-sm-2 control-label">DLC completion percentage</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="dlc_completion" class="col-form-label d-flex justify-content-end">DLC completion perc</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="dlc_completion" name="dlc_completion" disabled class="form-control" value="{{ game.dlcCompletion }} %" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="site_rating" class="col-sm-2 control-label">Site rating</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="site_rating" class="col-form-label d-flex justify-content-end">Site rating</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="site_rating" name="site_rating" disabled class="form-control" value="{{ game.siteRating }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="format" class="col-sm-2 control-label">Media</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="format" class="col-form-label d-flex justify-content-end">Media</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" disabled class="form-control" value="{{ game.format }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="status" class="col-sm-2 control-label">Status</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="status" class="col-form-label d-flex justify-content-end">Status</label>
+        </div>
+        <div class="col-sm-8">
             <select name="status" id="status" disabled class="form-control">
                 <option value=""></option>
                 <option value="available" {% if game.status == 'available' %}selected{% endif %}>Available</option>
                 <option value="delisted" {% if game.status == 'delisted' %}selected{% endif %}>Delisted</option>
-                <option value="region-locked" {% if game.status == 'region-locked' %}selected{% endif %}>Region locked</option>
-                <option value="sale" {% if game.status == 'sale' %}selected{% endif %}>On sale</option>
             </select>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="current_price" class="col-sm-2 control-label">Current price</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="current_price" class="col-form-label d-flex justify-content-end">Current price</label>
+        </div>
+        <div class="col-sm-8">
             <div class="input-group">
-                <div class="input-group-addon">&euro;</div>
+                <div class="input-group-text">&euro;</div>
                 <input type="text" id="current_price" name="current_price" disabled class="form-control" value="{{ game.currentPrice }}" />
             </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="regular_price" class="col-sm-2 control-label">Regular price</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="regular_price" class="col-form-label d-flex justify-content-end">Regular price</label>
+        </div>
+        <div class="col-sm-8">
             <div class="input-group">
-                <div class="input-group-addon">&euro;</div>
+                <div class="input-group-text">&euro;</div>
                 <input type="text" id="regular_price" name="regular_price" disabled class="form-control" value="{{ game.regularPrice }}" />
             </div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="walkthrough_url" class="col-sm-2 control-label"><a href="{{ game.walkthroughUrl }}" target="_blank">Walkthrough URL</a></label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="walkthrough_url" class="col-form-label d-flex justify-content-end">
+                <a class="link-secondary" href="{{ game.walkthroughUrl }}" target="_blank">Walkthrough URL</a>
+            </label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="walkthrough_url" name="walkthrough_url" disabled class="form-control" value="{{ game.walkthroughUrl }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="game_url" class="col-sm-2 control-label"><a href="{{ game.gameUrl }}" target="_blank">Game page URL</a></label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="game_url" class="col-form-label d-flex justify-content-end">
+                <a class="link-secondary" href="{{ game.gameUrl }}" target="_blank">Game page URL</a>
+            </label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="game_url" name="game_url" disabled class="form-control" value="{{ game.gameUrl }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="date_created" class="col-sm-2 control-label">Date added</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="date_created" class="col-form-label d-flex justify-content-end">Date added</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="date_created" name="date_created" disabled class="form-control" value="{{ game.created|format_datetime }}" />
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="last_modified" class="col-sm-2 control-label">Date last modified</label>
-        <div class="col-sm-10">
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <label for="last_modified" class="col-form-label d-flex justify-content-end">Date last modified</label>
+        </div>
+        <div class="col-sm-8">
             <input type="text" id="last_modified" name="last_modified" disabled class="form-control" value="{{ game.lastModified|format_datetime }}" />
         </div>
     </div>

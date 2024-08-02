@@ -8,6 +8,9 @@ namespace App\Controller;
  * - get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
  * - column sorting
+ * - bootstrap 3 upgrade to 4, to 5
+ * - reponsive design for mobile
+ * - shortlist?
  */
 
 use App\Entity\Game;
@@ -58,6 +61,7 @@ class IndexController extends AbstractController
         try {
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         } catch (OutOfRangeCurrentPageException) {
+            //@TODO redirect to page 1 instead of sneakily rendering page 1
             $pageNum = 1;
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         }

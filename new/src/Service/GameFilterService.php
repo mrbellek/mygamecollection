@@ -37,7 +37,6 @@ class GameFilterService
             'recent' => GameCollection::createAssociative($this->gameRepository->findRecent()),
             'paid' => GameCollection::createAssociative($this->gameRepository->findPaid()),
             'free' => GameCollection::createAssociative($this->gameRepository->findFree()),
-            'onsale' => GameCollection::createAssociative($this->gameRepository->findOnSale()),
             'physical' => $this->getPhysical(),
             'sold' => GameCollection::createAssociative($this->gameRepository->findBy(['status' => 'Sold'], ['name' => 'ASC'])),
             'unavailable' => GameCollection::createAssociative($this->gameRepository->findUnavailable()),

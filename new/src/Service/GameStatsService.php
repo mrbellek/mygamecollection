@@ -81,6 +81,7 @@ class GameStatsService
         });
 
         return [
+            'most_expensive_purchase' => $this->getMostExpensivePurchase($games),
             'spent_week' => $gamesBoughtLastWeek->reduce(function (?float $sum, Game $game) {
                 return $sum + $game->getPurchasedPrice();
             }),
@@ -110,5 +111,18 @@ class GameStatsService
                     return $list;
                 }) : ['over 10 games!'],
         ];
+    }
+
+    private function getMostExpensivePurchase(GameCollection $games): ?Game
+    {
+        $mostExpensiveGame = null;
+        /** @var Game $game **/
+        foreach ($games as $game) {
+            if ($game->getPurchasedPrice() > $mostExpensiveGame?->getPurchasedPrice()) {
+                $mostExpensiveGame = $game;
+            }
+        }
+
+        return $mostExpensiveGame;
     }
 }

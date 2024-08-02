@@ -1,20 +1,19 @@
 <div class="form-group text-center" style="line-height: 5em;">
-    <span class="btn btn-info">Total games<br/><span class="badge">{{ count }}</span></span>
-    <span class="btn btn-success">Free games<br/><span class="badge">{{ stats.free }}</span></span>
-    <span class="btn btn-success">Purchased for free<br/><span class="badge">{{ stats.purchased_free }}</span></span>
-    <span class="btn btn-info">Total spent<br/><span class="badge">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
-    <span class="btn btn-info">Average cost<br/><span class="badge">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
-    <span class="btn btn-info">Total estimated playtime<br/><span class="badge">{{ stats.total_playtime }} hours</span></span>
-    <span class="btn btn-info">Spent playtime<br/><span class="badge">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
+    <span class="btn btn-info">Total games<br/><span class="badge rounded-pill text-bg-light">{{ count }}</span></span>
+    <span class="btn btn-success">Free games<br/><span class="badge rounded-pill text-bg-light">{{ stats.free }}</span></span>
+    <span class="btn btn-success">Purchased for free<br/><span class="badge rounded-pill text-bg-light">{{ stats.purchased_free }}</span></span>
+    <span class="btn btn-info">Total spent<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
+    <span class="btn btn-info">Average cost<br/><span class="badge rounded-pill text-bg-light">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
+    <span class="btn btn-info">Total estimated playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_playtime }} hours</span></span>
+    <span class="btn btn-info">Spent playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
+    <br/>
     {% if stats.most_expensive_purchase is defined %}
-    <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge">{{ stats.most_expensive_purchase.price|format_currency('EUR') }}</span></span>
+    <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge rounded-pill text-bg-light">{{ stats.most_expensive_purchase.purchasedPrice|format_currency('EUR') }}</span></span>
     {% endif %}
-    {% if not stats.spent_year is empty %}
-    <span class="btn btn-warning">Spent last week:<br/><span class="badge" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Spent last month:<br/><span class="badge" title="{{ stats.spent_month_tooltip|join("\n") }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge" title="{{ stats.spent_6month_tooltip|join("\n") }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
-    <span class="btn btn-warning">Spent last year:<br/><span class="badge">{{ stats.spent_year|format_currency('EUR') }}</span></span>
-    {% endif %}
+    <span class="btn btn-warning">Spent last week:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last month:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_month_tooltip|join("\n") }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_6month_tooltip|join("\n") }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last year:<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_year|format_currency('EUR') }}</span></span>
 </div>
 
 <div class="form-group" style="line-height: 3em;">
@@ -32,12 +31,11 @@
         <a class="btn btn-info {% if filter == 'easiest' %}active{% endif %}" href="/easiest">Easiest</a>
         <a class="btn btn-info {% if filter == 'hardest' %}active{% endif %}" href="/hardest">Hardest</a>
         <a class="btn btn-info {% if filter == 'recent' %}active{% endif %}" href="/recent">Recent</a>
-        <a class="btn btn-default {% if filter == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
-        <a class="btn btn-default {% if filter == 'free' %}active{% endif %}" href="/free">Free games</a>
-        <a class="btn btn-default {% if filter == 'onsale' %}active{% endif %}" href="/onsale">On sale</a>
-        <a class="btn btn-default {% if filter == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
-        <a class="btn btn-default {% if filter == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
-        <a class="btn btn-default {% if filter == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
+        <a class="btn btn-light {% if filter == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
+        <a class="btn btn-light {% if filter == 'free' %}active{% endif %}" href="/free">Free games</a>
+        <a class="btn btn-light {% if filter == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
+        <a class="btn btn-light {% if filter == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
+        <a class="btn btn-light {% if filter == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
         <a class="btn btn-warning {% if filter == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
         <a class="btn btn-warning {% if filter == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
         <a class="btn btn-warning {% if filter == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
@@ -56,17 +54,9 @@
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
             <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
-            <a href="/all/1" class="btn btn-default">Clear</a>
+            <a href="/all/1" class="btn btn-light">Clear</a>
         </span>
     </form>
-    <!--form method="post" enctype="multipart/form-data" class="form-inline">
-        <input type="file" name="upload" style="width: auto; display: inline;" id="upload" class="form-control hidden-xs" />
-        {% if form_password is defined %}
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-        {% endif %}
-        <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import prices JSON" />
-        <input class="btn btn-info hidden-xs" name="action" type="submit" value="Import game collection CSV" />
-    </form-->
 </div>
 
 <a name="content"></a>
@@ -85,20 +75,26 @@
 {% endif %}
 
 {% if games.haveToPaginate %}
-<nav style="text-align: center;">
-    <ul class="pagination">
-        {% if page > 2 %}<li><a href="/{{ paginateSlug }}/1">1</a></li>{% endif %}
-        {% if page > 3 %}<li><a href="/{{ paginateSlug }}/2">2</a></li>{% endif %}
-        {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
+<nav class="text-center">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            <ul class="pagination" style="margin-top: 1em;">
+                {% if page > 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/1">1</a></li>{% endif %}
+                {% if page > 3 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/2">2</a></li>{% endif %}
+                {% if page > 4 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
 
-        {% if page > 1 %}<li><a href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
-        <li class="active"><span>{{ page }}</span></li>
-        {% if page < games.getNbPages %}<li><a href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+                {% if page > 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+                <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                {% if page < games.getNbPages %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
 
-        {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
-        {% if page < games.getNbPages - 2 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
-        {% if page < games.getNbPages - 1 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
-    </ul>
+                {% if page < games.getNbPages - 3 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
+                {% if page < games.getNbPages - 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+                {% if page < games.getNbPages - 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+            </ul>
+        </div>
+        <div class="col"></div>
+    </div>
 </nav>
 {% endif %}
 
@@ -120,11 +116,11 @@
         <th></th>
     </tr>
     {% for game in games %}
-        <tr class="table-striped {{ game.completionPercentageClass }}">
+        <tr class="table-striped table-{{ game.completionPercentageClass }}">
             <td>
-                <a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a>
+                <a href="{{ game.gameUrl }}" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ game.name }}</a>
                 {% if game.walkthroughUrl is not empty %}
-                    <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="glyphicon glyphicon-book"></span></a>
+                    <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="bi-book"></span></a>
                 {% endif %}
             </td>
             <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
@@ -134,18 +130,18 @@
             <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
             <td class="{{ game.completionEstimateClass }}">
                 <span class="hidden-xs" title="{{ game.hoursPlayed|number_format(2) }} hours played">{{ game.completionEstimate }}</span>
-                <span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span>
+                <!--span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span-->
             </td>
             <td>
                 {% if game.hasDlc %}
-                <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="glyphicon glyphicon-plus"></span></td>
+                <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="bi-plus-lg"></span></td>
                 {% endif %}
             </td>
             {% if game.platform == 'Xbox 360' %}
-                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="glyphicon glyphicon-refresh" /></td>
-                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="glyphicon glyphicon-eye-open" /></td>
-                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="glyphicon glyphicon-music" /></td>
-                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="glyphicon glyphicon-cloud-upload" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="bi-repeat" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="bi-eye-fill" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="bi-music-note-beamed" /></td>
+                <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="bi-cloud-upload" /></td>
             {% else %}
                 <td /><td /><td /><td />
             {% endif %}
@@ -157,20 +153,9 @@
                     {{ game.purchasedPrice|format_currency('EUR') }}
                 {% endif %}
             </td>
-            <!--td class="hidden-xs">
-                {# if game.status == 'delisted' %}
-                    <i title="{{ game.status }}" class="gpyhpicon glyphicon-ban-circle text-danger"></i>
-                {% elseif game.status == 'region-locked' %}
-                    <i title="{{ game.status }}" class="gpyhpicon glyphicon-globe text-danger"></i>
-                {% elseif game.currentPrice == 0 %}
-                {% else %}
-                    {{ game.currentPrice|format_currency('EUR') }}
-                {% endif #}
-            </td-->
-            <!--td>current price</td-->
             <!--td>shortlist</td-->
             <td>
-                <a href="/game/{{ game.id }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="/game/{{ game.id }}"><span class="bi-pencil"></span></a>
             </td>
         </tr>
     {% else %}
@@ -190,21 +175,27 @@
 </table>
 
 {% if games.haveToPaginate %}
-<nav style="text-align: center;">
-    <ul class="pagination">
-        {% if page > 2 %}<li><a href="/{{ paginateSlug }}/{{ 1 }}">1</a></li>{% endif %}
-        {% if page > 3 %}<li><a href="/{{ paginateSlug }}/{{ 2 }}">2</a></li>{% endif %}
-        {% if page > 4 %}<li class="inactive"><span>..</span></li>{% endif %}
+<div class="text-center">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            <ul class="pagination">
+                {% if page > 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ 1 }}">1</a></li>{% endif %}
+                {% if page > 3 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ 2 }}">2</a></li>{% endif %}
+                {% if page > 4 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
 
-        {% if page > 1 %}<li><a href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
-        <li class="active"><span>{{ page }}</span></li>
-        {% if page < games.getNbPages %}<li><a href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+                {% if page > 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+                <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                {% if page < games.getNbPages %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
 
-        {% if page < games.getNbPages - 3 %}<li class="inactive"><span>..</span></li>{% endif %}
-        {% if page < games.getNbPages - 2 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
-        {% if page < games.getNbPages - 1 %}<li><a href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
-    </ul>
-</nav>
+                {% if page < games.getNbPages - 3 %}<li class="page-item disabledinactive"><span class="page-link">&hellip;</span></li>{% endif %}
+                {% if page < games.getNbPages - 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+                {% if page < games.getNbPages - 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+            </ul>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
 {% endif %}
 
 <script>

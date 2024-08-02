@@ -195,19 +195,6 @@ class GameRepository extends ServiceEntityRepository
     /**
      * @return array<Game>
      */
-    public function findOnSale(): array
-    {
-        return $this->createQueryBuilder('g')
-            ->where('g.status = :sale')
-            ->setParameter(':sale', 'sale')
-            ->orderBy('g.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return array<Game>
-     */
     public function findFree(): array
     {
         return $this->createQueryBuilder('g')
