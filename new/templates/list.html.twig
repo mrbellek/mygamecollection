@@ -7,7 +7,7 @@
     <span class="btn btn-info">Total estimated playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_playtime }} hours</span></span>
     <span class="btn btn-info">Spent playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
     <br/>
-    {% if stats.most_expensive_purchase is defined %}
+    {% if stats.most_expensive_purchase %}
     <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge rounded-pill text-bg-light">{{ stats.most_expensive_purchase.purchasedPrice|format_currency('EUR') }}</span></span>
     {% endif %}
     <span class="btn btn-warning">Spent last week:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
