@@ -126,16 +126,19 @@ class GameImportCommand extends Command
         $output->writeLn('Saving games to database...');
         foreach ($games as $game) {
             $existingGame = $gameRepository->find($game->getId());
+            if (!($existingGame instanceof Game)) {
+                //insert new game
+                $manager->persist($game);
+                continue;
+            }
+
             $gameHasChanges = count($this->getGameDiff($existingGame, $game)) > 0;
-            if ($existingGame instanceof Game && $gameHasChanges) {
+            if ($gameHasChanges === true) {
                 //game exists, update with new details if needed
                 $existingGame->update($game);
                 $manager->persist($existingGame);
-            } elseif ($existingGame instanceof Game) {
-                //no changes
             } else {
-                //insert new game
-                $manager->persist($game);
+                //no changes
             }
         }
         $manager->flush();
@@ -232,17 +235,18 @@ class GameImportCommand extends Command
         if ($currentGame->getAchievementsWon() < $parsedGame->getAchievementsWon()) {
             //more achievements unlocked
             $changes[] = sprintf(
-                '%d more achievements unlocked, %d left',
+                '%d more achievements unlocked, now %d/%d unlocked',
                 $parsedGame->getAchievementsWon() - $currentGame->getAchievementsWon(),
-                $parsedGame->getAchievementsTotal() - $parsedGame->getAchievementsWon()
+                $parsedGame->getAchievementsWon(),
+                $parsedGame->getAchievementsTotal()
             );
         }
         if ($currentGame->getAchievementsTotal() < $parsedGame->getAchievementsTotal()) {
             //new dlc appeared
             $changes[] = sprintf(
                 'new dlc appeared! %d new achievements for %d GS',
-                $currentGame->getAchievementsTotal() - $parsedGame->getAchievementsTotal(),
-                $currentGame->getGamerscoreTotal() - $parsedGame->getGamerscoreTotal()
+                $parsedGame->getAchievementsTotal() - $currentGame->getAchievementsTotal(),
+                $parsedGame->getGamerscoreTotal() - $currentGame->getGamerscoreTotal()
             );
         }
         if ($currentGame->getStatus() !== $parsedGame->getStatus()) {

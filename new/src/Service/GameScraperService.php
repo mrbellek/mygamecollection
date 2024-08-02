@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Service;
 
 /**
- * TODO: HashKey for POST request hardcoded? private? what is it? seems required
+ * TODO:
+ * - HashKey for POST request hardcoded? private? what is it? seems required
+ * - preview how many pages are coming for more accurate fetch + feedback to user
  */
 
 use App\Exception\InvalidTAContentException;
@@ -95,10 +97,8 @@ class GameScraperService
             $result = curl_exec($curl);
             $scrapedPages[] = $result;
 
-            //cache scraped pages when debugging
-            if ($this->debug === true) {
-                file_put_contents(sprintf('scrape%d.html', $page), $result);
-            }
+            //cache scraped pages for when debugging
+            file_put_contents(sprintf('scrape%d.html', $page), $result);
             $page++;
 
             //stop whe we hit the 'no matching titles' message, or pagecount is insane
