@@ -6,7 +6,6 @@ namespace App\Service;
 /**
  * TODO:
  * - HashKey for POST request hardcoded? private? what is it? seems required
- * - preview how many pages are coming for more accurate fetch + feedback to user
  */
 
 use App\Exception\InvalidTAContentException;
@@ -83,31 +82,51 @@ class GameScraperService
         $gamerId = $this->lookupGamerId($gamertag);
 
         //construct game collection url and fetch first page
-        //loop until no more pages, indicates by result being:
-        // <div class="warningspanel">Sorry there are no matching titles</div>
-        //we *could* just load the html into DOMDocument and check for 0 games,
-        //but that would be loads slower.
-        $page = 1;
         $scrapedPages = [];
-        do {
-            $url = $this->buildUrl($gamerId, $page);
-            $curl = $this->initCurl($url, $gamerId);
+        $url = $this->buildUrl($gamerId, 1);
+        $curl = $this->initCurl($gamerId);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        $this->log('Importing TA game collection page 1/?..');
 
-            $this->log(sprintf('Importing TA game collection page %d..', $page));
+        //get number of games from first page 'total' line and calculate page count
+        $result = curl_exec($curl);
+        $scrapedPages[] = $result;
+        $totalPages = $this->getPageCountFromFirstPage($result);
+
+        for ($page = 2; $page <= $totalPages; $page++) {
+            $url = $this->buildUrl($gamerId, $page);
+            curl_setopt($curl, CURLOPT_URL, $url);
+
+            $this->log(sprintf('Importing TA game collection page %d/%d..', $page, $totalPages));
             $result = curl_exec($curl);
             $scrapedPages[] = $result;
 
             //cache scraped pages for when debugging
             file_put_contents(sprintf('scrape%d.html', $page), $result);
-            $page++;
-
-            //stop whe we hit the 'no matching titles' message, or pagecount is insane
-        } while (str_contains($result, 'warningspanel') === false && $page < 100);
+        }
         curl_close($curl);
 
         return $scrapedPages;
     }
     
+    private function getPageCountFromFirstPage(string $html): ?int
+    {
+        $numberOfGames = 0;
+
+        $dom = new DOMDocument();
+        $dom->loadHtml($html);
+        $xpath = new DOMXPath($dom);
+        $totalRow = $xpath->query('//tr[@class="total"]/td[@class="left"]');
+        $matches = [];
+        if (preg_match('/([0-9,]+) Titles?/', $totalRow[0]->textContent, $matches) === 1) {
+            $numberOfGames = intval(str_replace(',', '', $matches[1]));
+        } else {
+            throw new InvalidTAContentException('Failed to determine the number of pages in your game collection.');
+        }
+
+        return intval(ceil($numberOfGames / 100));
+    }
+
     /**
      * Lookup TA gamerId based on gamertag, there's a link tag in the header that has it
      * 
@@ -164,11 +183,11 @@ class GameScraperService
     /**
      * @return \CurlHandle
      */
-    private function initCurl(string $url, string $gamerId)
+    private function initCurl(string $gamerId)
     {
         //TA page uses the parameters in query string as well as post body,
         //but just the query string seems to work fine for us
-        $curl = curl_init($url);
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
