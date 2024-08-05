@@ -52,6 +52,7 @@ class GameParserService
 
         //1 - name + url
         $namelink = $basexpath->query('td[@class="smallgame"]/a', $tableRow);
+        //@TODO utf8_decode is deprecated, fix it
         $name = utf8_decode($namelink->item(0)->textContent);
         /** @var DOMElement $gameUrlElm **/
         $gameUrlElm =  $namelink->item(0);

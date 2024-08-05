@@ -5,8 +5,9 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
+ * . get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
+ * - organise the heap of buttons into something like dropdowns?
  * - column sorting
  * - reponsive design for mobile
  * - shortlist?
@@ -31,6 +32,8 @@ use RuntimeException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -219,12 +222,34 @@ class IndexController extends AbstractController
         $manager->flush();
     }
 
-    #[Route("/scrape", name: "scrape")]
-    public function scrape(GameScraperService $scraper): Response
+    #[Route("/import", name: "scrape")]
+    public function scrape(Request $request): Response
     {
-        //@TODO somehow get symfony command to run in the browser?
-        $scrapedGames = $scraper->scrape('mrbellek');
-        dd(($scrapedGames));
+        $gamertag = $request->request->get('gamertag');
+        if ($gamertag === null) {
+            return $this->render('import.html.twig');
+        }
+
+        $dir = realpath(getcwd() . '/..');
+        $process = new Process([
+            'php',
+            'bin/console',
+            'app:import',
+            $gamertag
+        ], $dir);
+        //@TODO I want the output to display in realtime as the command runs, 
+        //but 1) it needs to run  in an iframe or something to give live output,
+        //and 2) the anon function doesnt include line endings for some reason.
+        $process->run(function($type, $buffer) {
+            if ($type !== Process::ERR) {
+                //printf('%s: %s<br/>' . PHP_EOL, $type, $buffer);
+            }
+        });
+
+        return $this->render('import.html.twig', [
+            'gamertag' => $gamertag,
+            'output' => $process->getOutput(),
+        ]);
     }
 
     /**
