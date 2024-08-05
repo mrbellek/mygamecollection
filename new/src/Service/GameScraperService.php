@@ -108,8 +108,8 @@ class GameScraperService
 
         return $scrapedPages;
     }
-    
-    private function getPageCountFromFirstPage(string $html): ?int
+
+    private function getPageCountFromFirstPage(string $html): int
     {
         $numberOfGames = 0;
 

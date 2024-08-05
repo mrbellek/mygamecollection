@@ -5,6 +5,8 @@ namespace App\Controller;
 
 /**
  * TODO:
+ * - split out monolith controller into smaller controllers
+ * - refactor templates so everything extends from index.html.twig
  * . get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
  * - organise the heap of buttons into something like dropdowns?
