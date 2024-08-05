@@ -18,39 +18,64 @@
 
 <div class="form-group" style="line-height: 3em;">
     <form id="searchForm" action="/search/term/{{ page }}" method="get" class="form-inline">
-        <a class="btn btn-success {% if filter == 'all' %}active{% endif %}" href="/all">All games</a>
-        <a class="btn btn-success {% if filter == 'completed' %}active{% endif %}" href="/completed">Completed games</a>
-        <a class="btn btn-info {% if filter == 'incomplete' %}active{% endif %}" href="/incomplete">Incomplete games</a>
-        <a class="btn btn-info {% if filter == 'notstarted' %}active{% endif %}" href="/notstarted">Not started games</a>
-        <a class="btn btn-info {% if filter == 'bestrating' %}active{% endif %}" href="/bestrating">Best games</a>
-        <a class="btn btn-info {% if filter == 'notstartedbestrating' %}active{% endif %}" href="/notstartedbestrating">Best not started games</a>
-        <a class="btn btn-info {% if filter == 'shortest' %}active{% endif %}" href="/shortest">Shortest games</a>
-        <a class="btn btn-info {% if filter == 'shortestnotstarted' %}active{% endif %}" href="/shortestnotstarted">Shortest not started games</a>
-        <a class="btn btn-info {% if filter == 'longest' %}active{% endif %}" href="/longest">Longest games</a>
-        <a class="btn btn-info {% if filter == 'mostplayed' %}active{% endif %}" href="/mostplayed">Most played</a>
-        <a class="btn btn-info {% if filter == 'easiest' %}active{% endif %}" href="/easiest">Easiest</a>
-        <a class="btn btn-info {% if filter == 'hardest' %}active{% endif %}" href="/hardest">Hardest</a>
-        <a class="btn btn-info {% if filter == 'recent' %}active{% endif %}" href="/recent">Recent</a>
-        <a class="btn btn-light {% if filter == 'paid' %}active{% endif %}" href="/paid">Purchased games</a>
-        <a class="btn btn-light {% if filter == 'free' %}active{% endif %}" href="/free">Free games</a>
-        <a class="btn btn-light {% if filter == 'physical' %}active{% endif %}" href="/physical">Physical games</a>
-        <a class="btn btn-light {% if filter == 'sold' %}active{% endif %}" href="/sold">Sold games</a>
-        <a class="btn btn-light {% if filter == 'unavailable' %}active{% endif %}" href="/unavailable">Unavailable games</a>
-        <a class="btn btn-warning {% if filter == '360' %}active{% endif %}" href="/360">Xbox 360 games</a>
-        <a class="btn btn-warning {% if filter == 'xb1' %}active{% endif %}" href="/xb1">Xbox One games</a>
-        <a class="btn btn-warning {% if filter == 'xsx' %}active{% endif %}" href="/xsx">Xbox Series X|S games</a>
-        <a class="btn btn-warning {% if filter == 'win' %}active{% endif %}" href="/win">Windows games</a>
-        <a class="btn btn-warning {% if filter == 'bc' %}active{% endif %}" href="/bc">Backwards compatible games</a>
-        <a class="btn btn-warning {% if filter == 'nonbc' %}active{% endif %}" href="/nonbc">Not backwards compatible games</a>
-        <a class="btn btn-warning {% if filter == 'nonbckinect' %}active{% endif %}" href="/nonbckinect">Non-BC games with Kinect</a>
-        <a class="btn btn-warning {% if filter == 'nonbcperiph' %}active{% endif %}" href="/nonbcperiph">Non-BC games with peripheral</a>
-        <a class="btn btn-danger {% if filter == 'nonbconline' %}active{% endif %}" href="/nonbconline">Non-BC games with online multiplayer</a>
-        <a class="btn btn-success {% if filter == 'walkthrough' %}active{% endif %}" href="/walkthrough">With walkthrough</a>
-        <a class="btn btn-warning {% if filter == 'nowalkthrough' %}active{% endif %}" href="/nowalkthrough">Without walkthrough</a>
-        <a class="btn btn-success {% if filter == 'nodlc' %}active{% endif %}" href="/nodlc">Without DLC</a>
-        <a class="btn btn-warning {% if filter == 'withdlc' %}active{% endif %}" href="/withdlc">With DLC</a>
-        <a class="btn btn-success {% if filter == 'dlccompleted' %}active{% endif %}" href="/dlccompleted">DLC completed</a>
-        <a class="btn btn-warning {% if filter == 'dlcnotcompleted' %}active{% endif %}" href="/dlcnotcompleted">DLC not completed</a>
+        <div class="dropdown" style="display: inline;">
+            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">Completion</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/all">All games</a></li>
+                <li><a class="dropdown-item" href="/completed">Completed games</a></li>
+                <li><a class="dropdown-item" href="/incomplete">Incomplete games</a></li>
+                <li><a class="dropdown-item" href="/notstarted">Not started games</a></li>
+            </ul>
+        </div>
+        <div class="dropdown" style="display: inline;">
+            <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">Sorting</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/bestrating">Best games</a></li>
+                <li><a class="dropdown-item" href="/notstartedbestrating">Best not started games</a></li>
+                <li><a class="dropdown-item" href="/shortest">Shortest games</a></li>
+                <li><a class="dropdown-item" href="/shortestnotstarted">Shortest not started games</a></li>
+                <li><a class="dropdown-item" href="/longest">Longest games</a></li>
+                <li><a class="dropdown-item" href="/mostplayed">Most played</a></li>
+                <li><a class="dropdown-item" href="/easiest">Easiest</a></li>
+                <li><a class="dropdown-item" href="/hardest">Hardest</a></li>
+            </ul>
+        </div>
+        <div class="dropdown" style="display: inline;">
+            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">Store/Media</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/recent">Recent</a></li>
+                <li><a class="dropdown-item" href="/paid">Purchased games</a></li>
+                <li><a class="dropdown-item" href="/free">Free games</a></li>
+                <li><a class="dropdown-item" href="/physical">Physical games</a></li>
+                <li><a class="dropdown-item" href="/sold">Sold games</a></li>
+                <li><a class="dropdown-item" href="/unavailable">Unavailable games</a></li>
+            </ul>
+        </div>
+        <div class="dropdown" style="display: inline;">
+            <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">Platform</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/360">Xbox 360 games</a></li>
+                <li><a class="dropdown-item" href="/xb1">Xbox One games</a></li>
+                <li><a class="dropdown-item" href="/xsx">Xbox Series X|S games</a></li>
+                <li><a class="dropdown-item" href="/win">Windows games</a></li>
+                <li><a class="dropdown-item" href="/bc">Backwards compatible games</a></li>
+                <li><a class="dropdown-item" href="/nonbc">Not backwards compatible games</a></li>
+                <li><a class="dropdown-item" href="/nonbckinect">Non-BC games with Kinect</a></li>
+                <li><a class="dropdown-item" href="/nonbcperiph">Non-BC games with peripheral</a></li>
+                <li><a class="dropdown-item" href="/nonbconline">Non-BC games with online multiplayer</a></li>
+            </ul>
+        </div>
+        <div class="dropdown" style="display: inline;">
+            <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">Walkthrough/DLC</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/walkthrough">With walkthrough</a></li>
+                <li><a class="dropdown-item" href="/nowalkthrough">Without walkthrough</a></li>
+                <li><a class="dropdown-item" href="/nodlc">Without DLC</a></li>
+                <li><a class="dropdown-item" href="/withdlc">With DLC</a></li>
+                <li><a class="dropdown-item" href="/dlccompleted">DLC completed</a></li>
+                <li><a class="dropdown-item" href="/dlcnotcompleted">DLC not completed</a></li>
+            </ul>
+        </div>
         <span class="text-nowrap">
             <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
             <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
