@@ -19,19 +19,4 @@
     <script src="{{ asset('js/main.js') }}"></script>
 {% endblock %}
 
-{% block body %}
-<div class="container">
-    {% if id is defined%}
-
-        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a></h1>
-        {{ include('game.html.twig') }}
-
-    {% else %}
-
-        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a>
-            <a href="#content"><span class="bi-arrow-down-circle-fill"></span></a>
-        </h1>
-        {{ include('list.html.twig') }}
-    {% endif %}
-</div>
-{% endblock %}
+{% block body %}{% endblock %}

@@ -5,7 +5,6 @@ namespace App\Controller;
 
 /**
  * TODO:
- * - refactor templates so everything extends from index.html.twig
  * . get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
  * - column sorting
@@ -68,7 +67,7 @@ class IndexController extends AbstractController
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         }
     
-        return $this->render('index.html.twig', [
+        return $this->render('list.html.twig', [
             'games' => $pagerfanta,
             'count' => $games->count(),
             'stats' => $this->gameStatsService->getStats($games),
@@ -115,7 +114,7 @@ class IndexController extends AbstractController
             $formPassword = null;
         }
 
-        return $this->render('index.html.twig', [
+        return $this->render('game.html.twig', [
             'id' => $id,
             'game' => $game,
 
