@@ -10,6 +10,9 @@ use App\Enum\Platform as PlatformEnum;
 use App\Exception\InvalidFilterException;
 use App\Repository\GameRepository;
 
+/**
+ * Returns a filtered subset of the stored games in the database.
+ */
 class GameFilterService
 {
     public function __construct(

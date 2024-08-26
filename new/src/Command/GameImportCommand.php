@@ -6,6 +6,8 @@ namespace App\Command;
 /**
  * TODO:
  * - figure out better way to detect if game has dlc
+ * - cut up into multiple classes?
+ * - move dom logic to gameparserservice
  */
 
 use App\Entity\Game;

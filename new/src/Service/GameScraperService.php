@@ -17,6 +17,10 @@ use function curl_exec;
 use function curl_init;
 use function curl_setopt_array;
 
+/**
+ * This service scrapes the TA gamecollection pages for a given xbox gamertag,
+ * and returns the pages as an array of strings.
+ */
 class GameScraperService
 {
     private string $baseUrl = 'https://www.trueachievements.com/gamer/mrbellek/gamecollection?executeformfunction&function=AjaxList&params=';

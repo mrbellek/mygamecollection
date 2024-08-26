@@ -19,6 +19,11 @@ use DOMNode;
 use DOMElement;
 use DOMXPath;
 
+/**
+ * This service takes a DOM table row from the TA gamecollection page
+ * and extracts all the needed game information, returning a Game object.
+ */
+
 class GameParserService
 {
     private string $taBaseUrl = 'https://www.trueachievements.com';

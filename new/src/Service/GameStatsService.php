@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+/**
+ * @TODO:
+ * - array should be object
+ */
 use App\Entity\Game;
 use App\Entity\GameCollection;
 use App\Enum\Status as StatusEnum;
 use DateTime;
 
+/**
+ * This service takes a group of games and returns some stats about them.
+ */
 class GameStatsService
 {
     /**
