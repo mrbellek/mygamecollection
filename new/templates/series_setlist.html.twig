@@ -1,0 +1,9 @@
+{% extends 'index.html.twig' %}
+
+{% block body %}
+    <ul>
+    {% for serie in series %}
+        <li><a href="/series-setlist/{{ serie.id }}">{{ serie.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

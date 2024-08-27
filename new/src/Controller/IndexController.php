@@ -17,6 +17,8 @@ use App\Entity\GameCollection;
 use App\Enum\Platform as PlatformEnum;
 use App\Exception\InvalidFilterException;
 use App\Repository\GameRepository;
+use App\Repository\SeriesRepository;
+use App\Repository\SeriesGameRepository;
 use App\Service\GameFilterService;
 use App\Service\GameScraperService;
 use App\Service\GameStatsService;
@@ -248,6 +250,29 @@ class IndexController extends AbstractController
         return $this->render('import.html.twig', [
             'gamertag' => $gamertag,
             'output' => $process->getOutput(),
+        ]);
+    }
+
+    #[Route("/series-setlist", name: "series_setlist")]
+    public function seriesSetlist(SeriesRepository $seriesRepository): Response
+    {
+        $series = $seriesRepository->findAll();
+
+        return $this->render('series_setlist.html.twig', [
+            'series' => $series,
+        ]);
+    }
+
+    //#[Route("/game/{id}", name: "detail_post", requirements: ['page' => '\d+'], methods: ["POST"])]
+    #[Route("/series-setlist/{id}", name: "series_setlist_games", requirements: ['id' => '\d+'])]
+    public function seriesSetlietGames(
+        SeriesGameRepository $seriesGamesRepository,
+        int $id
+    ): Response {
+        $games = $seriesGamesRepository->findBySetlistId($id);
+
+        return $this->render('series_setlist_games.html.twig', [
+            'games' => $games,
         ]);
     }
 

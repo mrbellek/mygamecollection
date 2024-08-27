@@ -1,0 +1,9 @@
+{% extends 'index.html.twig' %}
+
+{% block body %}
+    <ul>
+    {% for game in games %}
+        <li>{{ game.name }} {% if game.isAltVersion %}(alternative version for {{ game.altForId }}){% endif %}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
