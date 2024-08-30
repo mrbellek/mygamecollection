@@ -350,6 +350,7 @@ class IndexController extends AbstractController
         $games = $seriesGamesRepository->findBySetlistId($id);
         //@TODO: FormSeriesGameCollection?
         $formSeriesGames = [];
+        /** @var SeriesGame $seriesGame **/
         foreach ($games as $seriesGame) {
             $formSeriesGames[] = new FormSeriesGame($seriesGame);
         }

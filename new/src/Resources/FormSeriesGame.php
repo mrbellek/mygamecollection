@@ -12,7 +12,8 @@ class FormSeriesGame
     private int $seriesId;
     private string $name;
     private ?int $altForId = null;
-    //private Game $altFor;
+    private ?SeriesGame $altFor;
+    private float $completionPercentage;
 
     public function __construct(SeriesGame $seriesGame)
     {
@@ -21,6 +22,8 @@ class FormSeriesGame
         $this->name = $seriesGame->getName();
         $this->seriesId = $seriesGame->getSetlistId();
         $this->altForId = $seriesGame->getAltForId();
+        $this->altFor = $seriesGame->getAltFor();
+        $this->completionPercentage = $seriesGame->isInCollection() ? $seriesGame->getGame()->getCompletionPercentage() : 0.0;
     }
 
     public function getId(): int
@@ -55,6 +58,6 @@ class FormSeriesGame
 
     public function getCompletionPercentage(): float
     {
-        return 0.0;
+        return $this->completionPercentage;
     }
 }

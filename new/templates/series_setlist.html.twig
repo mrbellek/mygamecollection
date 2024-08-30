@@ -24,8 +24,8 @@
                         <a href="/series-setlist/games/{{ serie.id }}" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ serie.name }}</a>
                     </td>
                     <td><em>{{ serie.userTitle }}</em></td>
-                    <td>0 / {{ serie.gamesCount }}</td>
-                    <td>{% if serie.completionPercentage > 0 %}{{ serie.completionPercentage }}{% endif %}</td>
+                    <td>{{ serie.ownedGamesCount }} / {{ serie.gamesCount }}</td>
+                    <td>{% if serie.ownedGamesCount > 0 %}{{ serie.completionPercentage|round }} %{% endif %}</td>
                     <td><a href="/series-setlist/edit/{{ serie.id }}"><span class="bi-pencil"></span></a></td>
                 </tr>
             {% endfor %}

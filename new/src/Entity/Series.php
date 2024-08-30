@@ -4,13 +4,15 @@ declare(strict_types=1);
 /**
  * @TODO:
  * - status enum
- * - relationship to games
  */
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Entity\SeriesGame;
 use App\Repository\SeriesRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: SeriesRepository::class)]
 #[ORM\Table(name: "series_setlist")]
@@ -29,6 +31,14 @@ class Series
 
     #[ORM\Column]
     private string $status;
+
+    #[ORM\OneToMany(targetEntity: SeriesGame::class, mappedBy: 'series')]
+    private Collection $seriesGames;
+
+    public function __construct()
+    {
+        $this->seriesGames = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -50,9 +60,9 @@ class Series
         return $this->status;
     }
 
-    public function getGames(): array //@TODO GameCollection
+    public function getGames(): Collection
     {
-        return [];
+        return $this->seriesGames;
     }
 
     public function setName(string $name): self

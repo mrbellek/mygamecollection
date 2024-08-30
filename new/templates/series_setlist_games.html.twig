@@ -22,7 +22,7 @@
                 <tr class="table-striped">
                     <td>{{ game.name }}</td>
                     <td>{% if game.isAltVersion %}alternative version for {{ game.altForId }}{% endif %}</td>
-                    <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage }}{% endif %}
+                    <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage|round }} %{% endif %}
                     <td><a href="/series-setlist/games/{{ serie.id }}/edit/{{ game.id }}"><span class="bi-pencil"></span></td>
                 </tr>
             {% endfor %}

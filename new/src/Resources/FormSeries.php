@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Resources;
 
-use App\Entity\Game;
 use App\Entity\Series;
+use App\Entity\SeriesGame;
 
 /**
  * Basically the same as the Series entity, but with two extra calculated
@@ -17,7 +17,8 @@ class FormSeries
     private string $userTitle;
     private string $status;
     private int $gamesCount = 0;
-    private int $completionPercentage = 0;
+    private int $ownedGamesCount = 0;
+    private float $completionPercentage = 0.0;
 
     public function __construct(Series $series)
     {
@@ -27,9 +28,12 @@ class FormSeries
         $this->status = $series->getStatus();
 
         $this->gamesCount = count($series->getGames());
-        /** @var Game $game **/
-        foreach ($series->getGames() as $game) {
-            $this->completionPercentage += $game->getCompletionPercentage();
+        /** @var SeriesGame $game **/
+        foreach ($series->getGames() as $seriesGame) {
+            if ($seriesGame->isInCollection()) {
+                $this->ownedGamesCount++;
+                $this->completionPercentage += $seriesGame->getGame()->getCompletionPercentage();
+            }
         }
         $this->completionPercentage = $this->gamesCount > 0 ? $this->completionPercentage / $this->gamesCount : 0;
     }
@@ -57,6 +61,11 @@ class FormSeries
     public function getGamesCount(): int
     {
         return $this->gamesCount;
+    }
+
+    public function getOwnedGamesCount(): int
+    {
+        return $this->ownedGamesCount;
     }
 
     public function getCompletionPercentage(): float

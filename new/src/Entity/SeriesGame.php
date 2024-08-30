@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 /**
  * @TODO:
- * - relationship to series
- * - relationship to altfor
+ * - better workaround for doctrine lazy loading
  */
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Game;
+use App\Entity\Series;
 use App\Repository\SeriesGameRepository;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SeriesGameRepository::class)]
 #[ORM\Table(name: "series_setlist_games")]
@@ -32,6 +34,18 @@ class SeriesGame
 
     #[ORM\Column(name: "alt_for", nullable: true)]
     private ?int $altForId = null;
+
+    #[ORM\ManyToOne(targetEntity: SeriesGame::class)]
+    #[ORM\JoinColumn(name: 'alt_for', referencedColumnName: 'id')]
+    private ?SeriesGame $altFor = null;
+
+    #[ORM\ManyToOne(targetEntity: Series::class, inversedBy: 'seriesGames')]
+    #[ORM\JoinColumn(name: 'setlist_id', referencedColumnName: 'id')]
+    private Series $series;
+
+    #[ORM\OneToOne(targetEntity: Game::class)]
+    #[ORM\JoinColumn(name: 'game_id', referencedColumnName: 'id', nullable: true)]
+    private ?Game $game = null;
 
     public function getId(): int
     {
@@ -56,6 +70,35 @@ class SeriesGame
     public function getAltForId(): ?int
     {
         return $this->altForId;
+    }
+
+    public function getSeries(): Series
+    {
+        return $this->series;
+    }
+
+    public function getGame(): Game
+    {
+        return $this->game;
+    }
+
+    public function getAltFor(): ?SeriesGame
+    {
+        return $this->altFor;
+    }
+
+    /**
+     * This is quick and dirty and not at all a permanent solution to
+     * Doctrine's lazy loading. This relationship can be NULL!
+     */
+    public function isInCollection(): bool
+    {
+        try {
+            $this->game->getName();
+            return true;
+        } catch (EntityNotFoundException) {
+            return false;
+        }
     }
 
     public function setGameId(int $id): self
