@@ -7,18 +7,22 @@ namespace App\Controller;
  * TODO:
  * . get scraper command working in browser - https://github.com/CoreSphere/ConsoleBundle
  * - proper graphs for top stats instead of buttons
- * - column sorting
  * - reponsive design for mobile
- * - shortlist?
+ * - #4 column sorting
+ * - #12 shortlist?
  */
 
 use App\Entity\Game;
 use App\Entity\GameCollection;
+use App\Entity\Series;
+use App\Entity\SeriesGame;
 use App\Enum\Platform as PlatformEnum;
 use App\Exception\InvalidFilterException;
 use App\Repository\GameRepository;
 use App\Repository\SeriesRepository;
 use App\Repository\SeriesGameRepository;
+use App\Resources\FormSeries;
+use App\Resources\FormSeriesGame;
 use App\Service\GameFilterService;
 use App\Service\GameScraperService;
 use App\Service\GameStatsService;
@@ -257,22 +261,97 @@ class IndexController extends AbstractController
     public function seriesSetlist(SeriesRepository $seriesRepository): Response
     {
         $series = $seriesRepository->findAll();
+        //@TODO: FormSeriesCollection?
+        $formSeries = [];
+        foreach ($series as $serie) {
+            $formSeries[] = new FormSeries($serie);
+        }
 
         return $this->render('series_setlist.html.twig', [
-            'series' => $series,
+            'series' => $formSeries,
         ]);
     }
 
-    //#[Route("/game/{id}", name: "detail_post", requirements: ['page' => '\d+'], methods: ["POST"])]
-    #[Route("/series-setlist/{id}", name: "series_setlist_games", requirements: ['id' => '\d+'])]
+    #[Route("/series-setlist/add", name: "series_setlist_add")]
+    public function seriesSetlistAdd(
+        ManagerRegistry $doctrine,
+        Request $request,
+    ): Response {
+
+        $name = '';
+        $userTitle = '';
+        $status = '';
+        if ($request->getMethod() === 'POST') {
+            $name = $request->request->get('name');
+            $userTitle = $request->request->get('userTitle');
+            $status = $request->request->get('status');
+
+            $serie = new Series();
+            $serie->setName($name);
+            $serie->setUserTitle($userTitle);
+            $serie->setStatus($status);
+
+            $manager = $doctrine->getManager();
+            $manager->persist($serie);
+            $manager->flush();
+
+            $this->addFlash('success', 'Changed saved.');
+            return $this->redirectToRoute('series_setlist');
+        }
+
+        return $this->render('series_setlist_edit.html.twig', [
+            'mode' => 'add',
+            'serie' => [
+                'name' => $name,
+                'userTitle' => $userTitle,
+                'status' => $status,
+            ],
+        ]);
+    }
+
+    #[Route("/series-setlist/edit/{id}", name: "series_setlist_edit", requirements: ['id' => '\d+'])]
+    public function seriesSetlistEdit(
+        ManagerRegistry $doctrine,
+        Request $request,
+        SeriesRepository $seriesRepository,
+        int $id
+    ): Response {
+
+        $serie = $seriesRepository->find($id);
+
+        if ($request->getMethod() === 'POST') {
+            $serie->setName($request->request->get('name'));
+            $serie->setUserTitle($request->request->get('userTitle'));
+            $serie->setStatus($request->request->get('status'));
+
+            $manager = $doctrine->getManager();
+            $manager->persist($serie);
+            $manager->flush();
+
+            $this->addFlash('success', 'Changes saved.');
+            return $this->redirectToRoute("series_setlist");
+        }
+
+        return $this->render('series_setlist_edit.html.twig', [
+            'mode' => 'edit',
+            'serie' => $serie,
+        ]);
+    }
+
+    #[Route("/series-setlist/games/{id}", name: "series_setlist_games", requirements: ['id' => '\d+'])]
     public function seriesSetlietGames(
         SeriesGameRepository $seriesGamesRepository,
         int $id
     ): Response {
         $games = $seriesGamesRepository->findBySetlistId($id);
+        //@TODO: FormSeriesGameCollection?
+        $formSeriesGames = [];
+        foreach ($games as $seriesGame) {
+            $formSeriesGames[] = new FormSeriesGame($seriesGame);
+        }
 
         return $this->render('series_setlist_games.html.twig', [
-            'games' => $games,
+            'games' => $formSeriesGames,
         ]);
     }
 

@@ -18,6 +18,7 @@ class Series
 {
     #[ORM\Id]
     #[ORM\Column]
+    #[ORM\GeneratedValue]
     private int $id;
 
     #[ORM\Column]
@@ -47,5 +48,31 @@ class Series
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getGames(): array //@TODO GameCollection
+    {
+        return [];
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function setUserTitle(string $userTitle): self
+    {
+        $this->userTitle = $userTitle;
+
+        return $this;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

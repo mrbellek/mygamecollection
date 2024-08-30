@@ -1,9 +1,26 @@
 {% extends 'index.html.twig' %}
 
 {% block body %}
-    <ul>
-    {% for game in games %}
-        <li>{{ game.name }} {% if game.isAltVersion %}(alternative version for {{ game.altForId }}){% endif %}</li>
-    {% endfor %}
-    </ul>
+    <div class="container">
+        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a></h1>
+        <table class="table table-condensed table-hover">
+            <tr>
+                <th>Name</td>
+                <th>Alternative version?</td>
+                <th>Completion %</th>
+            </tr>
+            {% for game in games %}
+                <tr class="table-striped">
+                    <td>{{ game.name }}</td>
+                    <td>{% if game.isAltVersion %}alternative version for {{ game.altForId }}{% endif %}</td>
+                    <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage }}{% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="form-group row">
+            <div class="col-sm-8">
+                <a href="/series-setlist" class="btn btn-primary">Back</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

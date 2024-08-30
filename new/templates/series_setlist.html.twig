@@ -1,9 +1,34 @@
 {% extends 'index.html.twig' %}
 
 {% block body %}
-    <ul>
-    {% for serie in series %}
-        <li><a href="/series-setlist/{{ serie.id }}">{{ serie.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="container">
+        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a></h1>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <table class="table table-condensed table-hover">
+            <tr>
+                <th>Series name</th>
+                <th>User title</th>
+                <th>Games owned</th>
+                <th>Completion %</th>
+                <th><a href="/series-setlist/add"><span class="bi-plus-circle"></span></a></th>
+            </tr>
+            {% for serie in series %}
+                <tr class="table-striped">
+                    <td>
+                        <a href="/series-setlist/games/{{ serie.id }}" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ serie.name }}</a>
+                    </td>
+                    <td><em>{{ serie.userTitle }}</em></td>
+                    <td>0 / {{ serie.gamesCount }}</td>
+                    <td>{% if serie.completionPercentage > 0 %}{{ serie.completionPercentage }}{% endif %}</td>
+                    <td><a href="/series-setlist/edit/{{ serie.id }}"><span class="bi-pencil"></span></a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}

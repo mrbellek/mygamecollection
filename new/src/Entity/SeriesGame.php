@@ -52,11 +52,6 @@ class SeriesGame
         return $this->setlistId;
     }
     
-    public function isAltVersion(): bool
-    {
-        return !is_null($this->altForId);
-    }
-
     public function getAltForId(): ?int
     {
         return $this->altForId;
