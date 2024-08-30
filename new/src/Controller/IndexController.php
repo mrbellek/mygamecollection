@@ -339,10 +339,14 @@ class IndexController extends AbstractController
     }
 
     #[Route("/series-setlist/games/{id}", name: "series_setlist_games", requirements: ['id' => '\d+'])]
-    public function seriesSetlietGames(
+    public function seriesSetlistGames(
+        SeriesRepository $seriesRepository,
         SeriesGameRepository $seriesGamesRepository,
         int $id
     ): Response {
+        $serie = $seriesRepository->find($id);
+        $formSerie = new FormSeries($serie);
+
         $games = $seriesGamesRepository->findBySetlistId($id);
         //@TODO: FormSeriesGameCollection?
         $formSeriesGames = [];
@@ -351,7 +355,77 @@ class IndexController extends AbstractController
         }
 
         return $this->render('series_setlist_games.html.twig', [
+            'serie' => $formSerie,
             'games' => $formSeriesGames,
+        ]);
+    }
+
+    #[Route("/series-setlist/games/{seriesId}/edit/{id}", name: "series_setlist_games_edit", requirements: ['seriesId' => '\d+', 'id' => '\d+'])]
+    public function seriesSetlistGamesEdit(
+        ManagerRegistry $doctrine,
+        Request $request,
+        SeriesGameRepository $seriesGameRepository,
+        int $seriesId,
+        int $id,
+    ): Response {
+
+        /** @var SeriesGame $seriesGame **/
+        $seriesGame = $seriesGameRepository->find($id);
+
+        if ($request->getMethod() === 'POST') {
+
+            $manager = $doctrine->getManager();
+            if ($request->request->get('action') === 'Delete') {
+                $manager->remove($seriesGame);
+                $manager->flush();
+                $this->addFlash('success', 'Changes saved.');
+
+            } else {
+                $seriesGame->setGameId($request->request->getInt('gameId'));
+                $seriesGame->setName($request->request->get('name'));
+                $seriesGame->setAltForId($request->request->get('altFor'));
+
+                $manager->persist($seriesGame);
+                $manager->flush();
+
+                $this->addFlash('success', 'Changes saved.');
+            }
+            return $this->redirectToRoute("series_setlist_games", ['id' => $seriesId]);
+        }
+
+        return $this->render('series_setlist_games_edit.html.twig', [
+            'mode' => 'edit',
+            'seriesId' => $seriesId,
+            'seriesGame' => $seriesGame,
+        ]);
+    }
+
+    #[Route("/series-setlist/games/{seriesId}/add", name: "series_setlist_games_add", requirements: ['seriesId' => '\d+'])]
+    public function seriesSetlistGamesAdd(
+        ManagerRegistry $doctrine,
+        Request $request,
+        int $seriesId,
+    ): Response {
+
+        if ($request->getMethod() === 'POST') {
+            $seriesGame = new SeriesGame();
+            $seriesGame->setSetlistId($seriesId);
+            $seriesGame->setGameId($request->request->getInt('gameId'));
+            $seriesGame->setName($request->request->get('name'));
+            $altForId = !empty($request->request->get('altForId')) ? $request->request->getInt('altForId') : null;
+            $seriesGame->setAltForId($altForId);
+
+            $manager = $doctrine->getManager();
+            $manager->persist($seriesGame);
+            $manager->flush();
+            $this->addFlash('success', 'Changes saved.');
+
+            return $this->redirectToRoute('series_setlist_games', ['id' => $seriesId]);
+        }
+
+        return $this->render('series_setlist_games_edit.html.twig', [
+            'mode' => 'add',
+            'seriesId' => $seriesId,
         ]);
     }
 

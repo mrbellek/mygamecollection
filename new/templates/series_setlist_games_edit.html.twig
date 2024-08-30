@@ -5,7 +5,7 @@
     <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist</h1>
     <form method="post" class="form-horizontal" role="form">
         {% if mode == 'edit' %}
-        <input type="hidden" name="id" value="{{ serie.id }}" />
+        <input type="hidden" name="id" value="{{ seriesGame.id }}" />
         {% endif %}
 
         {% for label, messages in app.flashes %}
@@ -16,33 +16,28 @@
 
         <div class="form-group row">
             <div class="col col-sm-2">
-                <label for="name" class="col-form-label d-flex justify-content-end">Serie name</label>
+                <label for="gameId" class="col-form-label d-flex justify-content-end">Game id</label>
             </div>
             <div class="col col-sm-8">
-                <input type="text" id="name" name="name" class="form-control" value="{{ serie.name|default('') }}" required />
+                <input type="text" id="gameId" name="gameId" class="form-control" value="{{ seriesGame.gameId|default('') }}" required />
             </div>
         </div>
 
         <div class="form-group row">
             <div class="col col-sm-2">
-                <label for="userTitle" class="col-form-label d-flex justify-content-end">User Title</label>
+                <label for="name" class="col-form-label d-flex justify-content-end">Game name</label>
             </div>
             <div class="col col-sm-8">
-                <input type="text" id="userTitle" name="userTitle" class="form-control" value="{{ serie.userTitle}}" required />
+                <input type="text" id="name" name="name" class="form-control" value="{{ seriesGame.name|default('') }}" required />
             </div>
         </div>
 
         <div class="form-group row">
             <div class="col col-sm-2">
-                <label for="status" class="col-form-label d-flex justify-content-end">Status</label>
+                <label for="altForId" class="col-form-label d-flex justify-content-end">Alternative version?</label>
             </div>
             <div class="col col-sm-8">
-                <select name="status" id="status" class="form-control">
-                    <option value="listed" {% if serie.status == 'listed' %}selected{% endif %}>Listed</option>
-                    <option value="unlisted" {% if serie.status == 'unlisted' %}selected{% endif %}>Unlisted</option>
-                    <option value="franchise" {% if serie.status == 'franchise' %}selected{% endif %}>Franchise</option>
-                    <option value="subfranchise" {% if serie.status == 'subfranchise' %}selected{% endif %}>Sub-franchise</option>
-                </select>
+                <input type="text" id="altForId" name="altForId" class="form-control" value="{{ seriesGame.altForId|default('') }}" />
             </div>
         </div>
 
@@ -52,7 +47,7 @@
             </div>
             <div class="col-sm-8">
                 <input type="submit" name="action" value="Save" class="btn btn-primary" />
-                <a href="/series-setlist" class="btn btn-light">Cancel</a>
+                <a href="/series-setlist/games/{{ seriesId }}" class="btn btn-light">Cancel</a>
                 <input type="submit" name="action" value="Delete" class="btn btn-danger confirm" />
             </div>
         </div>

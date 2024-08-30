@@ -18,6 +18,7 @@ class SeriesGame
 {
     #[ORM\Id]
     #[ORM\Column]
+    #[ORM\GeneratedValue]
     private int $id;
 
     #[ORM\Column(name: "game_id")]
@@ -55,5 +56,33 @@ class SeriesGame
     public function getAltForId(): ?int
     {
         return $this->altForId;
+    }
+
+    public function setGameId(int $id): self
+    {
+        $this->gameId = $id;
+
+        return $this;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function setSetlistId(int $setlistId): self
+    {
+        $this->setlistId = $setlistId;
+
+        return $this;
+    }
+
+    public function setAltForId(?int $id): self
+    {
+        $this->altForId = $id;
+
+        return $this;
     }
 }

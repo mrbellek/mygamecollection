@@ -2,18 +2,28 @@
 
 {% block body %}
     <div class="container">
-        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a></h1>
+        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist</h1>
+        <h3>{{ serie.name }} - <em>{{ serie.userTitle }}</em></h3>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
         <table class="table table-condensed table-hover">
             <tr>
                 <th>Name</td>
                 <th>Alternative version?</td>
                 <th>Completion %</th>
+                <th><a href="/series-setlist/games/{{ serie.id }}/add"><span class="bi-plus-circle"></span></a></th>
             </tr>
             {% for game in games %}
                 <tr class="table-striped">
                     <td>{{ game.name }}</td>
                     <td>{% if game.isAltVersion %}alternative version for {{ game.altForId }}{% endif %}</td>
                     <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage }}{% endif %}
+                    <td><a href="/series-setlist/games/{{ serie.id }}/edit/{{ game.id }}"><span class="bi-pencil"></span></td>
                 </tr>
             {% endfor %}
         </table>
