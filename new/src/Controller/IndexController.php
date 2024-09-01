@@ -12,6 +12,7 @@ namespace App\Controller;
  * - #12 shortlist?
  * - #25 bug: seriesGame entity has broken gameId and altFor properties, when adding
  * - #25 altfor games should be handled correctly for series overview
+ * - #25 add checkbox 'show setlists with 0 owned games' js filter
  */
 
 use App\Entity\Game;
@@ -260,13 +261,24 @@ class IndexController extends AbstractController
     }
 
     #[Route("/series-setlist", name: "series_setlist")]
-    public function seriesSetlist(SeriesRepository $seriesRepository): Response
-    {
+    public function seriesSetlist(
+        Request $request,
+        SeriesRepository $seriesRepository
+    ): Response {
+
+        //@TODO implement this in the template
+        $showAll = true;//(bool)$request->request->getInt('showAll');
+
         $series = $seriesRepository->findAll();
         //@TODO: FormSeriesCollection?
         $formSeries = [];
         foreach ($series as $serie) {
-            $formSeries[] = new FormSeries($serie);
+            $formSerie = new FormSeries($serie);
+
+            //hide setlists with 0 owned games by default
+            if ($formSerie->getOwnedGamesCount() > 0 || $showAll === true) {
+                $formSeries[] = $formSerie;
+            }
         }
 
         usort($formSeries, function(FormSeries $a, FormSeries $b) {
@@ -405,7 +417,8 @@ class IndexController extends AbstractController
             } else {
                 $seriesGame->setGameId($request->request->getInt('gameId'));
                 $seriesGame->setName($request->request->get('name'));
-                $seriesGame->setAltForId($request->request->getInt('altForId'));
+                $altForId = !empty($request->request->get('altForId')) ? $request->request->getInt('altForId') : null;
+                $seriesGame->setAltForId($altForId);
 
                 $manager->persist($seriesGame);
                 $manager->flush();
@@ -438,6 +451,7 @@ class IndexController extends AbstractController
             $seriesGame->setAltForId($altForId);
 
             $manager = $doctrine->getManager();
+            //@TODO do I need this? doctrine is being weird
             $gameRepository = $manager->getRepository(\App\Entity\Game::class);
             $game = $gameRepository->find($seriesGame->getGameId());
             $seriesGame->setGame($game);
