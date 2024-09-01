@@ -3,16 +3,18 @@ declare(strict_types=1);
 
 namespace App\Resources;
 
+use App\Entity\Game;
 use App\Entity\SeriesGame;
 
 class FormSeriesGame
 {
     private int $id;
-    private int $gameId;
+    private ?int $gameId;
     private int $seriesId;
     private string $name;
+    private bool $isInCollection;
     private ?int $altForId = null;
-    private ?SeriesGame $altFor;
+    private ?Game $altFor;
     private float $completionPercentage;
 
     public function __construct(SeriesGame $seriesGame)
@@ -23,7 +25,10 @@ class FormSeriesGame
         $this->seriesId = $seriesGame->getSetlistId();
         $this->altForId = $seriesGame->getAltForId();
         $this->altFor = $seriesGame->getAltFor();
+        $this->isInCollection = $seriesGame->isInCollection();
         $this->completionPercentage = $seriesGame->isInCollection() ? $seriesGame->getGame()->getCompletionPercentage() : 0.0;
+
+        //@TODO lookup SeriesGame object for games that are linked, but not owned.
     }
 
     public function getId(): int
@@ -31,7 +36,7 @@ class FormSeriesGame
         return $this->id;
     }
 
-    public function getGameId(): int
+    public function getGameId(): ?int
     {
         return $this->gameId;
     }
@@ -51,9 +56,24 @@ class FormSeriesGame
         return $this->altForId;
     }
 
+    public function getAltFor(): ?Game
+    {
+        return $this->altFor;
+    }
+
+    public function getAltForName(): ?string
+    {
+        return 'TODO';
+    }
+
     public function isAltVersion(): bool
     {
         return !is_null($this->altForId);
+    }
+
+    public function isInCollection(): bool
+    {
+        return $this->isInCollection;
     }
 
     public function getCompletionPercentage(): float

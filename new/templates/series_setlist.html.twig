@@ -2,7 +2,9 @@
 
 {% block body %}
     <div class="container">
-        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist</h1>
+        <h1>
+            <a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist
+        </h1>
 
         {% for label, messages in app.flashes %}
             {% for message in messages %}
@@ -13,16 +15,18 @@
         <table class="table table-condensed table-hover">
             <tr>
                 <th>Series name</th>
+                <th>Status</th>
                 <th>User title</th>
                 <th>Games owned</th>
                 <th>Completion %</th>
                 <th><a href="/series-setlist/add"><span class="bi-plus-circle"></span></a></th>
             </tr>
             {% for serie in series %}
-                <tr class="table-striped">
+                <tr class="table-striped {% if serie.completionPercentage == 100 %}table-success{% endif %}">
                     <td>
                         <a href="/series-setlist/games/{{ serie.id }}" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ serie.name }}</a>
                     </td>
+                    <td style="border: 2px solid; border-color: {{ serie.statusClass }};">{{ serie.status }}</td>
                     <td><em>{{ serie.userTitle }}</em></td>
                     <td>{{ serie.ownedGamesCount }} / {{ serie.gamesCount }}</td>
                     <td>{% if serie.ownedGamesCount > 0 %}{{ serie.completionPercentage|round }} %{% endif %}</td>

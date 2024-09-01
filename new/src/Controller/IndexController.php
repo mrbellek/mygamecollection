@@ -10,6 +10,8 @@ namespace App\Controller;
  * - reponsive design for mobile
  * - #4 column sorting
  * - #12 shortlist?
+ * - #25 bug: seriesGame entity has broken gameId and altFor properties, when adding
+ * - #25 altfor games should be handled correctly for series overview
  */
 
 use App\Entity\Game;
@@ -267,6 +269,16 @@ class IndexController extends AbstractController
             $formSeries[] = new FormSeries($serie);
         }
 
+        usort($formSeries, function(FormSeries $a, FormSeries $b) {
+            if ($a->getCompletionPercentage() != $b->getCompletionPercentage()) {
+                return $b->getCompletionPercentage() <=> $a->getCompletionPercentage();
+            } elseif ($a->getOwnedGamesCount() != $b->getOwnedGamesCount()) {
+                return $b->getOwnedGamesCount() <=> $a->getOwnedGamesCount();
+            } else {
+                return $a->getName() <=> $b->getName();
+            }
+        });
+
         return $this->render('series_setlist.html.twig', [
             'series' => $formSeries,
         ]);
@@ -320,6 +332,15 @@ class IndexController extends AbstractController
         $serie = $seriesRepository->find($id);
 
         if ($request->getMethod() === 'POST') {
+            if ($request->request->get('action') === 'Delete') {
+                $manager = $doctrine->getManager();
+                $manager->remove($serie);
+                $manager->flush();
+
+                $this->addFlash('success', 'Changes saved.');
+
+                return $this->redirectToRoute('series_setlist');
+            }
             $serie->setName($request->request->get('name'));
             $serie->setUserTitle($request->request->get('userTitle'));
             $serie->setStatus($request->request->get('status'));
@@ -384,7 +405,7 @@ class IndexController extends AbstractController
             } else {
                 $seriesGame->setGameId($request->request->getInt('gameId'));
                 $seriesGame->setName($request->request->get('name'));
-                $seriesGame->setAltForId($request->request->get('altFor'));
+                $seriesGame->setAltForId($request->request->getInt('altForId'));
 
                 $manager->persist($seriesGame);
                 $manager->flush();
@@ -417,6 +438,13 @@ class IndexController extends AbstractController
             $seriesGame->setAltForId($altForId);
 
             $manager = $doctrine->getManager();
+            $gameRepository = $manager->getRepository(\App\Entity\Game::class);
+            $game = $gameRepository->find($seriesGame->getGameId());
+            $seriesGame->setGame($game);
+            $seriesRepository = $manager->getRepository(\App\Entity\Series::class);
+            $series = $seriesRepository->find($seriesId);
+            $seriesGame->setSeries($series);
+
             $manager->persist($seriesGame);
             $manager->flush();
             $this->addFlash('success', 'Changes saved.');

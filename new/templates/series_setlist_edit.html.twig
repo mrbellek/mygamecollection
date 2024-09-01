@@ -38,10 +38,13 @@
             </div>
             <div class="col col-sm-8">
                 <select name="status" id="status" class="form-control">
-                    <option value="listed" {% if serie.status == 'listed' %}selected{% endif %}>Listed</option>
-                    <option value="unlisted" {% if serie.status == 'unlisted' %}selected{% endif %}>Unlisted</option>
-                    <option value="franchise" {% if serie.status == 'franchise' %}selected{% endif %}>Franchise</option>
-                    <option value="subfranchise" {% if serie.status == 'subfranchise' %}selected{% endif %}>Sub-franchise</option>
+                    <option value="listed" {% if serie.status == 'listed' %}selected{% endif %} style="background-color: green;">Listed</option>
+                    <option value="unlisted" {% if serie.status == 'unlisted' %}selected{% endif %} style="background-color: red;">Unlisted</option>
+                    <option value="franchise" {% if serie.status == 'franchise' %}selected{% endif %} style="background-color: cyan;">Franchise</option>
+                    <option value="subfranchise" {% if serie.status == 'subfranchise' %}selected{% endif %} style="background-color: yellow;">Sub-franchise</option>
+                    <option value="crossover" {% if serie.status == 'crossover' %}selected{% endif %} style="background-color: orange;">Crossover</option>
+                    <option value="community" {% if serie.status == 'community' %}selected{% endif %} style="background-color: pink;">Community</option>
+                    <option value="legacy" {% if serie.status == 'legacy' %}selected{% endif %} style="background-color: black; color: white;">Legacy</option>
                 </select>
             </div>
         </div>

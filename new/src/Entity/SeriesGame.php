@@ -24,7 +24,7 @@ class SeriesGame
     private int $id;
 
     #[ORM\Column(name: "game_id")]
-    private int $gameId;
+    private ?int $gameId = null;
 
     #[ORM\Column]
     private string $name;
@@ -35,13 +35,13 @@ class SeriesGame
     #[ORM\Column(name: "alt_for", nullable: true)]
     private ?int $altForId = null;
 
-    #[ORM\ManyToOne(targetEntity: SeriesGame::class)]
+    #[ORM\ManyToOne(targetEntity: Game::class)]
     #[ORM\JoinColumn(name: 'alt_for', referencedColumnName: 'id')]
-    private ?SeriesGame $altFor = null;
+    private ?Game $altFor = null;
 
     #[ORM\ManyToOne(targetEntity: Series::class, inversedBy: 'seriesGames')]
     #[ORM\JoinColumn(name: 'setlist_id', referencedColumnName: 'id')]
-    private Series $series;
+    private ?Series $series = null;
 
     #[ORM\OneToOne(targetEntity: Game::class)]
     #[ORM\JoinColumn(name: 'game_id', referencedColumnName: 'id', nullable: true)]
@@ -52,7 +52,7 @@ class SeriesGame
         return $this->id;
     }
 
-    public function getGameId(): int
+    public function getGameId(): ?int
     {
         return $this->gameId;
     }
@@ -72,17 +72,20 @@ class SeriesGame
         return $this->altForId;
     }
 
-    public function getSeries(): Series
+    public function getSeries(): ?Series
     {
         return $this->series;
     }
 
-    public function getGame(): Game
+    public function getGame(): ?Game
     {
         return $this->game;
     }
 
-    public function getAltFor(): ?SeriesGame
+    /**
+     * @return Game|null
+     */
+    public function getAltFor()
     {
         return $this->altFor;
     }
@@ -93,6 +96,9 @@ class SeriesGame
      */
     public function isInCollection(): bool
     {
+        if (is_null($this->game)) {
+            return false;
+        }
         try {
             $this->game->getName();
             return true;
@@ -101,9 +107,19 @@ class SeriesGame
         }
     }
 
-    public function setGameId(int $id): self
+    public function setGameId(?int $id): self
     {
         $this->gameId = $id;
+
+        return $this;
+    }
+
+    public function setGame(?Game $game): self
+    {
+        $this->game = $game;
+        if ($game instanceof Game) {
+            $this->gameId = $game->getId();
+        }
 
         return $this;
     }
@@ -115,9 +131,20 @@ class SeriesGame
         return $this;
     }
 
+    //@TODO rename to 'setSeriesId'
     public function setSetlistId(int $setlistId): self
     {
         $this->setlistId = $setlistId;
+
+        return $this;
+    }
+
+    public function setSeries(?Series $series): self
+    {
+        $this->series = $series;
+        if ($series instanceof Series) {
+            $this->setlistId = $series->getId();
+        }
 
         return $this;
     }

@@ -28,14 +28,18 @@ class FormSeries
         $this->status = $series->getStatus();
 
         $this->gamesCount = count($series->getGames());
-        /** @var SeriesGame $game **/
+        $totalGamesExcludingAlts = 0;
+        /** @var SeriesGame $seriesGame **/
         foreach ($series->getGames() as $seriesGame) {
+            if ($seriesGame->getAltForId() === null || $seriesGame->getAltForId() === 0) {
+                $totalGamesExcludingAlts++;
+            }
             if ($seriesGame->isInCollection()) {
                 $this->ownedGamesCount++;
                 $this->completionPercentage += $seriesGame->getGame()->getCompletionPercentage();
             }
         }
-        $this->completionPercentage = $this->gamesCount > 0 ? $this->completionPercentage / $this->gamesCount : 0;
+        $this->completionPercentage = $this->gamesCount > 0 ? $this->completionPercentage / $totalGamesExcludingAlts : 0;
     }
 
     public function getId(): int
@@ -56,6 +60,20 @@ class FormSeries
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getStatusClass(): string
+    {
+        return match($this->status) {
+            'listed' => 'green',
+            'unlisted' => 'red',
+            'franchise' => 'cyan',
+            'subfranchise' => 'yellow',
+            'crossover' => 'orange',
+            'community' => 'pink',
+            'legacy' => 'black',
+            default => 'white',
+        };
     }
 
     public function getGamesCount(): int
