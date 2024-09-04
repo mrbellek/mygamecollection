@@ -16,6 +16,7 @@ class FormSeriesGame
     private ?int $altForId = null;
     private ?Game $altFor;
     private float $completionPercentage;
+    private ?string $taUrl;
 
     public function __construct(SeriesGame $seriesGame)
     {
@@ -27,6 +28,7 @@ class FormSeriesGame
         $this->altFor = $seriesGame->getAltFor();
         $this->isInCollection = $seriesGame->isInCollection();
         $this->completionPercentage = $seriesGame->isInCollection() ? $seriesGame->getGame()->getCompletionPercentage() : 0.0;
+        $this->taUrl = $seriesGame->isInCollection() ? $seriesGame->getGame()->getGameUrl() : null;
 
         //@TODO lookup SeriesGame object for games that are linked, but not owned.
     }
@@ -79,5 +81,10 @@ class FormSeriesGame
     public function getCompletionPercentage(): float
     {
         return $this->completionPercentage;
+    }
+
+    public function getTaUrl(): ?string
+    {
+        return $this->taUrl;
     }
 }

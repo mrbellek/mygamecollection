@@ -13,6 +13,7 @@ namespace App\Controller;
  * - #25 bug: seriesGame entity has broken gameId and altFor properties, when adding
  * - #25 altfor games should be handled correctly for series overview
  * - #25 add checkbox 'show setlists with 0 owned games' js filter
+ * - #25 unicode input lol, see House Flipper
  */
 
 use App\Entity\Game;
