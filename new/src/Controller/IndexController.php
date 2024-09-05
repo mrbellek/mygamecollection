@@ -375,18 +375,23 @@ class IndexController extends AbstractController
     #[Route("/series-setlist/games/{id}", name: "series_setlist_games", requirements: ['id' => '\d+'])]
     public function seriesSetlistGames(
         SeriesRepository $seriesRepository,
-        SeriesGameRepository $seriesGamesRepository,
+        SeriesGameRepository $seriesGameRepository,
         int $id
     ): Response {
         $serie = $seriesRepository->find($id);
         $formSerie = new FormSeries($serie);
 
-        $games = $seriesGamesRepository->findBySetlistId($id);
+        $games = $seriesGameRepository->findBySetlistId($id);
         //@TODO: FormSeriesGameCollection?
         $formSeriesGames = [];
         /** @var SeriesGame $seriesGame **/
         foreach ($games as $seriesGame) {
-            $formSeriesGames[] = new FormSeriesGame($seriesGame);
+            $altForName = null;
+            if ($seriesGame->getAltForId() > 0) {
+                $altSeriesGame = $seriesGameRepository->findOneBy(['gameId' => $seriesGame->getAltForId()]);
+                $altForName = $altSeriesGame->getName();
+            }
+            $formSeriesGames[] = new FormSeriesGame($seriesGame, $altForName);
         }
 
         return $this->render('series_setlist_games.html.twig', [

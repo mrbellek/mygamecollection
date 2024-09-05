@@ -29,7 +29,7 @@
                         {% endif %}
                         {% if game.gameId > 0 %}<span class="bi-check2" style="color: lightgreen;" title="{{ game.gameId }}"></span>{% endif %}
                     </td>
-                    <td>{% if game.isAltVersion %}alternative version for {{ game.altForName }}{% endif %}</td>
+                    <td>{% if game.isAltVersion %}{{ game.altForName }}{% endif %}</td>
                     <td>{% if game.isInCollection %}<span class="bi-check2"></span>{% endif %}</td>
                     <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage|round }} %{% endif %}
                     <td><a href="/series-setlist/games/{{ serie.id }}/edit/{{ game.id }}"><span class="bi-pencil"></span></td>

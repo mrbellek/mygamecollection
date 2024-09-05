@@ -15,10 +15,11 @@ class FormSeriesGame
     private bool $isInCollection;
     private ?int $altForId = null;
     private ?Game $altFor;
+    private ?string $altForName;
     private float $completionPercentage;
     private ?string $taUrl;
 
-    public function __construct(SeriesGame $seriesGame)
+    public function __construct(SeriesGame $seriesGame, ?string $altForName)
     {
         $this->id = $seriesGame->getId();
         $this->gameId = $seriesGame->getGameId();
@@ -26,11 +27,10 @@ class FormSeriesGame
         $this->seriesId = $seriesGame->getSetlistId();
         $this->altForId = $seriesGame->getAltForId();
         $this->altFor = $seriesGame->getAltFor();
+        $this->altForName = $altForName;
         $this->isInCollection = $seriesGame->isInCollection();
         $this->completionPercentage = $seriesGame->isInCollection() ? $seriesGame->getGame()->getCompletionPercentage() : 0.0;
         $this->taUrl = $seriesGame->isInCollection() ? $seriesGame->getGame()->getGameUrl() : null;
-
-        //@TODO lookup SeriesGame object for games that are linked, but not owned.
     }
 
     public function getId(): int
@@ -65,7 +65,7 @@ class FormSeriesGame
 
     public function getAltForName(): ?string
     {
-        return 'TODO';
+        return $this->altForName;
     }
 
     public function isAltVersion(): bool
