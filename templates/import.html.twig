@@ -1,0 +1,43 @@
+{% extends 'index.html.twig' %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!--link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" type="text/css" /-->
+    <style>
+        div#output { border: 1px solid darkgrey; background-color: lightgrey; font-family: "Courier New", fixedsys; padding: 1em; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a></h1>
+
+    <form method="post" class="form-horizontal" role="form">
+        <div class="form-group row">
+            <div class="col col-sm-2">
+                <label for="gamertag" class="col-form-label d-flex justify-content-end">Enter your Gamertag</label>
+            </div>
+            <div class="col col-sm-8">
+                <input type="text" id="gamertag" name="gamertag" class="form-control" value="{{ gamertag|default('') }}" required />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label class="col-form-label d-flex justify-content-end">&nbsp;</label>
+            </div>
+            <div class="col-sm-8">
+                <input type="submit" value="Import" class="btn btn-primary" />
+            </div>
+        </div>
+        {% if output is defined %}
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <div id="output">{{ output|nl2br}}</div>
+                </div>
+            </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

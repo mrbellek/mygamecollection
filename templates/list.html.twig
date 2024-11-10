@@ -1,0 +1,245 @@
+{% extends 'index.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a>
+        <a href="#content"><span class="bi-arrow-down-circle-fill"></span></a>
+    </h1>
+    <div class="form-group text-center" style="line-height: 5em;">
+        <span class="btn btn-info">Total games<br/><span class="badge rounded-pill text-bg-light">{{ count }}</span></span>
+        <span class="btn btn-success">Free games<br/><span class="badge rounded-pill text-bg-light">{{ stats.free }}</span></span>
+        <span class="btn btn-success">Purchased for free<br/><span class="badge rounded-pill text-bg-light">{{ stats.purchased_free }}</span></span>
+        <span class="btn btn-info">Total spent<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
+        <span class="btn btn-info">Average cost<br/><span class="badge rounded-pill text-bg-light">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
+        <span class="btn btn-info">Total estimated playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_playtime }} hours</span></span>
+        <span class="btn btn-info">Spent playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
+        <br/>
+        {% if stats.most_expensive_purchase %}
+        <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge rounded-pill text-bg-light">{{ stats.most_expensive_purchase.purchasedPrice|format_currency('EUR') }}</span></span>
+        {% endif %}
+        <span class="btn btn-warning">Spent last week:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
+        <span class="btn btn-warning">Spent last month:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_month_tooltip|join("\n") }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
+        <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_6month_tooltip|join("\n") }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
+        <span class="btn btn-warning">Spent last year:<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_year|format_currency('EUR') }}</span></span>
+    </div>
+
+    <div class="form-group" style="line-height: 3em;">
+        <form id="searchForm" action="/search/term/{{ page }}" method="get" class="form-inline">
+            <div class="dropdown" style="display: inline;">
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">Completion</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/all">All games</a></li>
+                    <li><a class="dropdown-item" href="/completed">Completed games</a></li>
+                    <li><a class="dropdown-item" href="/incomplete">Incomplete games</a></li>
+                    <li><a class="dropdown-item" href="/notstarted">Not started games</a></li>
+                </ul>
+            </div>
+            <div class="dropdown" style="display: inline;">
+                <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">Sorting</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/recent">Recent</a></li>
+                    <li><a class="dropdown-item" href="/bestrating">Best games</a></li>
+                    <li><a class="dropdown-item" href="/notstartedbestrating">Best not started games</a></li>
+                    <li><a class="dropdown-item" href="/shortest">Shortest games</a></li>
+                    <li><a class="dropdown-item" href="/shortestnotstarted">Shortest not started games</a></li>
+                    <li><a class="dropdown-item" href="/longest">Longest games</a></li>
+                    <li><a class="dropdown-item" href="/mostplayed">Most played</a></li>
+                    <li><a class="dropdown-item" href="/easiest">Easiest</a></li>
+                    <li><a class="dropdown-item" href="/hardest">Hardest</a></li>
+                </ul>
+            </div>
+            <div class="dropdown" style="display: inline;">
+                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">Store/Media</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/paid">Purchased games</a></li>
+                    <li><a class="dropdown-item" href="/free">Free games</a></li>
+                    <li><a class="dropdown-item" href="/physical">Physical games</a></li>
+                    <li><a class="dropdown-item" href="/sold">Sold games</a></li>
+                    <li><a class="dropdown-item" href="/unavailable">Unavailable games</a></li>
+                </ul>
+            </div>
+            <div class="dropdown" style="display: inline;">
+                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">Platform</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/360">Xbox 360 games</a></li>
+                    <li><a class="dropdown-item" href="/xb1">Xbox One games</a></li>
+                    <li><a class="dropdown-item" href="/xsx">Xbox Series X|S games</a></li>
+                    <li><a class="dropdown-item" href="/win">Windows games</a></li>
+                    <li><a class="dropdown-item" href="/bc">Backwards compatible games</a></li>
+                    <li><a class="dropdown-item" href="/nonbc">Not backwards compatible games</a></li>
+                    <li><a class="dropdown-item" href="/nonbckinect">Non-BC games with Kinect</a></li>
+                    <li><a class="dropdown-item" href="/nonbcperiph">Non-BC games with peripheral</a></li>
+                    <li><a class="dropdown-item" href="/nonbconline">Non-BC games with online multiplayer</a></li>
+                </ul>
+            </div>
+            <div class="dropdown" style="display: inline;">
+                <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">Walkthrough/DLC</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/walkthrough">With walkthrough</a></li>
+                    <li><a class="dropdown-item" href="/nowalkthrough">Without walkthrough</a></li>
+                    <li><a class="dropdown-item" href="/nodlc">Without DLC</a></li>
+                    <li><a class="dropdown-item" href="/withdlc">With DLC</a></li>
+                    <li><a class="dropdown-item" href="/dlccompleted">DLC completed</a></li>
+                    <li><a class="dropdown-item" href="/dlcnotcompleted">DLC not completed</a></li>
+                </ul>
+            </div>
+            <span class="text-nowrap">
+                <input type="text" name="search" id="search" class="form-control" style="width: auto; display: inline;" value="{{ search }}" autofocus />
+                <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
+                <a href="/all/1" class="btn btn-light">Clear</a>
+            </span>
+            <span class="text-nowrap">
+                <a class="btn btn-danger" href="/series-setlist">Series Setlist</a>
+            </span>
+        </form>
+    </div>
+
+    <a name="content"></a>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    {% if successMsg is defined %}
+        <div role="alert" class="alert alert-success">{{ successMsg }}</div>
+    {% endif %}
+    {% if errorMsg is defined %}
+        <div role="alert" class="alert alert-danger">{{ errorMsg }}</div>
+    {% endif %}
+
+    {% if games.haveToPaginate %}
+    <nav class="text-center">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <ul class="pagination" style="margin-top: 1em;">
+                    {% if page > 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/1">1</a></li>{% endif %}
+                    {% if page > 3 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/2">2</a></li>{% endif %}
+                    {% if page > 4 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
+
+                    {% if page > 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+                    <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                    {% if page < games.getNbPages %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+
+                    {% if page < games.getNbPages - 3 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
+                    {% if page < games.getNbPages - 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+                    {% if page < games.getNbPages - 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+                </ul>
+            </div>
+            <div class="col"></div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th>Game name ({{ count }})</th>
+            <th class="hidden-xs">Platform</th>
+            <th class="hidden-xs">Ratio</th>
+            <th class="text-nowrap">C<span class="hidden-xs">omp</span> %</th>
+            <th class="text-nowrap">C<span class="hidden-xs">omp</span> est.</th>
+            <th><abbr title="Has downloadable content?">DLC</abbr></th>
+            <th><abbr title="Is backwards compatible?">BC</abbr></th>
+            <th><abbr title="Is Kinect required?">K</abbr></th>
+            <th><abbr title="Is peripheral required?">P</abbr></th>
+            <th><abbr title="Has no online multiplayer?">O</abbr></th>
+            <th class="hidden-xs">Media</th>
+            <th class="hidden-xs">Paid</th>
+            <!--th class="hidden-xs">Status</th-->
+            <th></th>
+        </tr>
+        {% for game in games %}
+            <tr class="table-striped table-{{ game.completionPercentageClass }}">
+                <td>
+                    <a href="{{ game.gameUrl }}" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ game.name }}</a>
+                    {% if game.walkthroughUrl is not empty %}
+                        <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="bi-book"></span></a>
+                    {% endif %}
+                </td>
+                <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
+                <td class="hidden-xs {{ game.ratioClass }}">
+                    {{ game.ratio|round(2) }}
+                </td>
+                <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>
+                <td class="{{ game.completionEstimateClass }}">
+                    <span class="hidden-xs" title="{{ game.hoursPlayed|number_format(2) }} hours played">{{ game.completionEstimate }}</span>
+                    <!--span class="visible-xs text-nowrap">{{ game.completionEstimate|replace({'hours': 'h'}) }}</span-->
+                </td>
+                <td>
+                    {% if game.hasDlc %}
+                    <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="bi-plus-lg"></span></td>
+                    {% endif %}
+                </td>
+                {% if game.platform == 'Xbox 360' %}
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="bi-repeat" /></td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="bi-eye-fill" /></td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="bi-music-note-beamed" /></td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="bi-cloud-upload" /></td>
+                {% else %}
+                    <td /><td /><td /><td />
+                {% endif %}
+                <td class="hidden-xs {{ game.formatClass }}">{{ game.format }}</td>
+                <td class="hidden-xs">
+                    {% if game.purchasedPrice == 0 %}
+                        <span class="text-success">free</span>
+                    {% else %}
+                        {{ game.purchasedPrice|format_currency('EUR') }}
+                    {% endif %}
+                </td>
+                <!--td>shortlist</td-->
+                <td>
+                    <a href="/game/{{ game.id }}"><span class="bi-pencil"></span></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="14">
+                    <div role="alert" class="alert alert-info">
+                        <p>The current filter '{{ filter }}' yields no results.</p>
+                        {% if filter == 'all' %}
+                            <hr/>
+                            <p>If this is your first time opening this app, run this Symfony console command to import your game collection:</p>
+                            <p style="font-family: monospace;">> bin/console app:import [your gamertag]</p>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if games.haveToPaginate %}
+    <div class="text-center">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <ul class="pagination">
+                    {% if page > 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ 1 }}">1</a></li>{% endif %}
+                    {% if page > 3 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ 2 }}">2</a></li>{% endif %}
+                    {% if page > 4 %}<li class="page-item disabled"><span class="page-link">&hellip;</span></li>{% endif %}
+
+                    {% if page > 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page - 1 }}">{{ page - 1 }}</a></li>{% endif %}
+                    <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                    {% if page < games.getNbPages %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ page + 1 }}">{{ page + 1 }}</a></li>{% endif %}
+
+                    {% if page < games.getNbPages - 3 %}<li class="page-item disabledinactive"><span class="page-link">&hellip;</span></li>{% endif %}
+                    {% if page < games.getNbPages - 2 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages - 1 }}">{{ games.getNbPages - 1 }}</a></li>{% endif %}
+                    {% if page < games.getNbPages - 1 %}<li class="page-item"><a class="page-link" href="/{{ paginateSlug }}/{{ games.getNbPages }}">{{ games.getNbPages }}</a></li>{% endif %}
+                </ul>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        //@TODO move to main.js
+        $('#searchForm').on('submit', function() {
+            let search = $('#search').prop('value');
+            window.location.href = '/search/' + search + '/1';
+            return false;
+        });
+    </script>
+</div>
+{% endblock %}

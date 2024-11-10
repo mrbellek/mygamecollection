@@ -1,0 +1,48 @@
+{% extends 'index.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>
+            <a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist
+            <a href="/"><span class="bi-arrow-left-circle-fill"></span></a>
+        </h1>
+        <h3>{{ serie.name }} - <em>{{ serie.userTitle }}</em></h3>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <table class="table table-condensed table-hover">
+            <tr>
+                <th>Name</td>
+                <th>Alternative version?</th>
+                <th>In Collection</th>
+                <th>Completion %</th>
+                <th><a href="/series-setlist/games/{{ serie.id }}/add"><span class="bi-plus-circle"></span></a></th>
+            </tr>
+            {% for game in games %}
+                <tr class="table-striped {% if game.completionPercentage == 100 %}table-success{% endif %}">
+                    <td>
+                        {% if game.isInCollection %}
+                            <a href="{{ game.taUrl }}" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">{{ game.name }}</a>
+                        {% else %}
+                            {{ game.name }}
+                        {% endif %}
+                        {% if game.gameId > 0 %}<span class="bi-check2" style="color: lightgreen;" title="{{ game.gameId }}"></span>{% endif %}
+                    </td>
+                    <td>{% if game.isAltVersion %}{{ game.altForName }}{% endif %}</td>
+                    <td>{% if game.isInCollection %}<span class="bi-check2"></span>{% endif %}</td>
+                    <td>{% if game.completionPercentage > 0 %}{{ game.completionPercentage|round }} %{% endif %}
+                    <td><a href="/series-setlist/games/{{ serie.id }}/edit/{{ game.id }}"><span class="bi-pencil"></span></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="form-group row">
+            <div class="col-sm-8">
+                <a href="/series-setlist" class="btn btn-primary">Back</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
