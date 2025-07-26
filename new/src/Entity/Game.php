@@ -82,6 +82,9 @@ class Game
 
         #[ORM\Column(name: "shortlist_order")]
         private int $shortlistOrder,
+
+        #[ORM\Column]
+        private int $ranking,
        
         #[ORM\Column(name: "walkthrough_url")]
         private ?string $walkthroughUrl,
@@ -330,6 +333,11 @@ class Game
         return $this->shortlistOrder;
     }
 
+    public function getRanking(): int
+    {
+        return $this->ranking;
+    }
+
     public function getWalkthroughUrl(): ?string
     {
         return $this->walkthroughUrl;
@@ -409,6 +417,13 @@ class Game
         return $this;
     }
 
+    public function setRanking(int $ranking): self
+    {
+        $this->ranking = $ranking;
+
+        return $this;
+    }
+
     ///////////// ENCAPSULATION FUNCTIONS /////////////
 
     /**
@@ -448,6 +463,7 @@ class Game
         $this->currentPrice = $game->getCurrentPrice();
         $this->regularPrice = $game->getRegularPrice();
         $this->shortlistOrder = $game->getShortlistOrder();
+        $this->ranking = $game->getRanking();
         $this->created = $game->getCreated();
          */
     }

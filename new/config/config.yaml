@@ -1,0 +1,5 @@
+doctrine:
+  orm:
+    dql:
+      numeric_functions:
+        Rand: App\Resources\MySqlRand

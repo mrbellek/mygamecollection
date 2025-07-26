@@ -221,4 +221,25 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
 
     }
+
+    public function fetchTwoRankingGames(): array
+    {
+        $rows = $this->createQueryBuilder('g')
+            ->where('g.ranking = 0')
+            ->andWhere('g.completionPercentage < 100')
+            ->getQuery()
+            ->getResult();
+
+        shuffle($rows);
+
+        return array_slice($rows, 0, 2);
+    }
+
+    public function getLowestRanking(): int
+    {
+        return $this->createQueryBuilder('g')
+            ->select('MAX(g.ranking) AS lowestRanking')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

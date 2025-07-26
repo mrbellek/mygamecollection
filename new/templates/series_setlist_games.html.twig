@@ -2,7 +2,10 @@
 
 {% block body %}
     <div class="container">
-        <h1><a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist</h1>
+        <h1>
+            <a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Series Setlist
+            <a href="/"><span class="bi-arrow-left-circle-fill"></span></a>
+        </h1>
         <h3>{{ serie.name }} - <em>{{ serie.userTitle }}</em></h3>
 
         {% for label, messages in app.flashes %}
