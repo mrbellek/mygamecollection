@@ -136,8 +136,24 @@ class Game
             PlatformEnum::PLATFORM_WIN => 'win',
             PlatformEnum::PLATFORM_ANDROID,
             PlatformEnum::PLATFORM_WEB => 'mob',
+            PlatformEnum::PLATFORM_SWITCH => 'switch',
 
             default => 'xsx',
+        };
+    }
+
+    public function getPlatformImg(): string
+    {
+        return match($this->platform) {
+            PlatformEnum::PLATFORM_360 => 'img/xbox-360.png',
+            PlatformEnum::PLATFORM_XB1 => 'img/xbox-one.png',
+            PlatformEnum::PLATFORM_XSX => 'img/xbox-series-x-s.png',
+            PlatformEnum::PLATFORM_WIN => 'img/windows.png',
+            PlatformEnum::PLATFORM_ANDROID => 'img/android.png',
+            PlatformEnum::PLATFORM_WEB => 'img/web.png',
+            PlatformEnum::PLATFORM_SWITCH => 'img/nintendo-switch.png',
+
+            default => 'img/xbox-one.png',
         };
     }
 

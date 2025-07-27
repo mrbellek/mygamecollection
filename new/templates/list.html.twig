@@ -159,7 +159,7 @@
                         <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="bi-book"></span></a>
                     {% endif %}
                 </td>
-                <td class="{{ game.platformClass }} hidden-xs">{{ game.platform }}</td>
+                <td class="hidden-xs"><img src="/{{ game.platformImg }}" width="16" height="16" /> {{ game.platform }}</td>
                 <td class="hidden-xs {{ game.ratioClass }}">
                     {{ game.ratio|round(2) }}
                 </td>
