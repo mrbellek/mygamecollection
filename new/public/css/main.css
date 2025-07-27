@@ -10,11 +10,16 @@ span.btn { cursor: default; }
 .table-hover tbody tr:hover > td.x36 { background-color: #5cb85c !important; }
 .table-hover tbody tr:hover > td.win { background-color: #f0ad4e !important; }
 .table-hover tbody tr:hover > td.mob { background-color: #5bc0de !important; }
-.table tbody tr > td.ratio-veryeasy { background-color: #00FF00; }
-.table tbody tr > td.ratio-easy { background-color: yellow; }
-.table tbody tr > td.ratio-medium { background-color: orange; }
-.table tbody tr > td.ratio-hard { background-color: pink; }
-.table tbody tr > td.ratio-veryhard { background-color: red; }
+.table tbody tr > td > div.ratiocircle { width: 1em; height: 1em; display: inline-block; }
+.table tbody tr div.ratio-veryeasy { background-color: #00FF00; }
+.table tbody tr div.ratio-easy { background-color: yellow; }
+.table tbody tr div.ratio-medium { background-color: orange; }
+.table tbody tr div.ratio-hard { background-color: pink; }
+.table tbody tr div.ratio-veryhard { background-color: red; }
 
 /** game page **/
 div.row { margin-bottom: 0.75em; }
+
+/** ranking page **/
+div.ranking { width: 50%; float: left; text-align: center; }
+div#ranking-stats { font-size: small; font-style: italic; }

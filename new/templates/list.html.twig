@@ -160,7 +160,8 @@
                     {% endif %}
                 </td>
                 <td class="hidden-xs"><img src="/{{ game.platformImg }}" width="16" height="16" /> {{ game.platform }}</td>
-                <td class="hidden-xs {{ game.ratioClass }}">
+                <td class="hidden-xs">
+                    <div class="ratiocircle {{ game.ratioClass }}">&nbsp;</div>
                     {{ game.ratio|round(2) }}
                 </td>
                 <td class="{{ game.completionPercentageClass }} text-center text-nowrap">{{ game.completionPercentage }} %</td>

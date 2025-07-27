@@ -20,10 +20,12 @@ class RankingController extends AbstractController
     public function ranking(): Response
     {
         $games = $this->gameRepository->fetchTwoRankingGames();
+        $stats = $this->gameRepository->fetchRankingStats();
 
         return $this->render('ranking/index.html.twig', [
             'game1' => $games[0],
             'game2' => $games[1],
+            'stats' => $stats,
         ]);
     }
 

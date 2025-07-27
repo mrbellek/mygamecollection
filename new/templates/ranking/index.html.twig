@@ -9,5 +9,24 @@
         <h3>Which would you rather play? (<a href="">skip)</a></h3>
         {% include 'ranking/game.html.twig' with { 'game': game1, 'otherGame': game2 } %}
         {% include 'ranking/game.html.twig' with { 'game': game2, 'otherGame': game1 } %}
+        <div class="text-muted" id="ranking-stats">
+            <ul>
+                <li>Unranked games: {{ stats.unrankedCount }}</li>
+                <li>
+                    Top 5 games:<ol>
+                        {% for game in stats.top5 %}
+                            <li>{{ game.name }}</li>
+                        {% endfor %}
+                    </ol>
+                </li>
+                <li>
+                    Bottom 5 games:<ol>
+                        {% for game in stats.bottom5 %}
+                            <li>{{ game.name }}</li>
+                        {% endfor %}
+                    </ol>
+                </li>
+            </ul>
+        </div>
     </div>
 {% endblock %}

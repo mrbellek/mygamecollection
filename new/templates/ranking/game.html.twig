@@ -1,32 +1,17 @@
-<div style="width: 50%; float: left; border: 1px solid grey; text-align: center;">
+<div class="ranking">
     <table class="table table-condensed table-hover">
         <tr class="table-striped table-{{ game.completionPercentageClass }}">
             <td><strong><a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a></strong></td>
         </tr>
         <tr>
-            <td class={{ game.platformClass }}>Platform: {{ game.platform }}</td>
+            <td>Platform: <img src="{{ game.platformImg }}"/> {{ game.platform }}</td>
         </tr>
         <tr>
             <td class="{{ game.completionEstimateClass }}">Completion estimate: {{ game.completionEstimate }}</td>
         </tr>
         <tr>
-            <td class="{{ game.ratioClass }}">Ratio: {{ game.ratio|round(2) }}</td>
+            <td>Ratio: <div class="ratiocircle {{ game.ratioClass }}">&nbsp;</div> {{ game.ratio|round(2) }}</td>
         </tr>
-        <tr>
-            <td class="{{ game.completionPercentageClass }}">Completion percentage: {{ game.completionPercentage }}%
-            </td>
-        </tr>
-        {% if game.completionPercentage > 0 %}
-            <tr>
-                <td>Hours played: {{ game.hoursPlayed }}</td>
-            </tr>
-            <tr>
-                <td>Achievements: {{ game.achievementsWon }}/{{ game.achievementsTotal }}</td>
-            </tr>
-        {% else %}
-            <tr><td>&nbsp;</td></tr>
-            <tr><td>&nbsp;</td></tr>
-        {% endif %}
         <tr>
             <td>Site rating: {{ game.siteRating }}</td>
         </tr>
@@ -36,6 +21,22 @@
         <tr>
             <td>Purchase price: {% if game.purchasedPrice > 0 %}{{ game.purchasedPrice|format_currency('EUR') }}{% else %}FREE{% endif %}</td>
         </tr>
+        {% if game.completionPercentage > 0 %}
+            <tr>
+                <td class="{{ game.completionPercentageClass }}">Completion percentage: {{ game.completionPercentage }}%
+                </td>
+            </tr>
+            <tr>
+                <td>Hours played: {{ game.hoursPlayed|number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td>Achievements: {{ game.achievementsWon }}/{{ game.achievementsTotal }}</td>
+            </tr>
+        {% else %}
+            <tr><td>Not started</td></tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td></tr>
+        {% endif %}
         <tr>
             <td><a class="btn btn-danger" href="/ranking/choose/{{ game.id }}/{{ otherGame.id }}">CHOOSE</a></td>
         </tr>
