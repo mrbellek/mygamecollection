@@ -1,14 +1,43 @@
 <div style="width: 50%; float: left; border: 1px solid grey; text-align: center;">
-    <ul>
-        <li><a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a></li>
-        <li>Platform: {{ game.platform }}</li>
-        <li>Completion percentage: {{ game.completionPercentage }}%</li>
-        <li>Completion estimate: {{ game.completionEstimate }}</li>
-        <li>Hours played: {{ game.hoursPlayed }}</li>
-        <li>Achievements: {{ game.achievementsWon }}/{{ game.achievementsTotal }}</li>
-        <li>Site rating: {{ game.siteRating }}</li>
-        <li>Walkthrough: <a href="{{ game.walkthroughUrl }}" target="_blank">maybe</a></li>
-        <li>Purchase price: {{ game.purchasedPrice }}</li>
-        <li><a class="button" href="/ranking/choose/{{ game.id }}/{{ otherGame.id }}">CHOOSE</a></li>
-    </ul>
+    <table class="table table-condensed table-hover">
+        <tr class="table-striped table-{{ game.completionPercentageClass }}">
+            <td><strong><a href="{{ game.gameUrl }}" target="_blank">{{ game.name }}</a></strong></td>
+        </tr>
+        <tr>
+            <td class={{ game.platformClass }}>Platform: {{ game.platform }}</td>
+        </tr>
+        <tr>
+            <td class="{{ game.completionEstimateClass }}">Completion estimate: {{ game.completionEstimate }}</td>
+        </tr>
+        <tr>
+            <td class="{{ game.ratioClass }}">Ratio: {{ game.ratio|round(2) }}</td>
+        </tr>
+        <tr>
+            <td class="{{ game.completionPercentageClass }}">Completion percentage: {{ game.completionPercentage }}%
+            </td>
+        </tr>
+        {% if game.completionPercentage > 0 %}
+            <tr>
+                <td>Hours played: {{ game.hoursPlayed }}</td>
+            </tr>
+            <tr>
+                <td>Achievements: {{ game.achievementsWon }}/{{ game.achievementsTotal }}</td>
+            </tr>
+        {% else %}
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td></tr>
+        {% endif %}
+        <tr>
+            <td>Site rating: {{ game.siteRating }}</td>
+        </tr>
+        <tr>
+            <td>Walkthrough: {% if game.walkthroughUrl %}<strong><a href="{{ game.walkthroughUrl }}" target="_blank">yes</a></strong>{% else %}no{% endif %}</td>
+        </tr>
+        <tr>
+            <td>Purchase price: {% if game.purchasedPrice > 0 %}{{ game.purchasedPrice|format_currency('EUR') }}{% else %}FREE{% endif %}</td>
+        </tr>
+        <tr>
+            <td><a class="btn btn-danger" href="/ranking/choose/{{ game.id }}/{{ otherGame.id }}">CHOOSE</a></td>
+        </tr>
+    </table>
 </div>

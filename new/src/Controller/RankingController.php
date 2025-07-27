@@ -42,12 +42,13 @@ class RankingController extends AbstractController
             $game->setRanking($otherGame->getRanking());
             $otherGame->setRanking($t);
 
-        } elseif ($game->getRanking() > 0 && $otherGame->getRanking() === 0) {
-            //chosen game has already been ranked, other game has not - do nothing
         } elseif ($game->getRanking() === 0 && $otherGame->getRanking() > 0) {
             //insert chosen game above other, ranked game
-            die('TODO');
-        } else {
+            $this->gameRepository->shiftRankingDownAt($otherGame->getRanking());
+            $game->setRanking($otherGame->getRanking());
+            $otherGame->setRanking($otherGame->getRanking() + 1);
+
+        } elseif ($game->getRanking() === 0 && $otherGame->getRanking() === 0) {
             //both games have no ranking, insert them below lowest ranked game
             $lowestRanking = $this->gameRepository->getLowestRanking();
             $game->setRanking($lowestRanking + 1);

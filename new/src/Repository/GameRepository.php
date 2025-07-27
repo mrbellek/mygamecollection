@@ -219,7 +219,6 @@ class GameRepository extends ServiceEntityRepository
             ->orderBy('g.name', 'ASC')
             ->getQuery()
             ->getResult();
-
     }
 
     public function fetchTwoRankingGames(): array
@@ -241,5 +240,18 @@ class GameRepository extends ServiceEntityRepository
             ->select('MAX(g.ranking) AS lowestRanking')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function shiftRankingDownAt(int $atRanking): self
+    {
+        $this->createQueryBuilder('g')
+            ->update('g')
+            ->set('g.ranking', 'g.ranking + 1')
+            ->where('g.ranking > :atRanking')
+            ->setParameter(':atRanking', $atRanking)
+            ->getQuery()
+            ->execute();
+
+        return $this;
     }
 }
