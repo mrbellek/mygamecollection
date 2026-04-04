@@ -3,8 +3,9 @@
 {% block body %}
     <div class="container">
         <h1>
-            <a href="https://www.trueachievements.com/" target="_blank" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> - Rank your games
-            <a href="/"><span class="bi-arrow-left-circle-fill"></span></a>
+            <a href="{{ path('index') }}" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">My Game Collection</a> -
+            <a href="{{ path('series_setlist') }}" class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">Series Setlist</a> -
+            <a href="{{ path('ranking') }}" class="link-primary link-underline-opacity-0 link-underline-opacity-100-hover">Ranking games</a>
         </h1>
         <h3>Which would you rather play? (<a href="">skip)</a></h3>
         {% include 'ranking/game.html.twig' with { 'game': game1, 'otherGame': game2 } %}

@@ -4,6 +4,6 @@ index:
 series_setlist:
     path: /series-setlist
     controller: App\Controller\SeriesSetlistController::seriesSetlist
-rankng:
+ranking:
     path: /ranking
     controller: App\Controller\RankingController::ranking
