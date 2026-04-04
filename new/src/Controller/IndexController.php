@@ -40,7 +40,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class IndexController extends AbstractController
 {
-    private const DEFAULT_PAGE_SIZE = 25;
+    private const int DEFAULT_PAGE_SIZE = 25;
 
     public function __construct(
         private readonly GameStatsService $gameStatsService,
