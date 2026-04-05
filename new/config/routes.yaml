@@ -1,9 +1,2 @@
-index:
-    path: /
-    controller: App\Controller\IndexController::index
-series_setlist:
-    path: /series-setlist
-    controller: App\Controller\SeriesSetlistController::seriesSetlist
-ranking:
-    path: /ranking
-    controller: App\Controller\RankingController::ranking
+controllers:
+    resource: routing.controllers
