@@ -183,11 +183,11 @@ class IndexController extends AbstractController
             return $this->redirect('index');
         }
 
-        if (strlen($search) > 0) {
+        if ($search !== '') {
             return $this->redirect(sprintf('/search/%s/%d', $search, $page));
-        } else {
-            return $this->redirect(sprintf('/%s/%d', $filter, $page));
         }
+
+        return $this->redirect(sprintf('/filter/%s/%d', $filter, $page));
     }
 
     private function delete(ObjectManager $manager, Game $game): void
