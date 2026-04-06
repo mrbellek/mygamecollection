@@ -90,10 +90,6 @@
                 <input class="btn btn-info" id="submitSearch" name="submitSearch" type="submit" value="Search" />
                 <a href="/filter/all/1" class="btn btn-light">Clear</a>
             </span>
-            <span class="text-nowrap">
-                <a class="btn btn-danger" href="/series-setlist">Series Setlist</a>
-                <a class="btn btn-danger" href="/ranking">Ranking games</a>
-            </span>
         </form>
     </div>
 
@@ -161,7 +157,7 @@
                         <a href="{{ game.walkthroughUrl }}" target="_blank" title="Walkthrough available"><span class="bi-book"></span></a>
                     {% endif %}
                 </td>
-                <td class="hidden-xs"><img src="/{{ game.platformImg }}" width="16" height="16" /> {{ game.platform }}</td>
+                <td class="hidden-xs"><img src="/{{ game.platformImg }}" alt="{{ game.platform }}" width="16" height="16" /> {{ game.platform }}</td>
                 <td class="hidden-xs">
                     <div class="ratiocircle {{ game.ratioClass }}">&nbsp;</div>
                     {{ game.ratio|round(2) }}
@@ -173,16 +169,24 @@
                 </td>
                 <td>
                     {% if game.hasDlc %}
-                    <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="bi-plus-lg"></span></td>
+                    <span style="color: {{ game.dlcCompletionClass }};" title="{{ game.dlcCompletion }}%" class="bi-plus-lg"></span>
                     {% endif %}
                 </td>
                 {% if game.platform == 'Xbox 360' %}
-                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.backwardsCompatibleClass }}" class="bi-repeat" /></td>
-                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.kinectRequiredClass }}" class="bi-eye-fill" /></td>
-                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.peripheralRequiredClass }}" class="bi-music-note-beamed" /></td>
-                    <td class="{{ game.backwardsCompatibleCompleteClass }}"><i style="color: {{ game.onlineMultiplayerClass }}" class="bi-cloud-upload" /></td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}">
+                        <i style="color: {{ game.backwardsCompatibleClass }}" class="bi-repeat" title="{% if game.backwardsCompatible %}Backwards compatible{% else %}Not backwards compatible{% endif %}"></i>
+                    </td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}">
+                        <i style="color: {{ game.kinectRequiredClass }}" class="bi-eye-fill" title="{% if game.kinectRequired %}Kinect is required{% else %}No Kinect required{% endif %}"></i>
+                    </td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}">
+                        <i style="color: {{ game.peripheralRequiredClass }}" class="bi-music-note-beamed" title="{% if game.peripheralRequired %}Peripheral required{% else %}No peripheral required{% endif %}"></i>
+                    </td>
+                    <td class="{{ game.backwardsCompatibleCompleteClass }}">
+                        <i style="color: {{ game.onlineMultiplayerClass }}" class="bi-cloud-upload" title="{% if game.onlineMultiplayer %}Has online multiplayer{% else %}No online multiplayer{% endif %}"></i>
+                    </td>
                 {% else %}
-                    <td /><td /><td /><td />
+                    <td></td><td></td><td></td><td></td>
                 {% endif %}
                 <td class="hidden-xs {{ game.formatClass }}">{{ game.format }}</td>
                 <td class="hidden-xs">
