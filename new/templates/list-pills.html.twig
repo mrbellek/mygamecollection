@@ -1,0 +1,17 @@
+<div class="form-group text-center" style="line-height: 5em;">
+    <span class="btn btn-info">Total games<br/><span class="badge rounded-pill text-bg-light">{{ count }}</span></span>
+    <span class="btn btn-success">Free games<br/><span class="badge rounded-pill text-bg-light">{{ stats.free }}</span></span>
+    <span class="btn btn-success">Purchased for free<br/><span class="badge rounded-pill text-bg-light">{{ stats.purchased_free }}</span></span>
+    <span class="btn btn-info">Total spent<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_purchased|format_currency('EUR') }}</span></span>
+    <span class="btn btn-info">Average cost<br/><span class="badge rounded-pill text-bg-light">{{ stats.average_purchased|format_currency('EUR') }}</span></span>
+    <span class="btn btn-info">Total estimated playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.total_playtime }} hours</span></span>
+    <span class="btn btn-info">Spent playtime<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_playtime|number_format(2, '.', '') }} hours</span></span>
+    <br/>
+    {% if stats.most_expensive_purchase %}
+        <span class="btn btn-danger">Most expensive buy:<br/>{{ stats.most_expensive_purchase.name }} <span class="badge rounded-pill text-bg-light">{{ stats.most_expensive_purchase.purchasedPrice|format_currency('EUR') }}</span></span>
+    {% endif %}
+    <span class="btn btn-warning">Spent last week:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_week_tooltip|join("\n") }}">{{ stats.spent_week|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last month:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_month_tooltip|join("\n") }}">{{ stats.spent_month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last 6 months:<br/><span class="badge rounded-pill text-bg-light" title="{{ stats.spent_6month_tooltip|join("\n") }}">{{ stats.spent_6month|format_currency('EUR') }}</span></span>
+    <span class="btn btn-warning">Spent last year:<br/><span class="badge rounded-pill text-bg-light">{{ stats.spent_year|format_currency('EUR') }}</span></span>
+</div>

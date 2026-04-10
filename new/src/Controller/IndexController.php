@@ -20,6 +20,7 @@ use App\Entity\Game;
 use App\Entity\GameCollection;
 use App\Enum\Platform as PlatformEnum;
 use App\Exception\InvalidFilterException;
+use App\Form\CsvUploadFormType;
 use App\Repository\GameRepository;
 use App\Service\GameFilterService;
 use App\Service\GameStatsService;
@@ -68,7 +69,9 @@ class IndexController extends AbstractController
             $pageNum = 1;
             $pagerfanta = Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $pageNum, $pageSize);
         }
-    
+
+        $uploadForm = $this->createForm(CsvUploadFormType::class);
+
         return $this->render('list.html.twig', [
             'games' => $pagerfanta,
             'count' => $games->count(),
@@ -76,7 +79,8 @@ class IndexController extends AbstractController
             'page' => $pageNum,
             'filter' => $filter,
             'search' => $search,
-            'paginateSlug' => strlen($search) > 0 ? sprintf('%s/%s', $filter, $search) : $filter,
+            'paginateSlug' => $search !== '' ? sprintf('%s/%s', $filter, $search) : $filter,
+            'form' => $uploadForm,
         ]);
     }
 
