@@ -18,7 +18,7 @@ class Game
 
         #[ORM\Id]
         #[ORM\Column]
-        private int $id,
+        private ?int $id = null,
 
         #[ORM\Column]
         private string $name,
