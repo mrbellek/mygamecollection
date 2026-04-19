@@ -33,6 +33,9 @@ class Series
     private string $status;
 
     #[ORM\OneToMany(targetEntity: SeriesGame::class, mappedBy: 'series')]
+    /**
+     * @var Collection<int, SeriesGame> $seriesGames
+     */
     private Collection $seriesGames;
 
     public function __construct()
@@ -60,6 +63,9 @@ class Series
         return $this->status;
     }
 
+    /**
+     * @return Collection<SeriesGame>
+     */
     public function getGames(): Collection
     {
         return $this->seriesGames;

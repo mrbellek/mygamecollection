@@ -12,6 +12,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  * 
  * we extend Doctrine ArrayColletion because it has a ton of useful functions,
  * like first, offsetGet, offsetExists, count, map, reduce and filter.
+ *
+ * @implements ArrayCollection<Game>
  */
 class GameCollection extends ArrayCollection
 {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Series;
+use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'app:setlistcheck')]
 class SetlistCheckerCommand extends Command
 {
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(ManagerRegistry $doctrine)
     {
@@ -75,10 +76,11 @@ class SetlistCheckerCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @return Series[]
+     */
     private function getSetlists(): array
     {
-        $setlistRepository = $this->entityManager->getRepository(Series::class);
-
-        return $setlistRepository->findBy([], ['name' => 'ASC']);
+        return $this->entityManager->getRepository(Series::class)->findBy([], ['name' => 'ASC']);
     }
 }

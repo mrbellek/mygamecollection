@@ -12,7 +12,6 @@ use App\Exception\InvalidTAContentException;
 use DOMDocument;
 use DOMXPath;
 
-use function curl_close;
 use function curl_exec;
 use function curl_init;
 use function curl_setopt_array;
@@ -26,7 +25,7 @@ class GameScraperService
     private string $baseUrl = 'https://www.trueachievements.com/gamer/mrbellek/gamecollection?executeformfunction&function=AjaxList&params=';
 
     /**
-     * @var array<string>
+     * @var array<string, string|int>
      */
     private array $parameters = [
         'ddlSortBy'                     => 'Titlename',
@@ -87,7 +86,7 @@ class GameScraperService
 
         //construct game collection url and fetch first page
         $scrapedPages = [];
-        $url = $this->buildUrl($gamerId, 1);
+        $url = $this->buildUrl($gamerId);
         $curl = $this->initCurl($gamerId);
         curl_setopt($curl, CURLOPT_URL, $url);
         $this->log('Importing TA game collection page 1/?..');
@@ -108,7 +107,6 @@ class GameScraperService
             //cache scraped pages for when debugging
             file_put_contents(sprintf('scrape%d.html', $page), $result);
         }
-        curl_close($curl);
 
         return $scrapedPages;
     }

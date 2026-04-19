@@ -32,7 +32,7 @@ class Version20240826163000 extends AbstractMigration
               `setlist_id` int(11) NOT NULL,
               `alt_for` int(11) DEFAULT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-        ")
+        ");
 
     }
 

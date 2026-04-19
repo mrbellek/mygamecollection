@@ -7,7 +7,7 @@ namespace App\Service;
  * TODO:
  * - calling getAttribute on a DOMNode element seems to confuse PHPStan,
  *   because that functions seems to belong with DOMElement... even though
- *   one is a subclass of the other. used some @var typehints as a workaround.
+ *   one is a subclass of the other. used some @ var typehints as a workaround.
  */
 
 use App\Entity\Game;
@@ -179,7 +179,7 @@ class GameParserService
         $gameId = 0;
         $m = [];
         if (preg_match('/_(\d+)$/', $cell->getAttribute('id'), $m)) {
-            $gameId = intval($m[1]);
+            $gameId = $m[1];
         }
 
         /** @var DOMElement $platformCodeCell */

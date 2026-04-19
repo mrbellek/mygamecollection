@@ -70,7 +70,7 @@ class GameStatsService
     }
 
     /**
-     * @return array<string|float>
+     * @return array<string, string|float|array|Game>
      */
     private function getSpentStats(GameCollection $games): array
     {
@@ -89,16 +89,16 @@ class GameStatsService
 
         return [
             'most_expensive_purchase' => $this->getMostExpensivePurchase($games),
-            'spent_week' => $gamesBoughtLastWeek->reduce(function (?float $sum, Game $game) {
+            'spent_week' => (float)$gamesBoughtLastWeek->reduce(function (?float $sum, Game $game) {
                 return $sum + $game->getPurchasedPrice();
             }),
-            'spent_month' => $gamesBoughtLastMonth->reduce(function (?float $sum, Game $game) {
+            'spent_month' => (float)$gamesBoughtLastMonth->reduce(function (?float $sum, Game $game) {
                 return $sum + $game->getPurchasedPrice();
             }),
-            'spent_6month' => $gamesBoughtLastSixMonths->reduce(function (?float $sum, Game $game) {
+            'spent_6month' => (float)$gamesBoughtLastSixMonths->reduce(function (?float $sum, Game $game) {
                 return $sum + $game->getPurchasedPrice();
             }),
-            'spent_year' => $gamesBoughtLastYear->reduce(function (?float $sum, Game $game) {
+            'spent_year' => (float)$gamesBoughtLastYear->reduce(function (?float $sum, Game $game) {
                 return $sum + $game->getPurchasedPrice();
             }),
 

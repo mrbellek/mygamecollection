@@ -7,6 +7,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\SeriesGame;
 
+/**
+ * @extends ServiceEntityRepository<SeriesGame>
+ */
 class SeriesGameRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

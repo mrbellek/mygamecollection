@@ -5,19 +5,20 @@ namespace App\Repository;
 use App\Entity\Game;
 use App\Enum\Status as StatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Game>
  *
- * @method Game|null find($id, $lockMode = null, $lockVersion = null)
- * @method Game|null findOneBy(array $criteria, array $orderBy = null)
- * @method Game[]    findAll()
- * @method Game[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @ method Game|null find($id, $lockMode = null, $lockVersion = null)
+ * @ method Game|null findOneBy(array $criteria, array $orderBy = null)
+ * @ method Game[]    findAll()
+ * @ method Game[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class GameRepository extends ServiceEntityRepository
 {
-    private $qb;
+    private QueryBuilder $qb;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -224,6 +225,9 @@ class GameRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return Game[]
+     */
     public function fetchTwoRankingGames(): array
     {
         //@TODO should be using RAND() here but doctrine doesnt natively support it
@@ -260,6 +264,9 @@ class GameRepository extends ServiceEntityRepository
         return $this;
     }
 
+    /**
+     * @return array<string, int|array>
+     */
     public function fetchRankingStats(): array
     {
         $unrankedCount = $this->qb

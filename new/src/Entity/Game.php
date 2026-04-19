@@ -16,10 +16,6 @@ class Game
 {
     public function __construct(
 
-        #[ORM\Id]
-        #[ORM\Column]
-        private ?int $id = null,
-
         #[ORM\Column]
         private string $name,
        
@@ -109,6 +105,10 @@ class Game
        
         #[ORM\Column(name: "regular_price")]
         private ?float $regularPrice = null,
+
+        #[ORM\Id]
+        #[ORM\Column]
+        private ?int $id = null,
     ) {
     }
 
