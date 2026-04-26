@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Form\CsvUploadFormType;
 use App\Repository\GameRepository;
 use App\Service\ImportParserService;
+use App\Trait\DebuggerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class UploadController extends AbstractController
 {
+    use DebuggerTrait;
+
     public function __construct(
         private readonly ImportParserService $importParserService,
         private readonly GameRepository      $gameRepository,
@@ -33,9 +36,8 @@ class UploadController extends AbstractController
 
             $importGames = $this->importParserService->parseCsvContents($importContent);
             $updatedGames = $this->importParserService->getUpdatedGames($importGames, $this->gameRepository->findAll());
-            echo '<pre>';
-            print_r($updatedGames);
-            die();
+            $this->dd($updatedGames);
+
             $result = $this->gameRepository->upsertAll($updatedGames);
 
             if ($result->isSuccess()) {

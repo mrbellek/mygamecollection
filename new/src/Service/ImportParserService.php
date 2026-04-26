@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Trait\DebuggerTrait;
 use DateTime;
 
 /**
@@ -15,6 +16,8 @@ use DateTime;
  */
 class ImportParserService
 {
+    use DebuggerTrait;
+
     private const int NAME = 0;
     private const int PLATFORM = 1;
     private const int TA_URL = 2;
@@ -145,14 +148,6 @@ class ImportParserService
             $libraryGame->getHoursPlayed() < $importGame->getHoursPlayed() ||
             $libraryGame->getAchievementsWon() < $importGame->getAchievementsWon() ||
             $libraryGame->getAchievementsTotal() < $importGame->getAchievementsTotal();
-    }
-
-    private function dd(...$args): void
-    {
-        echo '<pre>';
-        var_dump($args);
-        echo '</pre>';
-        exit();
     }
 
     /**
