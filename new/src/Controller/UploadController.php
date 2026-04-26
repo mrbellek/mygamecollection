@@ -32,14 +32,17 @@ class UploadController extends AbstractController
             $importContent = $csv->getContent();
 
             $importGames = $this->importParserService->parseCsvContents($importContent);
-            $result = $this->gameRepository->upsertAll($importGames);
+            $updatedGames = $this->importParserService->getUpdatedGames($importGames, $this->gameRepository->findAll());
+            echo '<pre>';
+            print_r($updatedGames);
+            die();
+            $result = $this->gameRepository->upsertAll($updatedGames);
 
             if ($result->isSuccess()) {
                 $this->addFlash('success', sprintf('Upload was successful, %d games imported.', $result->count));
             } else {
                 $this->addFlash('error', sprintf('Upload failed: %s', $result->errorMsg));
             }
-
         }
 
         return $this->redirectToRoute('index');

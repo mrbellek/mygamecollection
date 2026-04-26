@@ -6,6 +6,13 @@ namespace App\Service;
 use App\Entity\Game;
 use DateTime;
 
+/**
+ * Note: the following export fields are not available on the TA Game Collection webpage:
+ * - achievements won/total in base game
+ * - gamerscore won/total in base game
+ * - trueachievement score won/total in base game
+ * - challenges won/total
+ */
 class ImportParserService
 {
     private const int NAME = 0;
@@ -25,21 +32,21 @@ class ImportParserService
     private const int TA_MAX_W_DLC = 14;
     private const int COMP_PERC = 15;
     private const int COMP_DATE = 16;
-//    private const int CHALL_WON = 17;
-//    private const int CHALL_MAX = 18;
+//    private const int CHALLENGES_WON = 17;
+//    private const int CHALLENGES_MAX = 18;
     private const int HOURS_PLAYED = 19;
 //    private const int MY_RATING = 20;
     private const int SITE_RATING = 21;
 //    private const int MY_RATIO = 22;
 //    private const int SITE_RATIO = 23;
-//    private const int OWN_STATUS = 24;
+//    private const int OWNERSHIP_STATUS = 24;
     private const int PLAY_STATUS = 25;
-    private const int FORMAT = 26;
+    private const int FORMAT = 26; //'media' in TA game collection
     private const int COMP_EST = 27;
 //    private const int COMP_EST_W_DLC = 28;
     private const int WALKTHROUGH_URL = 29;
 //    private const int NOTES = 30;
-//    private const int ROLE = 31;
+//    private const int ROLE = 31; //'not for contests'
 
     /**
      * @return Game[]
@@ -95,6 +102,57 @@ class ImportParserService
             );
         }
         return $games;
+    }
+
+    /**
+     * @param Game[] $importGames
+     * @param Game[] $libraryGames
+     * @return Game[]
+     */
+    public function getUpdatedGames(array $importGames, array $libraryGames): array
+    {
+        $importNames = array_map(static fn (Game $game) => $game->getName(), $importGames);
+        $libraryNames = array_map(static fn (Game $game) => $game->getName(), $libraryGames);
+
+        $newGames = array_diff($importNames, $libraryNames);
+        $deletedGames = array_diff($libraryNames, $importNames);
+
+        $updatedGames = [];
+        foreach ($importGames as $importGame) {
+            foreach ($libraryGames as $game) {
+                if ($importGame->getName() === $game->getName() && $this->hasGameChanged($game, $importGame)) {
+                    $updatedGames[] = $importGame;
+                }
+            }
+        }
+
+        return [
+            'new' => $newGames,
+            'deleted' => $deletedGames,
+            'updated' => array_map(static fn (Game $game) => $game->getName(), $updatedGames),
+        ];
+    }
+
+    private function hasGameChanged(Game $libraryGame, Game $importGame): bool
+    {
+        /**
+         * A game has changed if:
+         * - more hours played (note that CSV export rounds hours_played to int)
+         * - more achievements unlocked
+         * - more dlc appeared
+         */
+        return
+            $libraryGame->getHoursPlayed() < $importGame->getHoursPlayed() ||
+            $libraryGame->getAchievementsWon() < $importGame->getAchievementsWon() ||
+            $libraryGame->getAchievementsTotal() < $importGame->getAchievementsTotal();
+    }
+
+    private function dd(...$args): void
+    {
+        echo '<pre>';
+        var_dump($args);
+        echo '</pre>';
+        exit();
     }
 
     /**

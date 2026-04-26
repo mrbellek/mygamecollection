@@ -504,6 +504,14 @@ class Game
         return $this->setOnlineMultiplayer($this->stringToNullableBool($online));
     }
 
+    public function diffTo(Game $game): array
+    {
+        return [
+            'this' => array_diff($this->asArray(), $game->asArray()),
+            'other' => array_diff($game->asArray(), $this->asArray()),
+        ];
+    }
+
     private function stringToNullableBool(?string $input): ?bool
     {
         return match($input) {
@@ -511,5 +519,31 @@ class Game
             '1' => true,
             default => null,
         };
+    }
+
+    private function asArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'platform' => $this->platform,
+            'completionPercentage' => $this->completionPercentage,
+            'completionEstimate' => $this->completionEstimate,
+            'hoursPlayed' => $this->hoursPlayed,
+            'achievementsWon' => $this->achievementsWon,
+            'achievementsTotal' => $this->achievementsTotal,
+            'gamerscoreWon' => $this->gamerscoreWon,
+            'gamerscoreTotal' => $this->gamerscoreTotal,
+            'taScore' => $this->taScore,
+            'taTotal' => $this->taTotal,
+            'hasDlc' => $this->hasDlc,
+            'dlcCompletionPercentage' => $this->dlcCompletionPercentage,
+            'completionDate' => $this->completionDate?->format('Y-m-d H:i:s'),
+            'siteRating' => $this->siteRating,
+            'format' => $this->format,
+            'status' => $this->status,
+            'walkthroughUrl' => $this->walkthroughUrl,
+            'gameUrl' => $this->gameUrl,
+//            'lastModified' => $this->lastModified->format('Y-m-d H:i:s'),
+        ];
     }
 }
