@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Game;
 use App\Enum\Status as StatusEnum;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -296,5 +297,18 @@ class GameRepository extends ServiceEntityRepository
             'top5' => $topFive,
             'bottom5' => $bottomFive,
         ];
+    }
+
+    public function updateGame(int $id, Game $updatedGame): bool
+    {
+        $game = $this->find($id);
+        if ($game === null) {
+            return false;
+        }
+
+        $game->updateWithData($updatedGame);
+        $this->getEntityManager()->persist($game);
+
+        return true;
     }
 }

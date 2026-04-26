@@ -5,7 +5,7 @@ namespace App\Trait;
 
 trait DebuggerTrait
 {
-    private function dd(...$args): void
+    private function dd(mixed ...$args): void
     {
         echo '<pre>';
         var_dump($args);

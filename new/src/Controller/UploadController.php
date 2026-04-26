@@ -38,7 +38,9 @@ class UploadController extends AbstractController
             $updatedGames = $this->importParserService->getUpdatedGames($importGames, $this->gameRepository->findAll());
             $this->dd($updatedGames);
 
-            $result = $this->gameRepository->upsertAll($updatedGames);
+            $result = $this->gameRepository->updateGames($updatedGames['updated']);
+            $result = $this->gameRepository->insertGames($updatedGames['new']);
+            $result = $this->gameRepository->deleteGames($updatedGames['deleted']);
 
             if ($result->isSuccess()) {
                 $this->addFlash('success', sprintf('Upload was successful, %d games imported.', $result->count));

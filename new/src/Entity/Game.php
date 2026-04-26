@@ -512,6 +512,40 @@ class Game
         ];
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * An updated game can have changed fields:
+     * - name (e.g. old gen game renamed when remake comes out)
+     * - new dlc (more TA/GS/achievements)
+     * - play progress (more TA/GS/achievements won)
+     * - hours played
+     * - completion percentage
+     * - completion date
+     */
+    public function updateWithData(self $updatedGame): void
+    {
+        //@TODO use this or $this->update?
+        $this->name = $updatedGame->getName();
+        $this->gameUrl = $updatedGame->getGameUrl();
+        $this->walkthroughUrl = $updatedGame->getWalkthroughUrl();
+
+        $this->hoursPlayed = max($this->hoursPlayed, $updatedGame->getHoursPlayed());
+        $this->completionPercentage = $updatedGame->getCompletionPercentage();
+        $this->completionDate = $updatedGame->getCompletionDate();
+
+        $this->taScore = $updatedGame->getTaScore();
+        $this->gamerscoreWon = $updatedGame->getGamerscoreWon();
+        $this->achievementsWon = $updatedGame->getAchievementsWon();
+
+        $this->taTotal = $updatedGame->getTaTotal();
+        $this->gamerscoreTotal = $updatedGame->getGamerscoreTotal();
+        $this->achievementsTotal = $updatedGame->getAchievementsTotal();
+    }
+
     private function stringToNullableBool(?string $input): ?bool
     {
         return match($input) {
@@ -521,6 +555,9 @@ class Game
         };
     }
 
+    /**
+     * @return array<string, string|int|float|DateTime|null>
+     */
     private function asArray(): array
     {
         return [

@@ -58,6 +58,7 @@
         "symfony/polyfill-php72": "*"
     },
     "scripts": {
+        "phpstan": "vendor/bin/phpstan --memory-limit=1G",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

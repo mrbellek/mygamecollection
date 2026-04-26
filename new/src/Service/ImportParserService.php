@@ -110,17 +110,32 @@ class ImportParserService
     /**
      * @param Game[] $importGames
      * @param Game[] $libraryGames
-     * @return Game[]
+     * @return array<string, Game[]>
      */
     public function getUpdatedGames(array $importGames, array $libraryGames): array
     {
         $importNames = array_map(static fn (Game $game) => $game->getName(), $importGames);
         $libraryNames = array_map(static fn (Game $game) => $game->getName(), $libraryGames);
 
-        $newGames = array_diff($importNames, $libraryNames);
-        $deletedGames = array_diff($libraryNames, $importNames);
-
+        $newGames = array_diff($importGames, $libraryGames);
+        $deletedGames = array_diff($libraryGames, $importGames);
         $updatedGames = [];
+
+        //Sometimes 360/XB1 games get rereleased on new platforms, and TA changes the name of the old game by
+        //adding 'Xbox 360' or 'Xbox One' - make sure those are picked up as updated
+        //
+        //Other changes that might happen to game names, that we can't pick up automatically:
+        //- capitalization (Final Fantasy XV -> FINAL FANTASY XV)
+        //- spelling (Kingdom: Two Crowns -> Kingdom Two Crowns)
+        foreach ($deletedGames as $i => $deletedGame) {
+            $indexNew = $this->gameIsRenamedLastGenGame($deletedGame, $newGames);
+            if ($indexNew > 0) {
+                $updatedGames[] = $newGames[$indexNew];
+                unset($newGames[$indexNew], $deletedGames[$i]);
+            }
+        }
+
+        //Make list of games that were updated (see function for criteria)
         foreach ($importGames as $importGame) {
             foreach ($libraryGames as $game) {
                 if ($importGame->getName() === $game->getName() && $this->hasGameChanged($game, $importGame)) {
@@ -129,21 +144,23 @@ class ImportParserService
             }
         }
 
+        //TODO: this should be lists of games, not a list of game names
         return [
-            'new' => $newGames,
-            'deleted' => $deletedGames,
-            'updated' => array_map(static fn (Game $game) => $game->getName(), $updatedGames),
+            'new' => $newGames,// array_map(static fn (Game $game) => $game->getName(), $newGames),
+            'deleted' => $deletedGames, // array_map(static fn (Game $game) => $game->getName(), $deletedGames),
+            'updated' => $updatedGames, // array_map(static fn (Game $game) => $game->getName(), $updatedGames),
         ];
     }
 
+    /**
+     * A game has changed if:
+     * - more hours played (note that CSV export rounds hours_played to int)
+     * - more achievements unlocked
+     * - more dlc appeared
+     * - game name changed (usually '(Xbox 360)' is suffixed)
+     */
     private function hasGameChanged(Game $libraryGame, Game $importGame): bool
     {
-        /**
-         * A game has changed if:
-         * - more hours played (note that CSV export rounds hours_played to int)
-         * - more achievements unlocked
-         * - more dlc appeared
-         */
         return
             $libraryGame->getHoursPlayed() < $importGame->getHoursPlayed() ||
             $libraryGame->getAchievementsWon() < $importGame->getAchievementsWon() ||
@@ -183,5 +200,23 @@ class ImportParserService
     private function getCompletionDate(array $fields): ?DateTime
     {
         return $fields[self::COMP_DATE] === '' ? null : DateTime::createFromFormat('d/m/Y H:i:s', $fields[self::COMP_DATE]);
+    }
+
+    /**
+     * @param Game[] $newGames
+     * @return int game index in newGames array
+     */
+    private function gameIsRenamedLastGenGame(Game $deletedGame, array $newGames): int
+    {
+        foreach ($newGames as $i => $newGame) {
+            if (
+                $newGame->getName() === $deletedGame->getName() . ' (Xbox 360)' ||
+                $newGame->getName() === $deletedGame->getName() . ' (Xbox One)'
+            ) {
+                return $i;
+            }
+        }
+
+        return 0;
     }
 }
