@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Entity\Game;
 use App\Trait\DebuggerTrait;
 use DateTime;
+use InvalidArgumentException;
 
 /**
  * Note: the following export fields are not available on the TA Game Collection webpage:
@@ -114,9 +115,6 @@ class ImportParserService
      */
     public function getUpdatedGames(array $importGames, array $libraryGames): array
     {
-        $importNames = array_map(static fn (Game $game) => $game->getName(), $importGames);
-        $libraryNames = array_map(static fn (Game $game) => $game->getName(), $libraryGames);
-
         $newGames = array_diff($importGames, $libraryGames);
         $deletedGames = array_diff($libraryGames, $importGames);
         $updatedGames = [];
@@ -130,6 +128,9 @@ class ImportParserService
         foreach ($deletedGames as $i => $deletedGame) {
             $indexNew = $this->gameIsRenamedLastGenGame($deletedGame, $newGames);
             if ($indexNew > 0) {
+                //TODO find game id in library games somehow
+                $libraryGame = $this->findLibraryGameByName($libraryGames, $newGames[$indexNew]->getName());
+                $newGames[$indexNew]->setId($libraryGame->getId());
                 $updatedGames[] = $newGames[$indexNew];
                 unset($newGames[$indexNew], $deletedGames[$i]);
             }
@@ -137,18 +138,23 @@ class ImportParserService
 
         //Make list of games that were updated (see function for criteria)
         foreach ($importGames as $importGame) {
-            foreach ($libraryGames as $game) {
-                if ($importGame->getName() === $game->getName() && $this->hasGameChanged($game, $importGame)) {
-                    $updatedGames[] = $importGame;
-                }
+            $libraryGame = $this->findLibraryGameByName($libraryGames, $importGame->getName());
+            if ($this->hasGameChanged($libraryGame, $importGame)) {
+                $importGame->setId($libraryGame->getId());
+                $updatedGames[] = $importGame;
             }
         }
 
-        //TODO: this should be lists of games, not a list of game names
+        $this->dd([
+            'new' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $newGames),
+            'deleted' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $deletedGames),
+            'updated' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $updatedGames),
+        ]);
+
         return [
-            'new' => $newGames,// array_map(static fn (Game $game) => $game->getName(), $newGames),
-            'deleted' => $deletedGames, // array_map(static fn (Game $game) => $game->getName(), $deletedGames),
-            'updated' => $updatedGames, // array_map(static fn (Game $game) => $game->getName(), $updatedGames),
+            'new' => $newGames,
+            'deleted' => $deletedGames,
+            'updated' => $updatedGames,
         ];
     }
 
@@ -218,5 +224,19 @@ class ImportParserService
         }
 
         return 0;
+    }
+
+    /**
+     * @param Game[] $libraryGames
+     * @throws InvalidArgumentException
+     */
+    private function findLibraryGameByName(array $libraryGames, string $name): Game
+    {
+        $libraryGame = array_find($libraryGames, fn($libraryGame) => $libraryGame->getName() === $name);
+        if ($libraryGame === null) {
+            throw new InvalidArgumentException(sprintf('Cannot find game "%s" in library', $name));
+        }
+
+        return $libraryGame;
     }
 }

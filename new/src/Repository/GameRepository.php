@@ -8,6 +8,7 @@ use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 
 /**
  * @extends ServiceEntityRepository<Game>
@@ -299,16 +300,80 @@ class GameRepository extends ServiceEntityRepository
         ];
     }
 
-    public function updateGame(int $id, Game $updatedGame): bool
+    /**
+     * @param Game[] $games
+     * @throws InvalidArgumentException
+     * @return int Updated games count
+     */
+    public function updateGames(array $games): int
     {
-        $game = $this->find($id);
-        if ($game === null) {
-            return false;
+        $updatedCount = 0;
+        foreach ($games as $updatedGame) {
+            if ($updatedGame->getId() === null) {
+                $libraryGame = $this->findOneBy(['name' => $updatedGame->getName()]);
+            } else {
+                $libraryGame = $this->findOneBy(['id' => $updatedGame->getId()]);
+            }
+            if ($libraryGame === null) {
+                throw new InvalidArgumentException(
+                    sprintf('Cannot find game "%s" to update', $updatedGame->getName()),
+                );
+            }
+            $libraryGame->updateWithData($updatedGame);
+            $this->getEntityManager()->persist($libraryGame);
+            $updatedCount++;
+
+            exit(1);
+        }
+        $this->getEntityManager()->flush();
+
+        return $updatedCount;
+    }
+
+    /**
+     * @param Game[] $games
+     * @throws InvalidArgumentException
+     * @return int Inserted games count
+     */
+    public function insertGames(array $games): int
+    {
+        $insertedCount = 0;
+        foreach ($games as $game) {
+            if ($game->getId() === null) {
+                throw new InvalidArgumentException(
+                    sprintf('Cannot insert game "%s" without id', $game->getName()),
+                );
+            }
+
+            $this->getEntityManager()->persist($game);
+            $insertedCount++;
         }
 
-        $game->updateWithData($updatedGame);
-        $this->getEntityManager()->persist($game);
+        $this->getEntityManager()->flush();
 
-        return true;
+        return $insertedCount;
+    }
+
+    /**
+     * @param Game[] $games
+     * @throws InvalidArgumentException
+     * @return int Deleted games count
+     */
+    public function deleteGames(array $games): int
+    {
+        $deletedCount = 0;
+        foreach ($games as $game) {
+            if ($game->getId() === null) {
+                throw new InvalidArgumentException(
+                    sprintf('Cannot delete game "%s" without id', $game->getName()),
+                );
+            }
+
+            $this->getEntityManager()->remove($game);
+        }
+
+        $this->getEntityManager()->flush();
+
+        return $deletedCount;
     }
 }
