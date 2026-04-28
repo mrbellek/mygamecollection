@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Exception\GameNotFoundInLibraryException;
 use App\Trait\DebuggerTrait;
 use DateTime;
 use InvalidArgumentException;
@@ -109,71 +110,6 @@ class ImportParserService
     }
 
     /**
-     * @param Game[] $importGames
-     * @param Game[] $libraryGames
-     * @return array<string, Game[]>
-     */
-    public function getUpdatedGames(array $importGames, array $libraryGames): array
-    {
-        $newGames = array_diff($importGames, $libraryGames);
-        $deletedGames = array_diff($libraryGames, $importGames);
-        $updatedGames = [];
-
-        //Sometimes 360/XB1 games get rereleased on new platforms, and TA changes the name of the old game by
-        //adding 'Xbox 360' or 'Xbox One' - make sure those are picked up as updated
-        //
-        //Other changes that might happen to game names, that we can't pick up automatically:
-        //- capitalization (Final Fantasy XV -> FINAL FANTASY XV)
-        //- spelling (Kingdom: Two Crowns -> Kingdom Two Crowns)
-        foreach ($deletedGames as $i => $deletedGame) {
-            $indexNew = $this->gameIsRenamedLastGenGame($deletedGame, $newGames);
-            if ($indexNew > 0) {
-                //TODO find game id in library games somehow
-                $libraryGame = $this->findLibraryGameByName($libraryGames, $newGames[$indexNew]->getName());
-                $newGames[$indexNew]->setId($libraryGame->getId());
-                $updatedGames[] = $newGames[$indexNew];
-                unset($newGames[$indexNew], $deletedGames[$i]);
-            }
-        }
-
-        //Make list of games that were updated (see function for criteria)
-        foreach ($importGames as $importGame) {
-            $libraryGame = $this->findLibraryGameByName($libraryGames, $importGame->getName());
-            if ($this->hasGameChanged($libraryGame, $importGame)) {
-                $importGame->setId($libraryGame->getId());
-                $updatedGames[] = $importGame;
-            }
-        }
-
-        $this->dd([
-            'new' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $newGames),
-            'deleted' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $deletedGames),
-            'updated' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $updatedGames),
-        ]);
-
-        return [
-            'new' => $newGames,
-            'deleted' => $deletedGames,
-            'updated' => $updatedGames,
-        ];
-    }
-
-    /**
-     * A game has changed if:
-     * - more hours played (note that CSV export rounds hours_played to int)
-     * - more achievements unlocked
-     * - more dlc appeared
-     * - game name changed (usually '(Xbox 360)' is suffixed)
-     */
-    private function hasGameChanged(Game $libraryGame, Game $importGame): bool
-    {
-        return
-            $libraryGame->getHoursPlayed() < $importGame->getHoursPlayed() ||
-            $libraryGame->getAchievementsWon() < $importGame->getAchievementsWon() ||
-            $libraryGame->getAchievementsTotal() < $importGame->getAchievementsTotal();
-    }
-
-    /**
      * @param array<int, string> $fields
      */
     private function getHasDlc(array $fields): bool
@@ -209,6 +145,60 @@ class ImportParserService
     }
 
     /**
+     * @param Game[] $importGames
+     * @param Game[] $libraryGames
+     * @return array<string, Game[]>
+     */
+    public function getUpdatedGames(array $importGames, array $libraryGames): array
+    {
+        $existingGames = array_intersect($importGames, $libraryGames);
+        $newGames = array_diff($importGames, $libraryGames);
+        $deletedGames = array_diff($libraryGames, $importGames);
+        $updatedGames = [];
+
+        //Sometimes 360/XB1 games get rereleased on new platforms, and TA changes the name of the old game by
+        //adding 'Xbox 360' or 'Xbox One' - make sure those are picked up as updated
+        //
+        //Other changes that might happen to game names, that we can't pick up automatically:
+        //- capitalization (Final Fantasy XV -> FINAL FANTASY XV)
+        //- spelling (Kingdom: Two Crowns -> Kingdom Two Crowns)
+        foreach ($deletedGames as $i => $deletedGame) {
+            $indexNew = $this->gameIsRenamedLastGenGame($deletedGame, $newGames);
+            if ($indexNew > 0) {
+                try {
+                    $libraryGame = $this->findLibraryGameByName($libraryGames, $deletedGame->getName());
+                    $newGames[$indexNew]->setId($libraryGame->getId());
+                    $updatedGames[] = $newGames[$indexNew];
+                    unset($newGames[$indexNew], $deletedGames[$i]);
+                } catch (GameNotFoundInLibraryException) {
+                    //cant find deleted game as renamed existing game
+                }
+            }
+        }
+
+        //Make list of games that were updated (see function for criteria)
+        foreach ($existingGames as $existingGame) {
+            $libraryGame = $this->findLibraryGameByName($libraryGames, $existingGame->getName());
+            if ($this->hasGameChanged($libraryGame, $existingGame)) {
+                $existingGame->setId($libraryGame->getId());
+                $updatedGames[] = $existingGame;
+            }
+        }
+
+        $this->dd([
+            'new' => array_map(static fn(Game $game) => $game->getName(), $newGames),
+            'deleted' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $deletedGames),
+            'updated' => array_map(static fn(Game $game) => $game->getId() . ':' . $game->getName(), $updatedGames),
+        ]);
+
+        return [
+            'new' => $newGames,
+            'deleted' => $deletedGames,
+            'updated' => $updatedGames,
+        ];
+    }
+
+    /**
      * @param Game[] $newGames
      * @return int game index in newGames array
      */
@@ -234,9 +224,24 @@ class ImportParserService
     {
         $libraryGame = array_find($libraryGames, fn($libraryGame) => $libraryGame->getName() === $name);
         if ($libraryGame === null) {
-            throw new InvalidArgumentException(sprintf('Cannot find game "%s" in library', $name));
+            throw new GameNotFoundInLibraryException(sprintf('Cannot find game "%s" in library', $name));
         }
 
         return $libraryGame;
+    }
+
+    /**
+     * A game has changed if:
+     * - more hours played (note that CSV export rounds hours_played to int)
+     * - more achievements unlocked
+     * - more dlc appeared
+     * - game name changed (e.g. '(Xbox 360)' is suffixed) - this is checked earlier
+     */
+    private function hasGameChanged(Game $libraryGame, Game $importGame): bool
+    {
+        return
+            $libraryGame->getHoursPlayed() < $importGame->getHoursPlayed() ||
+            $libraryGame->getAchievementsWon() < $importGame->getAchievementsWon() ||
+            $libraryGame->getAchievementsTotal() < $importGame->getAchievementsTotal();
     }
 }

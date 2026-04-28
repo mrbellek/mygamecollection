@@ -36,6 +36,7 @@ class UploadController extends AbstractController
             $csv = $form->get('upload')->getData();
             $importContent = $csv->getContent();
 
+            //TODO move this logic into the service (parse, process, update database)
             $importGames = $this->importParserService->parseCsvContents($importContent);
             $updatedGames = $this->importParserService->getUpdatedGames($importGames, $this->gameRepository->findAll());
 
