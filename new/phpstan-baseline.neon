@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method App\\Repository\\SeriesGameRepository\:\:findBySetlistId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/SeriesSetlistController.php
+
+		-
+			message: '#^Result of \|\| is always true\.$#'
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: src/Controller/SeriesSetlistController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between true and true will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: src/Controller/SeriesSetlistController.php
+
+		-
+			message: '#^Property App\\Entity\\Series\:\:\$id is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Entity/Series.php
+
+		-
+			message: '#^Property App\\Entity\\Series\:\:\$seriesGames with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Series.php
+
+		-
+			message: '#^Property App\\Entity\\SeriesGame\:\:\$altFor \(App\\Entity\\Game\|null\) is never assigned App\\Entity\\Game so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/SeriesGame.php
+
+		-
+			message: '#^Property App\\Entity\\SeriesGame\:\:\$id is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Entity/SeriesGame.php

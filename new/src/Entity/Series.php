@@ -33,9 +33,7 @@ class Series
     private string $status;
 
     #[ORM\OneToMany(targetEntity: SeriesGame::class, mappedBy: 'series')]
-    /**
-     * @var Collection<int, SeriesGame> $seriesGames
-     */
+    /** @var Collection<int, SeriesGame> $seriesGames */
     private Collection $seriesGames;
 
     public function __construct()
@@ -64,7 +62,7 @@ class Series
     }
 
     /**
-     * @return Collection<SeriesGame>
+     * @return Collection<int, SeriesGame>
      */
     public function getGames(): Collection
     {

@@ -95,6 +95,7 @@ class GameImportCommand extends Command
     }
 
     /**
+     * @param DOMNodeList<\DOMNode> $games
      * @return array<int, Game>
      */
     private function parseRowsIntoGames(DOMNodeList|false $games, DOMXPath $xpath): array

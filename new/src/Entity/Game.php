@@ -511,7 +511,10 @@ class Game
         return $this->setOnlineMultiplayer($this->stringToNullableBool($online));
     }
 
-    public function diffTo(Game $game): array
+    /**
+     * @return array<string, array<string, string|int|float|DateTime|null>>
+     */
+    public function diffTo(self $game): array
     {
         return [
             'this' => array_diff($this->asArray(), $game->asArray()),
@@ -563,7 +566,7 @@ class Game
     }
 
     /**
-     * @return array<string, string|int|float|DateTime|null>
+     * @return array<string, string|int|float|bool|null>
      */
     private function asArray(): array
     {

@@ -45,7 +45,6 @@ class GameFactory
         DateTime $created,
     ): Game {
         return new Game(
-            $gameId,
             $name,
             $platform,
             $backwardsCompatible,
@@ -67,6 +66,7 @@ class GameFactory
             $format,
             $status,
             $shortlistOrder,
+            0,
             $walkthroughUrl,
             $gameUrl,
             $lastModified,
@@ -75,6 +75,7 @@ class GameFactory
             $purchasedPrice,
             $currentPrice,
             $regularPrice,
+            $gameId,
         );
     }
 }

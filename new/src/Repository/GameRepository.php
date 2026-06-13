@@ -256,7 +256,7 @@ class GameRepository extends ServiceEntityRepository
     public function shiftRankingDownAt(int $atRanking): self
     {
         $this->qb
-            ->update('g')
+            ->update(Game::class, 'g')
             ->set('g.ranking', 'g.ranking + 1')
             ->where('g.ranking > :atRanking')
             ->setParameter(':atRanking', $atRanking)
@@ -267,7 +267,7 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<string, int|array>
+     * @return array<string, int|array<string>>
      */
     public function fetchRankingStats(): array
     {

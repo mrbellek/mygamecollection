@@ -70,7 +70,7 @@ class GameStatsService
     }
 
     /**
-     * @return array<string, string|float|array|Game>
+     * @return array<string, string|float|array<string>|Game>
      */
     private function getSpentStats(GameCollection $games): array
     {
