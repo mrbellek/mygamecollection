@@ -9,6 +9,8 @@ namespace App\Service;
  */
 
 use App\Exception\InvalidTAContentException;
+use App\Trait\DebuggerTrait;
+use CurlHandle;
 use DOMDocument;
 use DOMXPath;
 
@@ -22,6 +24,7 @@ use function curl_setopt_array;
  */
 class GameScraperService
 {
+    use DebuggerTrait;
     private string $baseUrl = 'https://www.trueachievements.com/gamer/mrbellek/gamecollection?executeformfunction&function=AjaxList&params=';
 
     /**
@@ -54,16 +57,19 @@ class GameScraperService
         'chkColSiteratio'               => 'True',
         'chkColSiterating'              => 'True',
     ];
+
+    private CurlHandle $curl;
     
     public function __construct(private readonly bool $debug = false)
     {
         //prevent DOMDocument from choking on invalid html
         libxml_use_internal_errors(true);
+        $this->curl = $this->initCurl();
     }
 
     private function log(string $message): void
     {
-        printf($message . PHP_EOL);
+        print($message . PHP_EOL);
     }
 
     /**
@@ -87,21 +93,18 @@ class GameScraperService
         //construct game collection url and fetch first page
         $scrapedPages = [];
         $url = $this->buildUrl($gamerId);
-        $curl = $this->initCurl($gamerId);
-        curl_setopt($curl, CURLOPT_URL, $url);
         $this->log('Importing TA game collection page 1/?..');
 
         //get number of games from first page 'total' line and calculate page count
-        $result = curl_exec($curl);
+        $result = $this->urlPost($url, $gamerId);
         $scrapedPages[] = $result;
         $totalPages = $this->getPageCountFromFirstPage($result);
 
         for ($page = 2; $page <= $totalPages; $page++) {
             $url = $this->buildUrl($gamerId, $page);
-            curl_setopt($curl, CURLOPT_URL, $url);
 
             $this->log(sprintf('Importing TA game collection page %d/%d..', $page, $totalPages));
-            $result = curl_exec($curl);
+            $result = $this->urlPost($url, $gamerId);
             $scrapedPages[] = $result;
 
             //cache scraped pages for when debugging
@@ -142,7 +145,7 @@ class GameScraperService
             return '71675';
         }
 
-        $gamerHomepage = file_get_contents(sprintf('https://www.trueachievements.com/gamer/%s', $gamertag));
+        $gamerHomepage = $this->urlGet(sprintf('https://www.trueachievements.com/gamer/%s', $gamertag));
         $dom = new DOMDocument();
         $dom->loadHtml($gamerHomepage);
 
@@ -182,10 +185,54 @@ class GameScraperService
             );
     }
 
-    /**
-     * @return \CurlHandle
-     */
-    private function initCurl(string $gamerId)
+    private function urlGet(string $url, ?string $gamerId = null): string
+    {
+        curl_setopt($this->curl, CURLOPT_POST, false);
+
+        return $this->urlFetch($url, $gamerId);
+    }
+
+    private function urlPost(string $url, ?string $gamerId = null): string
+    {
+        curl_setopt($this->curl, CURLOPT_POST, true);
+
+        return $this->urlFetch($url, $gamerId);
+    }
+
+    private function urlFetch(string $url, ?string $gamerId = null): string
+    {
+        curl_setopt($this->curl, CURLOPT_URL, $url);
+        if ($gamerId !== null) {
+            curl_setopt(
+                $this->curl,
+                CURLOPT_HTTPHEADER,
+                [
+                    sprintf('Cookie: GamerID=%s; HashKey=a00bc2497d9d467f94903b6a16a3489a;', $gamerId),
+                    //'Content-Type: application/json; charset=UTF-8',
+                    //'Content-Length: ' . strlen(json_encode($json)),
+                ],
+            );
+        }
+
+        $result = curl_exec($this->curl);
+
+        if ($this->debug) {
+            $info = curl_getinfo($this->curl);
+            $this->log(sprintf(
+                '%s %s: HTTP %d, %d bytes',
+                $info['effective_method'],
+                $url,
+                $info['http_code'],
+                $info['size_download'],
+            ));
+            //var_dump($result);
+            //if ($info['http_code'] !== 200) die();
+        }
+
+        return $result;
+    }
+
+    private function initCurl(): CurlHandle
     {
         //TA page uses the parameters in query string as well as post body,
         //but just the query string seems to work fine for us
@@ -195,7 +242,8 @@ class GameScraperService
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_HTTPHEADER => [sprintf('Cookie: GamerID=%s; HashKey=a00bc2497d9d467f94903b6a16a3489a;', $gamerId)],
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36 OPR/51.0.2830.55',
+
         ]);
 
         return $curl;
