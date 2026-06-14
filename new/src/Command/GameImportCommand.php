@@ -48,6 +48,7 @@ class GameImportCommand extends Command
         //get game collection for given gamertag
         $gamertag = $input->getArgument('gamertag');
         try {
+            $this->scraper->setDebug(true);
             $gameCollectionPages = $this->scraper->scrape($gamertag);
         } catch (InvalidTAContentException $e) {
             $output->writeLn($e->getMessage());
@@ -64,7 +65,7 @@ class GameImportCommand extends Command
             $xpath = new DOMXPath($dom);
             $games = $xpath->query('//tr[contains(@class, "green") or contains(@class, "even") or contains(@class, "odd")]');
             try {
-                $parsedArray = array_merge($parsedArray, $this->parseRowsIntoGames($games, $xpath));
+                $parsedArray += $this->parseRowsIntoGames($games, $xpath);
             } catch (InvalidPlatformValueException $e) {
                 $output->writeLn($e->getMessage());
                 return Command::FAILURE;
@@ -95,7 +96,7 @@ class GameImportCommand extends Command
     }
 
     /**
-     * @param DOMNodeList<\DOMNode> $games
+     * @param DOMNodeList<\DOMNode>|false $games
      * @return array<int, Game>
      */
     private function parseRowsIntoGames(DOMNodeList|false $games, DOMXPath $xpath): array
@@ -140,8 +141,6 @@ class GameImportCommand extends Command
                 //game exists, update with new details if needed
                 $existingGame->update($game);
                 $manager->persist($existingGame);
-            } else {
-                //no changes
             }
         }
         $manager->flush();
@@ -158,6 +157,7 @@ class GameImportCommand extends Command
         foreach ($currentGames as $gameId => $currentGame) {
             if ($parsedGames->containsKey($gameId) === false) {
                 //game was deleted from collection
+                $output->writeLn(sprintf('[%s] game removed', $currentGame->getName()));
                 $manager->remove($currentGame);
                 $deletedCount++;
             }

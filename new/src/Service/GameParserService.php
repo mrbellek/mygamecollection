@@ -171,7 +171,7 @@ class GameParserService
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, int|string>
      * @throws InvalidPlatformValueException
      */
     private function parseGameIdAndPlatform(DOMXPAth $basexpath, DOMElement $cell): array
@@ -179,7 +179,7 @@ class GameParserService
         $gameId = 0;
         $m = [];
         if (preg_match('/_(\d+)$/', $cell->getAttribute('id'), $m)) {
-            $gameId = $m[1];
+            $gameId = (int)$m[1];
         }
 
         /** @var DOMElement $platformCodeCell */

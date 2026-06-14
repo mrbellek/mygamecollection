@@ -59,12 +59,20 @@ class GameScraperService
     ];
 
     private CurlHandle $curl;
+    private bool $debug = false;
     
-    public function __construct(private readonly bool $debug = false)
+    public function __construct()
     {
         //prevent DOMDocument from choking on invalid html
         libxml_use_internal_errors(true);
         $this->curl = $this->initCurl();
+    }
+
+    public function setDebug(bool $debug): self
+    {
+        $this->debug = $debug;
+
+        return $this;
     }
 
     private function log(string $message): void
@@ -78,7 +86,7 @@ class GameScraperService
     public function scrape(string $gamertag): array
     {
         //return cached pages when debugging
-        if ($this->debug === true && is_readable('scrape1.html')) {
+        if ($this->debug === true && is_readable('scrape001.html')) {
             $caches = glob('scrape*.html');
             $result = [];
             foreach ($caches as $cache) {
@@ -99,6 +107,7 @@ class GameScraperService
         $result = $this->urlPost($url, $gamerId);
         $scrapedPages[] = $result;
         $totalPages = $this->getPageCountFromFirstPage($result);
+        file_put_contents('scrape001.html', $result);
 
         for ($page = 2; $page <= $totalPages; $page++) {
             $url = $this->buildUrl($gamerId, $page);
@@ -108,7 +117,7 @@ class GameScraperService
             $scrapedPages[] = $result;
 
             //cache scraped pages for when debugging
-            file_put_contents(sprintf('scrape%d.html', $page), $result);
+            file_put_contents(sprintf('scrape%03d.html', $page), $result);
         }
 
         return $scrapedPages;
